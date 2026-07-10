@@ -1,0 +1,472 @@
+#!/usr/bin/env bash
+# sync-template.sh — 在派生项目里下行同步 ai-project-template 的方法论文件
+#
+# 用法（在派生项目根目录执行）:
+#   bash scripts/sync-template.sh [--dry-run [--no-stat]|--summary|--commit]
+#     --dry-run  仅抓取并预览差异，不修改工作区、不 stage（默认）
+#     --no-stat  与 --dry-run 搭配，跳过逐文件 diff stat，仅输出轻量摘要
+#     --summary  等价于 --dry-run --no-stat
+#     --commit   抓取、覆盖、stage 并提交 "sync template vX.Y.Z"
+#   环境变量:
+#     TEMPLATE_REMOTE  模板远端（默认 https://github.com/emily8421/ai-project-template.git）
+# 依赖: git（网络可达模板远端；模板私有，活跃 gh 账号须有访问权限）
+set -euo pipefail
+
+usage() {
+  echo "用法: bash scripts/sync-template.sh [--dry-run [--no-stat]|--summary|--commit]" >&2
+}
+
+MODE="--dry-run"
+MODE_EXPLICIT=0
+SKIP_STAT=0
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      if [[ "$MODE_EXPLICIT" -eq 1 && "$MODE" != "--dry-run" ]]; then
+        usage
+        exit 1
+      fi
+      MODE="--dry-run"
+      MODE_EXPLICIT=1
+      ;;
+    --commit)
+      if [[ "$MODE_EXPLICIT" -eq 1 && "$MODE" != "--commit" ]]; then
+        usage
+        exit 1
+      fi
+      MODE="--commit"
+      MODE_EXPLICIT=1
+      ;;
+    --summary)
+      if [[ "$MODE_EXPLICIT" -eq 1 && "$MODE" == "--commit" ]]; then
+        usage
+        exit 1
+      fi
+      MODE="--dry-run"
+      MODE_EXPLICIT=1
+      SKIP_STAT=1
+      ;;
+    --no-stat)
+      SKIP_STAT=1
+      ;;
+    *)
+      usage
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+if [[ "$MODE" == "--commit" && "$SKIP_STAT" -eq 1 ]]; then
+  usage
+  exit 1
+fi
+
+TEMPLATE_REMOTE="${TEMPLATE_REMOTE:-https://github.com/emily8421/ai-project-template.git}"
+
+# 兜底同步清单；优先读取模板远端 template-sync.json。
+DEFAULT_SYNC_FILES=(
+  "VERSION"
+  "CHANGELOG.md"
+  "MAINTAINERS.md"
+  "template-docs/beginner-guide.md"
+  "template-docs/env-setup.md"
+  "template-docs/ai-cli-setup.md"
+  "template-docs/smoke-test.md"
+  "template-docs/smoke-test-report-template.md"
+  "template-docs/template-methodology.md"
+  "template-docs/glossary.md"
+  "template-docs/docs-scaffold/README.md"
+  "template-docs/docs-scaffold/inputs/input-review-report.md"
+  "template-docs/docs-scaffold/vision/product-vision.md"
+  "template-docs/docs-scaffold/00-scenario.md"
+  "template-docs/docs-scaffold/01-user-requirements.md"
+  "template-docs/docs-scaffold/02-srs.md"
+  "template-docs/docs-scaffold/03-prd.md"
+  "template-docs/docs-scaffold/04-architecture.md"
+  "template-docs/docs-scaffold/05-tech-spec.md"
+  "template-docs/docs-scaffold/06-db-design.md"
+  "template-docs/docs-scaffold/07-api-spec.md"
+  "template-docs/docs-scaffold/08-dev-plan.md"
+  "template-docs/docs-scaffold/09-verification.md"
+  "template-docs/docs-scaffold/design/subsystem-design.md"
+  "template-docs/docs-scaffold/design/frontend-interaction.md"
+  "template-docs/docs-scaffold/design/ui-prototype-strategy.md"
+  "template-docs/docs-scaffold/decisions/ADR-template.md"
+  "template-docs/docs-scaffold/research/docs-open-items.md"
+  "template-docs/docs-scaffold/research/ui-prototype-exploration.md"
+  "template-docs/docs-scaffold/research/tech-env-evaluation.md"
+  "template-docs/session-handoff.example.md"
+  "template-docs/derived-sync-report-template.md"
+  "template-docs/ui-prototype-strategy-template.md"
+  "template-sync.json"
+  "ai/index.md"
+  "ai/global-rules.md"
+  "ai/document-lifecycle-rules.md"
+  "ai/implementation-lifecycle-rules.md"
+  "ai/session-rules.md"
+  "ai/doc-standards/README.md"
+  "ai/doc-standards/00-scenario.md"
+  "ai/doc-standards/01-user-requirements.md"
+  "ai/doc-standards/02-srs.md"
+  "ai/doc-standards/03-prd.md"
+  "ai/doc-standards/04-architecture.md"
+  "ai/doc-standards/05-tech-spec.md"
+  "ai/doc-standards/06-db-design.md"
+  "ai/doc-standards/07-api-spec.md"
+  "ai/doc-standards/08-dev-plan.md"
+  "ai/doc-standards/09-verification.md"
+  "ai/doc-standards/design-doc.md"
+  "ai/doc-standards/frontend-interaction.md"
+  "ai/doc-standards/ui-prototype-strategy.md"
+  "ai/commands/README.md"
+  "ai/commands/sync-methodology.md"
+  "ai/commands/post-sync-cleanup.md"
+  "ai/commands/docs-system-audit.md"
+  "ai/commands/template-proposal-summary.md"
+  "ai/commands/generate-docs.md"
+  "ai/commands/review-inputs.md"
+  "ai/commands/project-review.md"
+  "ai/commands/edit-single-doc.md"
+  "ai/commands/sync-docs-from-code.md"
+  "ai/commands/phase-upgrade.md"
+  "ai/commands/docs-checklist.md"
+  "ai/commands/run-dev-task.md"
+  "ai/commands/fix-bug.md"
+  "ai/commands/sprint-summary.md"
+  "ai/commands/collect-env.md"
+  "ai/commands/new-project.md"
+  "ai/commands/commit-message.md"
+  "AGENTS.md"
+  "CLAUDE.md"
+  ".cursor/rules/project-rules.mdc"
+  "SOP.md"
+  "INIT-PROMPT.md"
+  "ai/prompts/dev/02-run-task.md"
+  "ai/prompts/dev/05-fix-bug.md"
+  "ai/prompts/dev/09-sprint-summary.md"
+  "ai/prompts/docs/00-generate-or-complete-docs.md"
+  "ai/prompts/docs/01-review-inputs.md"
+  "ai/prompts/docs/04-edit-single-doc.md"
+  "ai/prompts/docs/07-sync-docs-from-code.md"
+  "ai/prompts/git/06-commit-message.md"
+  "ai/prompts/maintainers/11-template-proposal-summary.md"
+  "ai/prompts/maintainers/12-sync-template.md"
+  "ai/prompts/maintainers/15-post-sync-cleanup.md"
+  "ai/prompts/planning/08-phase-upgrade.md"
+  "ai/prompts/planning/19-plan-phases-and-sprints.md"
+  "ai/prompts/README.md"
+  "ai/prompts/review/03-project-review.md"
+  "ai/prompts/review/10-docs-checklist.md"
+  "ai/prompts/review/16-docs-system-audit.md"
+  "ai/prompts/setup/13-collect-env.md"
+  "ai/prompts/setup/14-new-project.md"
+  "CONTRIBUTING.md"
+  "git-guide.md"
+  "docs/README.md"
+  "docs/inputs/README.md"
+  "scripts/new-project.sh"
+  "scripts/sync-template.sh"
+  "scripts/sync-template.ps1"
+  "scripts/check-template.sh"
+  "scripts/check-template.ps1"
+  "scripts/check-derived-sync.sh"
+  "scripts/check-derived-sync.ps1"
+  "scripts/check-github-context.ps1"
+  "scripts/collect-env.ps1"
+  "scripts/check-prereqs.ps1"
+  "scripts/bootstrap-dev-env.ps1"
+  "scripts/sync-all-derived.sh"
+  "scripts/e2e-sync-check.sh"
+  "template-docs/e2e-regression-checklist.md"
+  "template-docs/e2e-report-template.md"
+  "ai/commands/submit-proposal.md"
+  "ai/commands/submit-feedback.md"
+  "ai/prompts/maintainers/17-submit-proposal.md"
+  "ai/prompts/maintainers/18-submit-feedback.md"
+)
+
+# doc-standards 兼容镜像：历史保留入口；当前 00-09 均已升级为独立标准文件。
+# 与 SYNC_FILES 不同，这是 src(docs/0X) != dest(ai/doc-standards/0X) 的专用镜像步骤；
+# 00-09 已升级为独立标准文件，由 SYNC_FILES 同步，避免被项目模板骨架覆盖。
+# 产物是只读 AI 文档标准，不是项目事实，绝不覆盖派生项目自己的 docs/0X。
+DOC_STANDARD_DOCS=(
+)
+
+warn_derived_workflow_migration() {
+  if [[ -f ".github/workflows/template-check.yml" ]]; then
+    echo "⚠️  检测到 .github/workflows/template-check.yml。"
+    echo "   该 workflow 通常属于模板仓自检入口；派生项目普通 PR 不应运行 scripts/check-template.sh。"
+    echo "   建议迁移为派生项目版 .github/workflows/project-check.yml：普通 PR 仅跑 git diff --check，模板同步提交再跑 scripts/check-derived-sync.sh HEAD。"
+    echo
+  fi
+}
+
+SYNC_FILES=()
+
+parse_sync_files_json() {
+  sed -n '/"files"[[:space:]]*:[[:space:]]*\[/,/\]/ s/^[[:space:]]*"\([^"]\+\)"[[:space:]]*,\{0,1\}[[:space:]]*$/\1/p'
+}
+
+load_sync_files() {
+  local ref="$1"
+  SYNC_FILES=()
+
+  if git cat-file -e "$ref:template-sync.json" 2>/dev/null; then
+    while IFS= read -r file; do
+      [[ -n "$file" ]] && SYNC_FILES+=("$file")
+    done < <(git show "$ref:template-sync.json" | parse_sync_files_json)
+  else
+    SYNC_FILES=("${DEFAULT_SYNC_FILES[@]}")
+  fi
+
+  if [[ "${#SYNC_FILES[@]}" -eq 0 ]]; then
+    echo "✗ 无法解析模板同步清单 template-sync.json" >&2
+    exit 1
+  fi
+}
+
+git rev-parse --is-inside-work-tree >/dev/null
+
+echo "==> 抓取模板: $TEMPLATE_REMOTE (main)"
+if ! git fetch --no-tags --depth=1 "$TEMPLATE_REMOTE" main; then
+  echo "✗ 抓取失败。模板仓库是私有的——确保活跃 gh 账号有访问权限：" >&2
+  echo "    gh auth status" >&2
+  echo "    gh auth switch -u <有模板仓库访问权限的账号>" >&2
+  exit 1
+fi
+REF="FETCH_HEAD"
+
+# 自身更新保护：派生项目里的旧脚本可能漏同步新文件或不是真 dry-run。
+# 因此先确认本地脚本与模板远端最新版一致；不一致时停止，让用户先 bootstrap 脚本。
+if git cat-file -e "$REF:scripts/sync-template.sh" 2>/dev/null; then
+  REMOTE_SCRIPT_HASH="$(git rev-parse "$REF:scripts/sync-template.sh")"
+  LOCAL_SCRIPT_HASH="$(git hash-object --path=scripts/sync-template.sh scripts/sync-template.sh 2>/dev/null || true)"
+  if [[ -z "$LOCAL_SCRIPT_HASH" || "$REMOTE_SCRIPT_HASH" != "$LOCAL_SCRIPT_HASH" ]]; then
+    echo "✗ 本地 scripts/sync-template.sh 不是模板远端最新版，已停止同步。" >&2
+    echo "  请先执行以下 bootstrap 步骤，单独提交脚本更新后，再重新运行本命令：" >&2
+    echo "    git checkout FETCH_HEAD -- scripts/sync-template.sh" >&2
+    echo "    git add scripts/sync-template.sh" >&2
+    echo "    git commit -m \"chore: bootstrap latest sync script\"" >&2
+    exit 1
+  fi
+fi
+
+load_sync_files "$REF"
+
+# 解析模板版本号（用于提交信息）
+VERSION="$(git show "$REF:VERSION" 2>/dev/null | tr -d '[:space:]' || true)"
+if [[ -z "$VERSION" ]]; then
+  LINE="$(git show "$REF:ai/global-rules.md" 2>/dev/null | grep -E '模板版本|全局规则版本' | head -1 || true)"
+  VERSION="$(printf '%s' "$LINE" | grep -oE 'v[0-9]+\.[0-9]+(\.[0-9]+)?' | head -1 || true)"
+fi
+[[ -n "$VERSION" ]] || VERSION="unknown"
+
+echo "==> 模板版本: $VERSION"
+warn_derived_workflow_migration
+echo "==> 同步文件:"
+
+remote_file_matches_local() {
+  local file="$1"
+  local remote_hash
+  local local_hash
+
+  remote_hash="$(git rev-parse "$REF:$file")"
+  local_hash="$(git hash-object --path="$file" "$file" 2>/dev/null || true)"
+  [[ -n "$local_hash" && "$remote_hash" == "$local_hash" ]]
+}
+
+show_local_to_template_stat() {
+  local file="$1"
+  local tmp_dir
+  local local_file
+  local remote_file
+
+  tmp_dir="$(mktemp -d)"
+  local_file="$tmp_dir/local/$file"
+  remote_file="$tmp_dir/template/$file"
+  mkdir -p "$(dirname "$local_file")"
+  mkdir -p "$(dirname "$remote_file")"
+  git show "$REF:$file" > "$remote_file"
+
+  if [[ -f "$file" ]]; then
+    cp "$file" "$local_file"
+    git diff --no-index --stat -- "$local_file" "$remote_file" || true
+  else
+    git diff --no-index --stat -- /dev/null "$remote_file" | sed "s#${tmp_dir//\/\\}/##g" || true
+  fi
+
+  rm -rf "$tmp_dir"
+}
+
+summary_bucket_for() {
+  local file="$1"
+  if [[ "$file" == */* ]]; then
+    echo "${file%%/*}/"
+  else
+    echo "./"
+  fi
+}
+
+matches_risk_path() {
+  local file="$1"
+  case "$file" in
+    README.md|ai/project-rules.md|docs/0[0-9]-*.md|frontend/*|backend/*|tests/*|docker/*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+record_summary() {
+  local file="$1"
+  local status="$2"
+  local bucket
+
+  bucket="$(summary_bucket_for "$file")"
+  SUMMARY_BUCKETS["$bucket"]=1
+  case "$status" in
+    added) SUMMARY_ADDED["$bucket"]=$(( ${SUMMARY_ADDED["$bucket"]:-0} + 1 )) ;;
+    modified) SUMMARY_MODIFIED["$bucket"]=$(( ${SUMMARY_MODIFIED["$bucket"]:-0} + 1 )) ;;
+    skipped) SUMMARY_SKIPPED["$bucket"]=$(( ${SUMMARY_SKIPPED["$bucket"]:-0} + 1 )) ;;
+  esac
+  SUMMARY_TOTAL["$status"]=$(( ${SUMMARY_TOTAL["$status"]:-0} + 1 ))
+
+  if matches_risk_path "$file" && [[ "$status" != "unchanged" ]]; then
+    RISK_HITS+=("$status $file")
+  fi
+}
+
+print_summary() {
+  local bucket
+
+  echo "==> dry-run 轻量摘要（未输出逐文件 diff stat）"
+  echo "   变更计数: added=${SUMMARY_TOTAL[added]:-0}, modified=${SUMMARY_TOTAL[modified]:-0}, deleted=${SUMMARY_TOTAL[deleted]:-0}, skipped=${SUMMARY_TOTAL[skipped]:-0}"
+  echo "   按顶层目录聚合:"
+  if [[ "${#SUMMARY_BUCKETS[@]}" -eq 0 ]]; then
+    echo "    = 无变更"
+  else
+    for bucket in $(printf '%s\n' "${!SUMMARY_BUCKETS[@]}" | sort); do
+      echo "    - $bucket added=${SUMMARY_ADDED["$bucket"]:-0}, modified=${SUMMARY_MODIFIED["$bucket"]:-0}, deleted=${SUMMARY_DELETED["$bucket"]:-0}, skipped=${SUMMARY_SKIPPED["$bucket"]:-0}"
+    done
+  fi
+
+  echo "   风险路径命中:"
+  if [[ "${#RISK_HITS[@]}" -eq 0 ]]; then
+    echo "    = 无"
+  else
+    printf '    ! %s\n' "${RISK_HITS[@]}"
+  fi
+}
+
+if [[ "$MODE" == "--dry-run" ]]; then
+  declare -A SUMMARY_BUCKETS=()
+  declare -A SUMMARY_ADDED=()
+  declare -A SUMMARY_MODIFIED=()
+  declare -A SUMMARY_DELETED=()
+  declare -A SUMMARY_SKIPPED=()
+  declare -A SUMMARY_TOTAL=()
+  RISK_HITS=()
+
+  for f in "${SYNC_FILES[@]}"; do
+    if git cat-file -e "$REF:$f" 2>/dev/null; then
+      if remote_file_matches_local "$f"; then
+        echo "    = $f（无差异）"
+      else
+        echo "    Δ $f"
+        if [[ -f "$f" ]]; then
+          record_summary "$f" "modified"
+        else
+          record_summary "$f" "added"
+        fi
+      fi
+    else
+      echo "    · $f （模板无此文件，跳过）"
+      record_summary "$f" "skipped"
+    fi
+  done
+
+  echo
+  echo "ℹ️  dry-run：仅预览，未修改工作区、未 stage。"
+  echo "   方向：本地当前文件 -> 模板 $VERSION（即执行 --commit 后的变化）"
+  if [[ "$SKIP_STAT" -eq 1 ]]; then
+    print_summary
+  else
+    echo "   差异统计："
+    for f in "${SYNC_FILES[@]}"; do
+      if git cat-file -e "$REF:$f" 2>/dev/null; then
+        if ! remote_file_matches_local "$f"; then
+          show_local_to_template_stat "$f"
+        fi
+      fi
+    done
+  fi
+
+  echo
+  echo "==> doc-standards 兼容镜像（当前无 docs/* 镜像；00-09 用独立标准文件）:"
+  for src in "${DOC_STANDARD_DOCS[@]}"; do
+    dest="ai/doc-standards/$(basename "$src")"
+    if git cat-file -e "$REF:$src" 2>/dev/null; then
+      if [[ -f "$dest" ]]; then
+        remote_hash="$(git rev-parse "$REF:$src")"
+        local_hash="$(git hash-object --path="$dest" "$dest" 2>/dev/null || true)"
+        if [[ -n "$local_hash" && "$remote_hash" == "$local_hash" ]]; then
+          echo "    = $dest（无差异）"
+        else
+          echo "    Δ $dest（规范镜像）"
+        fi
+      else
+        echo "    Δ $dest（新增规范镜像）"
+      fi
+    else
+      echo "    · $dest（模板无 $src，跳过）"
+    fi
+  done
+  echo "   确认后执行: bash scripts/sync-template.sh --commit"
+else
+  UPDATED_FILES=()
+  for f in "${SYNC_FILES[@]}"; do
+    if git cat-file -e "$REF:$f" 2>/dev/null; then
+      git checkout "$REF" -- "$f"
+      git add "$f"
+      UPDATED_FILES+=("$f")
+      echo "    ✓ $f"
+    else
+      echo "    · $f （模板无此文件，跳过）"
+    fi
+  done
+
+  echo "==> doc-standards 兼容镜像（当前无 docs/* 镜像；00-09 用独立标准文件）:"
+  for src in "${DOC_STANDARD_DOCS[@]}"; do
+    dest="ai/doc-standards/$(basename "$src")"
+    if git cat-file -e "$REF:$src" 2>/dev/null; then
+      mkdir -p ai/doc-standards
+      git show "$REF:$src" > "$dest"
+      git add "$dest"
+      UPDATED_FILES+=("$dest")
+      echo "    ✓ $dest（规范镜像）"
+    else
+      echo "    · $dest（模板无 $src，跳过）"
+    fi
+  done
+
+  echo
+  if git diff --quiet HEAD -- "${UPDATED_FILES[@]}"; then
+    echo "ℹ️  无需提交：同步文件与模板一致。"
+    exit 0
+  fi
+
+  git commit -q -m "sync template $VERSION from ai-project-template" -- "${UPDATED_FILES[@]}"
+  echo "✅ 已提交：sync template $VERSION"
+  echo "   推送: git push"
+  echo
+  echo "下一步（不要停在同步提交）："
+  echo "  1. 运行派生边界检查: powershell -ExecutionPolicy Bypass -File scripts/check-derived-sync.ps1"
+  echo "  2. 在 AI 中执行: /run post-sync-cleanup"
+  echo "  3. 在 AI 中执行: /run docs-system-audit（同步后审计模式）"
+  echo "  4. 按项目技术栈运行测试 / lint / build；无法运行的记录为未验证项"
+  echo "  5. 生成或更新同步运行记录: sync-records/template-sync/YYYY-MM-DD-sync-template-$VERSION.md"
+  echo "     可参考: template-docs/derived-sync-report-template.md"
+fi

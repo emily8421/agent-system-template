@@ -1,0 +1,39 @@
+name: Project Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  project-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check whitespace
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            git diff --check "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
+          elif [[ "${{ github.event.before }}" =~ ^0+$ ]]; then
+            git diff-tree --check --no-commit-id --root -r "${{ github.sha }}"
+          else
+            git diff --check "${{ github.event.before }}" "${{ github.sha }}"
+          fi
+
+      - name: Check template sync boundary
+        shell: bash
+        run: |
+          subject="$(git log -1 --format=%s)"
+          if [[ "$subject" =~ ^sync[[:space:]]template[[:space:]]v[0-9]+\.[0-9]+\.[0-9]+[[:space:]]from[[:space:]]ai-project-template$ ]]; then
+            bash scripts/check-derived-sync.sh HEAD
+          else
+            echo "Not a template sync commit; skip derived sync boundary check."
+          fi

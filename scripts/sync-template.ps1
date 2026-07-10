@@ -1,0 +1,597 @@
+﻿<#
+sync-template.ps1 - Windows PowerShell entrypoint for template sync.
+
+Usage:
+  powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 --dry-run [--no-stat]
+  powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 --summary
+  powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 --commit
+
+It prefers Git Bash so Windows behavior stays aligned with sync-template.sh.
+If Git Bash cannot be started from PowerShell, it falls back to a native
+PowerShell implementation for dry-run / commit.
+#>
+param(
+  [Parameter(ValueFromRemainingArguments = $true)]
+  [string[]]$SyncArgs
+)
+
+$ErrorActionPreference = "Stop"
+
+function Find-TemplateBash {
+  $programFilesX86 = [Environment]::GetEnvironmentVariable("ProgramFiles(x86)")
+  $candidates = @($env:GIT_BASH)
+
+  if ($env:ProgramFiles) {
+    $candidates += Join-Path $env:ProgramFiles "Git\bin\bash.exe"
+  }
+
+  if ($programFilesX86) {
+    $candidates += Join-Path $programFilesX86 "Git\bin\bash.exe"
+  }
+
+  $candidates = @($candidates | Where-Object { $_ -and (Test-Path $_) })
+  if ($candidates.Count -gt 0) {
+    return $candidates[0]
+  }
+
+  $bash = Get-Command bash -ErrorAction SilentlyContinue
+  if ($bash) {
+    return $bash.Source
+  }
+
+  throw "bash was not found. Install Git for Windows or set GIT_BASH to bash.exe."
+}
+
+function Test-TemplateBash {
+  param([string]$BashPath)
+
+  $tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) ("template-bash-" + [guid]::NewGuid().ToString("N"))
+  New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null
+  $stdoutFile = Join-Path $tmpDir "stdout.txt"
+  $stderrFile = Join-Path $tmpDir "stderr.txt"
+
+  try {
+    $proc = Start-Process -FilePath $BashPath `
+      -ArgumentList "--version" `
+      -NoNewWindow `
+      -Wait `
+      -PassThru `
+      -RedirectStandardOutput $stdoutFile `
+      -RedirectStandardError $stderrFile
+
+    if ($null -eq $proc) {
+      return [pscustomobject]@{
+        Ready    = $false
+        ExitCode = -1
+        StdErr   = 'Start-Process returned null (bash failed to start from PowerShell)'
+      }
+    }
+
+    $stderr = if (Test-Path $stderrFile) {
+      $stderrText = Get-Content $stderrFile -Raw
+      if ($null -eq $stderrText) { "" } else { $stderrText.Trim() }
+    } else { "" }
+    return [pscustomobject]@{
+      Ready    = ($proc.ExitCode -eq 0)
+      ExitCode = $proc.ExitCode
+      StdErr   = $stderr
+    }
+  }
+  finally {
+    Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
+  }
+}
+
+function Invoke-Git {
+  param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GitArgs)
+
+  & git @GitArgs
+  if ($LASTEXITCODE -ne 0) {
+    throw "git $($GitArgs -join ' ') failed with exit code $LASTEXITCODE"
+  }
+}
+
+function Get-GitText {
+  param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GitArgs)
+
+  $text = Get-GitUtf8Text @GitArgs
+  if ($text.Length -eq 0) {
+    return @()
+  }
+
+  $normalized = $text -replace "`r`n", "`n" -replace "`r", "`n"
+  $lines = @([regex]::Split($normalized, "`n"))
+  if ($normalized.EndsWith("`n") -and $lines.Count -gt 0) {
+    $lines = @($lines | Select-Object -First ($lines.Count - 1))
+  }
+  return $lines
+}
+
+function Get-GitUtf8Text {
+  param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GitArgs)
+
+  $tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) ("template-git-" + [guid]::NewGuid().ToString("N"))
+  New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null
+  $stdoutFile = Join-Path $tmpDir "stdout.bin"
+  $stderrFile = Join-Path $tmpDir "stderr.bin"
+
+  try {
+    $proc = Start-Process -FilePath "git" `
+      -ArgumentList $GitArgs `
+      -NoNewWindow `
+      -Wait `
+      -PassThru `
+      -RedirectStandardOutput $stdoutFile `
+      -RedirectStandardError $stderrFile
+
+    if ($null -eq $proc) {
+      throw "git $($GitArgs -join ' ') failed to start"
+    }
+
+    $stdout = if (Test-Path $stdoutFile) { [System.IO.File]::ReadAllText($stdoutFile, [System.Text.Encoding]::UTF8) } else { "" }
+    $stderr = if (Test-Path $stderrFile) { [System.IO.File]::ReadAllText($stderrFile, [System.Text.Encoding]::UTF8).Trim() } else { "" }
+
+    if ($proc.ExitCode -ne 0) {
+      $message = "git $($GitArgs -join ' ') failed with exit code $($proc.ExitCode)"
+      if ($stderr) { $message = "$message`: $stderr" }
+      throw $message
+    }
+
+    return $stdout
+  }
+  finally {
+    Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
+  }
+}
+
+function Test-GitObject {
+  param(
+    [string]$Ref,
+    [string]$Path
+  )
+
+  & git cat-file -e ("{0}:{1}" -f $Ref, $Path) 2>$null
+  return ($LASTEXITCODE -eq 0)
+}
+
+function Get-RemoteHash {
+  param(
+    [string]$Ref,
+    [string]$Path
+  )
+
+  $result = Get-GitText rev-parse ("{0}:{1}" -f $Ref, $Path)
+  return ($result -join "").Trim()
+}
+
+function Get-LocalHash {
+  param([string]$Path)
+
+  if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+    return ""
+  }
+
+  $output = & git hash-object --path=$Path $Path 2>$null
+  if ($LASTEXITCODE -ne 0) {
+    return ""
+  }
+  return (@($output) -join "").Trim()
+}
+
+function Get-SyncFilesFromRef {
+  param([string]$Ref)
+
+  if (Test-GitObject -Ref $Ref -Path "template-sync.json") {
+    $jsonText = Get-GitUtf8Text show ("{0}:template-sync.json" -f $Ref)
+    $json = $jsonText | ConvertFrom-Json
+    return @($json.files | Where-Object { $_ })
+  }
+
+  if (Test-Path -LiteralPath "template-sync.json" -PathType Leaf) {
+    $json = Get-Content -Raw -Encoding UTF8 template-sync.json | ConvertFrom-Json
+    return @($json.files | Where-Object { $_ })
+  }
+
+  return @()
+}
+
+function Get-TemplateVersion {
+  param([string]$Ref)
+
+  if (Test-GitObject -Ref $Ref -Path "VERSION") {
+    $version = (Get-GitUtf8Text show ("{0}:VERSION" -f $Ref)).Trim()
+    if ($version) { return $version }
+  }
+
+  if (Test-GitObject -Ref $Ref -Path "ai/global-rules.md") {
+    $line = Get-GitText show ("{0}:ai/global-rules.md" -f $Ref) | Select-String -Pattern 'template version|global rules version|v[0-9]' | Select-Object -First 1
+    if ($line -and $line.Line -match 'v\d+\.\d+(\.\d+)?') {
+      return $Matches[0]
+    }
+  }
+
+  return "unknown"
+}
+
+function Test-RemoteMatchesLocal {
+  param(
+    [string]$Ref,
+    [string]$RemotePath,
+    [string]$LocalPath = $RemotePath
+  )
+
+  $remoteHash = Get-RemoteHash -Ref $Ref -Path $RemotePath
+  $localHash = Get-LocalHash -Path $LocalPath
+  return ($localHash -and ($remoteHash -eq $localHash))
+}
+
+function Write-RemoteFileToLocal {
+  param(
+    [string]$Ref,
+    [string]$RemotePath,
+    [string]$LocalPath
+  )
+
+  $parent = Split-Path -Parent $LocalPath
+  if ($parent) {
+    New-Item -ItemType Directory -Path $parent -Force | Out-Null
+  }
+
+  $content = Get-GitUtf8Text show ("{0}:{1}" -f $Ref, $RemotePath)
+  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+  [System.IO.File]::WriteAllText((Join-Path (Get-Location) $LocalPath), $content, $utf8NoBom)
+}
+
+function Show-TemplateDiffStat {
+  param(
+    [string]$Ref,
+    [string]$RemotePath,
+    [string]$LocalPath = $RemotePath
+  )
+
+  $tmpDir = Join-Path ([System.IO.Path]::GetTempPath()) ("template-sync-diff-" + [guid]::NewGuid().ToString("N"))
+  $localFile = Join-Path (Join-Path $tmpDir "local") $LocalPath
+  $remoteFile = Join-Path (Join-Path $tmpDir "template") $RemotePath
+
+  try {
+    New-Item -ItemType Directory -Path (Split-Path -Parent $localFile) -Force | Out-Null
+    New-Item -ItemType Directory -Path (Split-Path -Parent $remoteFile) -Force | Out-Null
+
+    if (Test-Path -LiteralPath $LocalPath -PathType Leaf) {
+      Copy-Item -LiteralPath $LocalPath -Destination $localFile -Force
+    } else {
+      New-Item -ItemType File -Path $localFile -Force | Out-Null
+    }
+
+    $remoteContent = Get-GitUtf8Text show ("{0}:{1}" -f $Ref, $RemotePath)
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($remoteFile, $remoteContent, $utf8NoBom)
+    & git diff --no-index --stat -- $localFile $remoteFile | ForEach-Object { Write-Host ($_ -replace [regex]::Escape($tmpDir + [System.IO.Path]::DirectorySeparatorChar), "") }
+    $global:LASTEXITCODE = 0
+  }
+  finally {
+    Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
+  }
+}
+
+function Get-SummaryBucket {
+  param([string]$Path)
+
+  if ($Path -match '/') {
+    return (($Path -split '/', 2)[0] + '/')
+  }
+
+  return './'
+}
+
+function Test-RiskPath {
+  param([string]$Path)
+
+  return ($Path -eq 'README.md' `
+    -or $Path -eq 'ai/project-rules.md' `
+    -or $Path -match '^docs/0[0-9]-[^/]+\.md$' `
+    -or $Path -match '^(frontend|backend|tests|docker)/')
+}
+
+function Add-SummaryEntry {
+  param(
+    [hashtable]$Summary,
+    [System.Collections.Generic.List[string]]$RiskHits,
+    [string]$Path,
+    [string]$Status
+  )
+
+  $bucket = Get-SummaryBucket -Path $Path
+  if (-not $Summary.Buckets.ContainsKey($bucket)) {
+    $Summary.Buckets[$bucket] = @{ added = 0; modified = 0; deleted = 0; skipped = 0 }
+  }
+
+  if ($Summary.Buckets[$bucket].ContainsKey($Status)) {
+    $Summary.Buckets[$bucket][$Status]++
+  }
+
+  if ($Summary.Total.ContainsKey($Status)) {
+    $Summary.Total[$Status]++
+  }
+
+  if ((Test-RiskPath -Path $Path) -and $Status -ne 'unchanged') {
+    $RiskHits.Add(("{0} {1}" -f $Status, $Path)) | Out-Null
+  }
+}
+
+function Write-Summary {
+  param(
+    [hashtable]$Summary,
+    [System.Collections.Generic.List[string]]$RiskHits
+  )
+
+  Write-Host "==> dry-run summary (per-file diff stat omitted)"
+  Write-Host ("   Change counts: added={0}, modified={1}, deleted={2}, skipped={3}" -f $Summary.Total.added, $Summary.Total.modified, $Summary.Total.deleted, $Summary.Total.skipped)
+  Write-Host "   By top-level directory:"
+  if ($Summary.Buckets.Count -eq 0) {
+    Write-Host "    = no changes"
+  } else {
+    foreach ($bucket in @($Summary.Buckets.Keys | Sort-Object)) {
+      $entry = $Summary.Buckets[$bucket]
+      Write-Host ("    - {0} added={1}, modified={2}, deleted={3}, skipped={4}" -f $bucket, $entry.added, $entry.modified, $entry.deleted, $entry.skipped)
+    }
+  }
+
+  Write-Host "   Risk path hits:"
+  if ($RiskHits.Count -eq 0) {
+    Write-Host "    = none"
+  } else {
+    foreach ($hit in $RiskHits) {
+      Write-Host ("    ! " + $hit)
+    }
+  }
+}
+
+function Invoke-NativeTemplateSync {
+  param([string[]]$NativeSyncArgs)
+
+  $mode = "--dry-run"
+  $modeExplicit = $false
+  $skipStat = $false
+  $summaryExplicit = $false
+  if ($NativeSyncArgs -and $NativeSyncArgs.Count -gt 0) {
+    foreach ($arg in $NativeSyncArgs) {
+      switch ($arg) {
+        "--dry-run" {
+          if ($modeExplicit -and $mode -ne "--dry-run") {
+            Write-Error "Usage: powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 [--dry-run [--no-stat]|--summary|--commit]"
+            return 1
+          }
+          $mode = "--dry-run"
+          $modeExplicit = $true
+        }
+        "--commit" {
+          if ($modeExplicit -and $mode -ne "--commit") {
+            Write-Error "Usage: powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 [--dry-run [--no-stat]|--summary|--commit]"
+            return 1
+          }
+          $mode = "--commit"
+          $modeExplicit = $true
+        }
+        "--summary" {
+          if ($modeExplicit -and $mode -eq "--commit") {
+            Write-Error "Usage: powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 [--dry-run [--no-stat]|--summary|--commit]"
+            return 1
+          }
+          $mode = "--dry-run"
+          $modeExplicit = $true
+          $skipStat = $true
+          $summaryExplicit = $true
+        }
+        "--no-stat" {
+          $skipStat = $true
+        }
+        default {
+          Write-Error "Usage: powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 [--dry-run [--no-stat]|--summary|--commit]"
+          return 1
+        }
+      }
+    }
+
+    if ($mode -eq "--commit" -and $skipStat) {
+      Write-Error "Usage: powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 [--dry-run [--no-stat]|--summary|--commit]"
+      return 1
+    }
+  }
+
+  $displayMode = $mode
+  if ($mode -eq "--dry-run" -and $skipStat) {
+    if ($summaryExplicit) {
+      $displayMode = "--summary"
+    } else {
+      $displayMode = "--dry-run --no-stat"
+    }
+  }
+
+  $templateRemote = if ($env:TEMPLATE_REMOTE) { $env:TEMPLATE_REMOTE } else { "https://github.com/emily8421/ai-project-template.git" }
+  $docStandardDocs = @(
+  )
+
+  Write-Host "==> PowerShell fallback template sync"
+  Write-Host "Git Bash could not be started from PowerShell on this machine."
+  Write-Host "Using native PowerShell fallback for $displayMode. Fix Git Bash/MSYS separately if you need Bash entrypoints."
+  Write-Host ""
+
+  Invoke-Git rev-parse --is-inside-work-tree | Out-Null
+
+  Write-Host "==> Fetch template: $templateRemote (main)"
+  & git fetch --no-tags --depth=1 $templateRemote main
+  if ($LASTEXITCODE -ne 0) {
+    Write-Error "Fetch failed. If the template repo is private, check gh auth status or switch to an account with access."
+    return 1
+  }
+
+  $ref = "FETCH_HEAD"
+
+  if (Test-GitObject -Ref $ref -Path "scripts/sync-template.sh") {
+    $remoteScriptHash = Get-RemoteHash -Ref $ref -Path "scripts/sync-template.sh"
+    $localScriptHash = Get-LocalHash -Path "scripts/sync-template.sh"
+    if (-not $localScriptHash -or $remoteScriptHash -ne $localScriptHash) {
+      Write-Error "Local scripts/sync-template.sh is not the latest template version. Stop sync; bootstrap latest scripts first and commit them separately."
+      Write-Host "  git checkout FETCH_HEAD -- scripts/sync-template.sh scripts/sync-template.ps1"
+      Write-Host "  git add scripts/sync-template.sh scripts/sync-template.ps1"
+      Write-Host "  git commit -m `"chore: bootstrap latest sync script`""
+      return 1
+    }
+  }
+
+  $syncFiles = @(Get-SyncFilesFromRef -Ref $ref)
+  if ($syncFiles.Count -eq 0) {
+    Write-Error "Could not parse template-sync.json sync file list."
+    return 1
+  }
+
+  $version = Get-TemplateVersion -Ref $ref
+  Write-Host "==> Template version: $version"
+  if (Test-Path -LiteralPath ".github/workflows/template-check.yml" -PathType Leaf) {
+    Write-Warning "Detected .github/workflows/template-check.yml. This workflow is for template repository self-checks; derived project PRs should not run scripts/check-template.sh. Migrate to .github/workflows/project-check.yml with git diff --check for normal PRs and scripts/check-derived-sync.sh HEAD only for template sync commits."
+    Write-Host ""
+  }
+  Write-Host "==> Sync files:"
+
+  if ($mode -eq "--dry-run") {
+    $summary = @{
+      Buckets = @{}
+      Total   = @{ added = 0; modified = 0; deleted = 0; skipped = 0 }
+    }
+    $riskHits = New-Object System.Collections.Generic.List[string]
+
+    foreach ($file in $syncFiles) {
+      if (Test-GitObject -Ref $ref -Path $file) {
+        if (Test-RemoteMatchesLocal -Ref $ref -RemotePath $file) {
+          Write-Host "    = $file (no diff)"
+        } else {
+          Write-Host "    delta $file"
+          if (Test-Path -LiteralPath $file -PathType Leaf) {
+            Add-SummaryEntry -Summary $summary -RiskHits $riskHits -Path $file -Status "modified"
+          } else {
+            Add-SummaryEntry -Summary $summary -RiskHits $riskHits -Path $file -Status "added"
+          }
+        }
+      } else {
+        Write-Host "    skip $file (not in template)"
+        Add-SummaryEntry -Summary $summary -RiskHits $riskHits -Path $file -Status "skipped"
+      }
+    }
+
+    Write-Host ""
+    Write-Host "INFO dry-run: preview only; workspace and index unchanged."
+    Write-Host "   Direction: local current files -> template $version (changes that --commit would apply)"
+    if ($skipStat) {
+      Write-Summary -Summary $summary -RiskHits $riskHits
+    } else {
+      Write-Host "   Diff stats:"
+      foreach ($file in $syncFiles) {
+        if ((Test-GitObject -Ref $ref -Path $file) -and -not (Test-RemoteMatchesLocal -Ref $ref -RemotePath $file)) {
+          Show-TemplateDiffStat -Ref $ref -RemotePath $file -LocalPath $file
+        }
+      }
+    }
+
+    Write-Host ""
+    Write-Host "==> doc-standards compatibility mirror (no docs/* mirror currently; 00-09 use standalone standards):"
+    foreach ($src in $docStandardDocs) {
+      $dest = "ai/doc-standards/" + [System.IO.Path]::GetFileName($src)
+      if (Test-GitObject -Ref $ref -Path $src) {
+        if (Test-Path -LiteralPath $dest -PathType Leaf) {
+          if (Test-RemoteMatchesLocal -Ref $ref -RemotePath $src -LocalPath $dest) {
+            Write-Host "    = $dest (no diff)"
+          } else {
+            Write-Host "    delta $dest (standards mirror)"
+          }
+        } else {
+          Write-Host "    delta $dest (new standards mirror)"
+        }
+      } else {
+        Write-Host "    skip $dest (template has no $src)"
+      }
+    }
+    Write-Host "   After confirmation, run: powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 --commit"
+    return 0
+  }
+
+  if ((git status --porcelain) -ne $null) {
+    Write-Error "Working tree is not clean; PowerShell fallback --commit will not overwrite files in a dirty workspace. Commit or stash other changes first."
+    return 1
+  }
+
+  $updatedFiles = New-Object System.Collections.Generic.List[string]
+  foreach ($file in $syncFiles) {
+    if (Test-GitObject -Ref $ref -Path $file) {
+      Invoke-Git checkout $ref -- $file
+      Invoke-Git add $file
+      $updatedFiles.Add($file)
+      Write-Host "    ok $file"
+    } else {
+      Write-Host "    skip $file (not in template)"
+    }
+  }
+
+  Write-Host "==> doc-standards compatibility mirror (no docs/* mirror currently; 00-09 use standalone standards):"
+  foreach ($src in $docStandardDocs) {
+    $dest = "ai/doc-standards/" + [System.IO.Path]::GetFileName($src)
+    if (Test-GitObject -Ref $ref -Path $src) {
+      Write-RemoteFileToLocal -Ref $ref -RemotePath $src -LocalPath $dest
+      Invoke-Git add $dest
+      $updatedFiles.Add($dest)
+      Write-Host "    ok $dest (standards mirror)"
+    } else {
+      Write-Host "    skip $dest (template has no $src)"
+    }
+  }
+
+  Write-Host ""
+  & git diff --quiet HEAD -- @($updatedFiles.ToArray())
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host "INFO no commit needed: sync files already match template."
+    return 0
+  }
+
+  Invoke-Git commit -q -m "sync template $version from ai-project-template" -- @($updatedFiles.ToArray())
+  Write-Host "OK committed: sync template $version"
+  Write-Host "   Push: git push"
+  Write-Host ""
+  Write-Host "Next steps (do not stop at the sync commit):"
+  Write-Host "  1. Run derived boundary check: powershell -ExecutionPolicy Bypass -File scripts/check-derived-sync.ps1"
+  Write-Host "  2. In AI, run: /run post-sync-cleanup"
+  Write-Host "  3. In AI, run: /run docs-system-audit (post-sync audit mode)"
+  Write-Host "  4. Run project tests / lint / build as applicable; record unavailable checks as unverified"
+  Write-Host "  5. Create or update: sync-records/template-sync/YYYY-MM-DD-sync-template-$version.md"
+  Write-Host "     Use: template-docs/derived-sync-report-template.md"
+  return 0
+}
+
+if (-not $SyncArgs -or $SyncArgs.Count -eq 0) {
+  $SyncArgs = @("--dry-run")
+}
+
+$root = Resolve-Path (Join-Path $PSScriptRoot "..")
+$bash = Find-TemplateBash
+$probe = Test-TemplateBash -BashPath $bash
+
+Push-Location $root
+try {
+  if (-not $probe.Ready) {
+    Write-Warning "Git Bash could not be started from PowerShell."
+    if ($probe.StdErr) {
+      Write-Warning ("Bash stderr: " + $probe.StdErr)
+    } elseif ($probe.ExitCode -ne 0) {
+      Write-Warning ("Bash probe exit code: " + $probe.ExitCode)
+    }
+
+    $fallbackExit = Invoke-NativeTemplateSync -NativeSyncArgs $SyncArgs
+    exit $fallbackExit
+  }
+
+  $bashArgs = @("scripts/sync-template.sh") + $SyncArgs
+  & $bash $bashArgs
+  exit $LASTEXITCODE
+}
+finally {
+  Pop-Location
+}

@@ -6,6 +6,16 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v0.1.0（2026-07-10）
+
+agent-system-template 领域模板初始化：从母模板 `ai-project-template` v1.44.3 派生，叠加 agent 领域 scaffold MVP。
+
+- **领域模板身份化**：VERSION 起点 `v0.1.0`；新建 `TEMPLATE-BASE.md` 溯源母模板 v1.44.3；README 改为领域模板身份。
+- **agent scaffold MVP**：新增 `template-docs/agent-system/`（架构 / 工具权限模型 / memory-state / eval 计划 + 检查表），结构模板，不绑定 runtime。
+- ⚠️ 本文件在 sync 清单内，母模板 sync 后会被覆盖；领域模板自身版本以 `TEMPLATE-BASE.md` 为权威（待母模板 inheritance Batch 3 解决版本保留）。
+
+> 以下为母模板 `ai-project-template` 的版本历史（继承背景，sync 来源）：
+
 ## v1.44.3（2026-07-10）
 
 领域模板可选中间层方法论独立文档：新增 `template-docs/domain-templates.md` 作为「领域模板（domain template）可选中间层」的单一权威源，主线文件零内容改动、仅加引用指针，明确「两层为默认主路径、三层为可选增强」，消除现有使用者的理解歧义。

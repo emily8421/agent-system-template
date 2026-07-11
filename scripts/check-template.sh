@@ -685,6 +685,7 @@ for command_file in \
   ai/commands/docs-system-audit.md \
   ai/commands/docs-evaluation.md \
   ai/commands/template-proposal-summary.md \
+  ai/commands/domain-template-lab.md \
   ai/commands/generate-docs.md \
   ai/commands/review-inputs.md \
   ai/commands/project-review.md \
@@ -963,6 +964,8 @@ require_contains "ai/prompts/planning/19-plan-phases-and-sprints.md" 'docs/08-de
 require_contains "ai/prompts/planning/19-plan-phases-and-sprints.md" 'docs/09-verification\.md' "A9 规划 Prompt 输出 09 草稿"
 require_contains "ai/session-rules.md" '\.ai/session-handoff\.md' "session-rules 定义新续接文件"
 require_contains "ai/session-rules.md" 'NEXT-STEPS\.md' "session-rules 兼容 NEXT-STEPS"
+require_contains "ai/session-rules.md" 'Token 热点观察触发' "session-rules 定义 token hotspot 主动提醒"
+require_contains "ai/session-rules.md" 'ai-records/token-hotspots/' "session-rules 定义 token hotspot 记录目录"
 require_contains ".gitignore" '\.ai/session-handoff\.md' ".gitignore 排除新续接文件"
 require_contains ".gitignore" 'NEXT-STEPS\.md' ".gitignore 排除旧续接文件"
 require_contains "ai/commands/README.md" '/run sync-methodology' "commands README 包含同步方法论命令"
@@ -972,6 +975,14 @@ require_contains "ai/commands/docs-system-audit.md" 'ai/prompts/review/16-docs-s
 require_contains "ai/commands/template-proposal-summary.md" 'ai/prompts/maintainers/11-template-proposal-summary\.md' "template-proposal-summary 路由到提案汇总 Prompt"
 require_contains "ai/commands/template-proposal-summary.md" 'TEMPLATE-UPGRADE:' "template-proposal-summary 覆盖标题型 issue 提案"
 require_contains "ai/commands/template-proposal-summary.md" 'proposal.*/ feedback|proposal.*feedback|feedback.*proposal' "template-proposal-summary 覆盖 proposal / feedback issue 标签"
+require_contains "ai/commands/README.md" 'domain-template-lab' "commands README 包含领域模板实验入口"
+require_contains "ai/commands/domain-template-lab.md" 'ai/prompts/maintainers/23-domain-template-lab\.md' "domain-template-lab 路由到维护者 Prompt"
+require_contains "ai/prompts/maintainers/23-domain-template-lab.md" '只相邻同步，不跨层操作' "domain-template-lab Prompt 定义相邻层同步原则"
+require_contains "template-docs/domain-templates.md" 'domain-template-lab' "domain-templates 指向 AI 可执行实验入口"
+require_contains "template-sync.json" 'ai/commands/domain-template-lab\.md' "template-sync 同步 domain-template-lab 命令"
+require_contains "template-sync.json" 'ai/prompts/maintainers/23-domain-template-lab\.md' "template-sync 同步 domain-template-lab Prompt"
+require_contains "scripts/sync-template.sh" 'ai/commands/domain-template-lab\.md' "sync-template 兜底清单含 domain-template-lab 命令"
+require_contains "scripts/sync-template.sh" 'ai/prompts/maintainers/23-domain-template-lab\.md' "sync-template 兜底清单含 domain-template-lab Prompt"
 require_contains "template-docs/scenario-guides.md" '处理 issue 提案' "scenario C1 包含 issue 提案入口"
 require_contains "template-docs/scenario-guides.md" 'TEMPLATE-UPGRADE:' "scenario C1 覆盖标题型 issue 提案"
 require_contains "CONTRIBUTING.md" 'submit-proposal.*/ submit-feedback|submit-proposal.*submit-feedback|submit-feedback.*submit-proposal' "CONTRIBUTING 说明 issue 回流入口"
@@ -1290,6 +1301,22 @@ require_contains "template-docs/domain-templates.md" '可选中间层' "领域�
 require_contains "template-docs/domain-templates.md" '母模板 → 领域模板 → 项目' "领域模板文档定义三层继承模型"
 require_contains "template-docs/domain-templates.md" '主线治理仍为两层' "领域模板文档声明主线仍为两层（防回退为强制三层）"
 require_contains "template-docs/glossary.md" '领域模板（domain template）' "术语表收录领域模板条目"
+require_file "ai/commands/show-demo.md"
+require_contains "ai/commands/show-demo.md" '查看演示效果' "show-demo 命令定位查看演示效果"
+require_contains "ai/commands/show-demo.md" 'AI 执行边界' "show-demo 命令含 AI 执行边界表"
+require_file "template-docs/demo-runbook-template.md"
+require_contains "template-docs/demo-runbook-template.md" '不替代' "demo-runbook 模板声明不替代 09 验收"
+require_contains "ai/commands/README.md" 'show-demo' "命令索引收录 show-demo"
+require_contains "docs/README.md" 'local-demo-runbook' "docs README 记录 demo runbook 默认路径"
+require_contains "template-sync.json" 'ai/commands/show-demo\.md' "同步清单包含 show-demo 命令"
+require_contains "template-sync.json" 'template-docs/demo-runbook-template\.md' "同步清单包含 demo runbook 模板"
+require_contains "template-docs/scenario-guides.md" 'A21 查看演示效果' "场景引导回写 show-demo 为 A21 场景（防漂移）"
+require_contains "template-docs/scenario-guides.md" 'A8.5 技术路线与环境支撑评估' "场景速查索引含 A8.5（防漏场景）"
+require_contains "template-docs/beginner-guide.md" 'domain-templates' "新手指南导航含领域模板（防漂移）"
+require_contains "template-docs/beginner-guide.md" 'demo-runbook-template' "新手指南导航含演示 SOP 模板（防漂移）"
+require_contains "template-docs/template-methodology.md" 'implementation-lifecycle-rules' "方法论权威源表含实现生命周期规则（防漂移）"
+require_contains "template-docs/template-methodology.md" 'session-rules' "方法论权威源表含会话续接规则（防漂移）"
+require_contains "template-docs/glossary.md" '演示 SOP' "术语表含演示 SOP 条目（防漂移）"
 require_contains "ai/prompts/docs/00-generate-or-complete-docs.md" '专题讨论优先' "文档生成 Prompt 要求专题讨论先确认"
 require_contains "ai/document-lifecycle-rules.md" '## 10\.3 专题方案讨论边界' "文档生命周期定义专题方案讨论边界"
 require_contains "ai/document-lifecycle-rules.md" 'docs/research/YYYY-MM-DD-docs-open-items\.md' "文档生命周期定义 open items 默认路径"

@@ -6,15 +6,70 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
-## v0.1.0（2026-07-10）
+## v1.45.6（2026-07-11）
 
-agent-system-template 领域模板初始化：从母模板 `ai-project-template` v1.44.3 派生，叠加 agent 领域 scaffold MVP。
+领域模板独立实验入口：新增 `domain-template-lab` 命令与维护者 Prompt，让 AI 能自动识别并规划 `母模板 → 派生领域模板 → 领域派生项目` 的独立试验线，同时保持普通 `母模板 → 直接派生项目` 主同步路径不变。
 
-- **领域模板身份化**：VERSION 起点 `v0.1.0`；新建 `TEMPLATE-BASE.md` 溯源母模板 v1.44.3；README 改为领域模板身份。
-- **agent scaffold MVP**：新增 `template-docs/agent-system/`（架构 / 工具权限模型 / memory-state / eval 计划 + 检查表），结构模板，不绑定 runtime。
-- ⚠️ 本文件在 sync 清单内，母模板 sync 后会被覆盖；领域模板自身版本以 `TEMPLATE-BASE.md` 为权威（待母模板 inheritance Batch 3 解决版本保留）。
+- **新增命令**：`ai/commands/domain-template-lab.md`，用于“初始化领域模板实验线 / 创建派生领域模板 / 创建 agent-system-template / 试跑领域模板同步”等场景。
+- **新增 Prompt**：`ai/prompts/maintainers/23-domain-template-lab.md`，定义仓库角色判定、只相邻同步、不跨层操作、两级回流和实验资产计划。
+- **独立边界**：`template-docs/domain-templates.md` 明确该入口不接入 `git-guide.md` §5 主同步路径，不修改母模板 `sync-template` 语义，不让领域派生项目直接同步母模板。
+- **提案状态**：`_proposals/TEMPLATE-UPGRADE-domain-template-inheritance.md` 标记 Batch 3 的母模板侧 AI 实验入口部分落地；领域 scaffold、领域同步清单和领域自检仍待独立仓库试验。
+- **同步与自检**：`template-sync.json` 纳入新命令 / Prompt；`scripts/check-template.sh` 与 `scripts/check-template.ps1` 加入口断言。
 
-> 以下为母模板 `ai-project-template` 的版本历史（继承背景，sync 来源）：
+## v1.45.5（2026-07-10）
+
+Token 热点记录最小自动提醒：把候选机制中的 B+「最小同步可发现入口」落到 `ai/session-rules.md`，让 AI 在长任务收尾时自动识别并询问是否记录 token hotspot，同时保留写入确认和隐私边界。
+
+- **自动提醒触发**：新增 `ai/session-rules.md` §4.1，覆盖完整规则读取后的长任务、模板维护 / 提案 / 文档审计 / PR / CI 闭环、大文件或长日志重复读取、用户询问 token 热点等场景。
+- **写入边界**：默认只自动识别并询问，不静默创建文件；首次创建 `ai-records/token-hotspots/` 或写入记录仍需遵守 `ai/project-rules.md` §6 的确认规则。
+- **隐私边界**：记录只写任务类型、文件路径、命令类别、热点判断、质量影响和优化建议；不得写入密钥、账号密码、客户敏感数据或完整对话正文。
+- **提案状态**：`_proposals/TEMPLATE-UPGRADE-token-hotspot-records.md` 标记 B+ 部分落地，记录模板 / summary / 正式目录规范仍待 3–5 份记录后评估。
+- **自检防回归**：`scripts/check-template.sh` 与 `scripts/check-template.ps1` 增加 token hotspot 触发规则和记录路径断言。
+
+## v1.45.4（2026-07-10）
+
+Windows 新手 smoke-test 真实体验小修：基于 2026-07-10 本地烟测结果，修正 Git Bash / WSL stub 提示、前置检查 next steps 与新建项目完成提示，避免新手在本地最小链路中误判下一步。
+
+- **Git Bash fallback**：`template-docs/smoke-test.md` 补充 `bash` 指向 Windows / WSL stub 并报 `E_ACCESSDENIED`、`/bin/bash` 不存在时改用 `C:\Program Files\Git\bin\bash.exe` 全路径。
+- **前置检查提示**：`scripts/check-prereqs.ps1` 检测 `bash` 是否真的可从 PowerShell 启动；Required 全通过时不再默认建议运行 `bootstrap-dev-env.ps1`，而是提示可继续本地项目 / smoke-test。
+- **新建项目完成提示**：`scripts/new-project.sh` 完成后指向 `collect-env`、`docs/inputs/`、`ai/project-rules.md`、`/run review-inputs` 与 `/run generate-docs` 链路，与派生项目 README 保持一致。
+- **提案留痕**：新增 `_proposals/TEMPLATE-UPGRADE-smoke-test-followups.md` 记录本次 smoke-test 发现、非目标、验证方式和待确认项。
+
+## v1.45.3（2026-07-10）
+
+SOP 去三写（减负）：使用原则 / 文档入口表 / 常见选择三段重复同一组路由（新手 / 环境 / CLI / 烟测 / 方法论）×3，措辞略不同，用户扫三遍、维护改三处。合并去重。
+
+- **使用原则**（12→5 条）：只留原则（scenario 兜底 / Git Bash 排障 / git-guide 与 Prompt 权威 / 治理），路由指向文档入口表 + 场景索引。
+- **文档入口表**：补 env-setup（成为唯一权威路由表）。
+- **常见选择**（15→8 条）：只留带分支判断的决策（同步后续接 / push 预检 / 改模板 / 续接等），删纯文档路由。
+- `SOP.md` 净减 11 行；`check-template.sh` 断言仍过（关键词在文档入口表 + 场景表）。
+
+## v1.45.2（2026-07-10）
+
+模板易填性增强与防漂移断言（UX 审核 C+D）：可填模板补范例行降低填写门槛；check-template 加回写一致性断言防未来漂移。
+
+- **批次 C（模板范例）**：`ui-prototype-strategy-template` 各表补 `<示例>` 行 + doc-standards 权威指针；`derived-sync-report-template` 命令真实性表 + A13 判据矩阵补填写范例 + `_proposals/`↔`_archive/proposals/` 归档关系说明。
+- **批次 D（防漂移断言）**：`check-template.sh` 加 7 条断言——验证 show-demo 回写到 scenario A21 / beginner §7、domain-templates 进 beginner §7、implementation-lifecycle / session-rules 进 methodology §2、glossary 含演示 SOP、scenario 索引含 A8.5（防漏场景）。
+
+## v1.45.1（2026-07-10）
+
+文档体验对齐与正确性修复（UX 审核 A+B）：把 v1.44.3 / v1.45.0 新能力回写到所有核心文档，修正场景码漂移与锚点 / 命令 bug，不新增能力。
+
+- **新能力回写**：`show-demo` 回写到 scenario-guides（新增 A21 场景，引用命令不双写）、beginner-guide（§3 / §7 入口）、glossary（演示 SOP 条目，演示≠09 验收）；`domain-templates` 进 template-methodology §2 权威源表 + beginner §7 导航。
+- **场景码一致性**：全仓统一「A0–A21（含 .5）/ C1–C8 / M0–M1」，删 "23 场景" 硬编码；scenario 速查索引补 A8.5；SOP 场景表对齐（补 16 漏码 + 修 A5/A6、A8/A10 共享码歧义 + 去三写冗余留待后续）。
+- **正确性 bug**：git-guide 3 处锚点（§7→§8、§1.2 / §1.3→§1 第 2/3 条）+ 场景码桥接列；e2e-regression-checklist 建仓命令重复触发修复 + "bootstrap sync 脚本"改真实命令；ai-cli-setup §8 重号→§9；smoke-test / report 旧根名→template-docs/ + 步骤对齐；INIT-PROMPT 删 v1.22.2 + 补 ai/index.md 自动读取说明。
+- **权威源**：template-methodology §2 补 `implementation-lifecycle-rules` / `session-rules` / `domain-templates`。
+- **README**：术语表入口 + A0–A21 范围。
+
+## v1.45.0（2026-07-10）
+
+项目演示 SOP 与 AI 触发规则：新增 `show-demo` 命令和 `demo-runbook-template`，约定项目级演示 SOP 默认路径 `docs/env/local-demo-runbook.md`，让「查看演示效果 / 启动 Demo / 二维码 / 检查 Demo」成为一等入口。
+
+- **新增命令**：`ai/commands/show-demo.md`——路由到项目演示 SOP，含 AI 执行边界表（只读说明 vs 启动脚本 vs 健康检查 vs 二维码 vs 安装依赖 / 外部服务）和禁止项。
+- **新增模板**：`template-docs/demo-runbook-template.md`——八节演示 SOP 结构（适用范围 / AI 场景 / 启动前提 / 启动方式 / 访问入口 / 检查验证 / 推荐演示路径 / 安全与边界），明确不替代 `docs/09-verification.md`。
+- **入口与定位**：`ai/commands/README.md` 命令表 + 触发词；`docs/README.md` §5 `docs/env/` 加 `local-demo-runbook.md` 命名。
+- **同步与自检**：`template-sync.json` 纳入两新文件；`scripts/check-template.sh` 加 8 条断言。
+- 回流自 GitHub issue #160（zhiyan-digital-cs-platform）。
 
 ## v1.44.3（2026-07-10）
 

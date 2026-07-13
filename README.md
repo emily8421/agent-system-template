@@ -19,7 +19,7 @@
 
 - **继承**：本仓通过 `TEMPLATE-BASE.md` 溯源母模板版本；通用方法论经 `sync-template` 下行接收（详见母模板 `template-docs/domain-templates.md` §4）。
 - **回流**：本仓沉淀的跨领域通用经验，经提案回流母模板。
-- ⚠️ 当前 sync 按两端校验（多级同步待母模板 inheritance Batch 3）；`VERSION`/`CHANGELOG.md` 在 sync 清单内会被覆盖，**领域模板自身版本以 `TEMPLATE-BASE.md` 为权威溯源**。
+- ⚠️ 当前 sync 仍按两端校验（多级同步自动化待母模板 inheritance 后续 Batch）；作为领域模板下游同步母模板时，使用 `sync-template.* --domain-template` 保留本仓 `VERSION`/`CHANGELOG.md`，由 `TEMPLATE-BASE.md` 记录继承的母模板版本与领域标准件范围。
 
 ## 当前状态
 

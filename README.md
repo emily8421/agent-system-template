@@ -33,6 +33,6 @@
 | `TEMPLATE-BASE.md` | 领域模板溯源（继承自 ai-project-template 的 base version + 版本演进，不被 sync 覆盖） |
 | `template-docs/agent-system/` | agent 领域标准件（架构 / 工具权限 / memory-state / eval + 检查表） |
 | `ai/` `template-docs/` `scripts/` `docs/` 骨架 | 继承自母模板的通用方法论（随 sync 刷新） |
-| `docs/` | 具体派生项目填入的业务事实 |
+| `docs/` | 具体 agent 项目派生后填写的业务事实 scaffold；本仓内 `00-09` 默认不是已确认业务事实 |
 
 > 完整方法论、AI 行为规则、场景引导均继承自母模板 `ai-project-template`；本 README 只说明领域模板身份，不重复母模板通用说明。

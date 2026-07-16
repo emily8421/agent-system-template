@@ -22,9 +22,17 @@
 
 ## 必读文件
 
-- `ai/index.md`（只确认快速续接例外；不展开读取全部规则）
+- `ai/index.md`（只确认快速续接例外；不展开任务规则包）
 - `ai/session-rules.md` §1、§3.1
 - `.ai/session-handoff.md`；若不存在，再读 `NEXT-STEPS.md`
+
+Windows / PowerShell 环境若中文规则输出乱码，先用显式 UTF-8 重读上述最小文件，不得基于乱码内容推断续接状态：
+
+```powershell
+$OutputEncoding = [System.Text.UTF8Encoding]::new()
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+Get-Content -Path ai/session-rules.md -Encoding UTF8 -Raw
+```
 
 ## 执行流程
 
@@ -34,7 +42,7 @@
 4. 比对 Git 客观事实与 handoff 的分支、HEAD、VERSION 和任务进度。
 5. 输出恢复摘要：当前分支 / 版本 / 最近提交、handoff 新鲜度、可继续事项、待确认项、未复核远端事项。
 6. 若 handoff stale，停止深挖旧记录，不联网、不继续执行任务，等待用户确认下一步。
-7. 若用户确认继续执行任务，退出快速续接模式，回到 `ai/index.md` 全量规则读取与对应 command 流程。
+7. 若用户确认继续执行任务，退出快速续接模式，回到 `ai/index.md` 规则路由与对应 command 流程；无法判断时读取完整规则回退包。
 
 ## 写入风险
 

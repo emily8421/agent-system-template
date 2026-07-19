@@ -750,6 +750,9 @@ require_contains "_proposals/README.md" 'Release strategy' "_proposals README �
 require_contains "_proposals/README.md" '可选脚本参数.*默认按 `patch` 判断|默认按 `patch` 判断.*可选脚本参数' "_proposals README 说明兼容参数默认 patch"
 require_contains "_archive/proposals/README.md" 'VERSION' "归档 README 以 VERSION 为事实来源"
 require_contains "_archive/proposals/README.md" 'TEMPLATE-UPGRADE-version-impact-threshold\.md' "归档 README 记录版本影响门槛收敛提案"
+# 派生项目登记（维护者侧索引，不入同步清单，不下行同步）
+require_file "ai-records/project-registry/README.md"
+require_contains "ai-records/project-registry/README.md" '不下行同步' "project-registry README 声明不下行同步"
 require_contains "CONTRIBUTING.md" '提案 → 分支 → PR → 评审 → 合并 → 归档' "CONTRIBUTING 含提案先行流程"
 require_contains "CONTRIBUTING.md" 'vMAJOR\.MINOR\.PATCH' "CONTRIBUTING 含三段式版本规则"
 require_contains "CONTRIBUTING.md" '默认发布级别.*兼容增强' "CONTRIBUTING 说明 patch 是兼容增强默认级别"
@@ -950,6 +953,8 @@ require_contains "scripts/sync-template.ps1" '--domain-template' "sync-template 
 require_contains "scripts/sync-template.ps1" 'Write-DomainTemplateBase' "sync-template PowerShell fallback 维护领域版 TEMPLATE-BASE.md"
 require_contains "scripts/sync-template.ps1" 'Get-LegacyDomainStandardsScope' "sync-template PowerShell fallback 迁移旧领域版 TEMPLATE-BASE.md 标准件范围"
 require_contains "scripts/sync-template.ps1" '叠加的标准件范围' "sync-template PowerShell fallback 兼容旧领域版 TEMPLATE-BASE.md 中文范围标题"
+require_contains "scripts/sync-template.sh" 'http\.proxy|HTTPS_PROXY' "sync-template fetch 失败提示受限网络代理配置（git http.proxy + gh HTTPS_PROXY）"
+require_contains "scripts/sync-template.ps1" 'http\.proxy|HTTPS_PROXY' "sync-template PowerShell fallback fetch 失败提示受限网络代理配置"
 require_contains "scripts/check-derived-sync.sh" 'ai/doc-standards/\*' "check-derived-sync 放行 doc-standards 规范镜像"
 require_contains "scripts/check-derived-sync.sh" 'docs/_scaffold/\*' "check-derived-sync 迁移期兼容旧 _scaffold 规范镜像"
 # 阶段 B：派生项目版本机制启用状态检测（check-derived-sync 双脚本）+ post-sync-cleanup 引导，防回归。

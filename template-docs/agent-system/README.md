@@ -11,6 +11,7 @@
 | `docs/design/tool-permission-model.md` | 工具权限模型（注册 / 边界 / 危险操作 / 沙箱 / 审计） |
 | `docs/design/memory-and-state.md` | memory / state 设计（短期 / 长期 / 持久化 / 清理 / 可解释） |
 | `docs/research/agent-eval-plan.md` | agent eval 计划（任务集 / 轨迹 / 准确率 / 成本延迟） |
+| `layer-map.md` | 层映射表：路径 → 层类（L1/L2/L3）→ 同步 / 编辑策略；AI 进项目查此表判层（见 buildout 提案 §4.5） |
 
 ## 设计边界
 

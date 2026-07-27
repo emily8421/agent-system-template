@@ -1,14 +1,35 @@
-# 模板优化提案起草区
+# 领域模板提案区
 
-本目录用于在本项目内临时起草可回流到 `ai-project-template` 的模板优化提案。
+> 层归属：L2 领域自有（不在 `template-sync.json`，母模板同步不覆盖）。本目录由 `agent-system-template` 领域模板维护。
+> 约定来源：buildout 提案 §4.5 G4（上行回流分层路由）+ `template-docs/domain-templates.md` §4（两级回流）。
 
-当开发过程中发现可通用于多个项目的规则、流程、文档骨架或脚本优化时，可在此新增：
+本目录是 `agent-system-template` 领域模板的**提案收件箱**。提案为**草案 · 待维护者确认**，非既成事实；不得写入业务需求、客户敏感数据或无法提交到仓库的隐私事实。
+
+## 提案两组（按去向）
+
+| 组 | 来源 | 去向 | 机制 |
+|---|---|---|---|
+| **A · 领域级（本仓库落地）** | ① 领域模板自身主动修改；② 领域派生项目往领域模板回流（issue） | 停在 L2，由领域模板实现 | 领域收件箱：本地文件 + 派生 issue 本地镜像；① 与 ② 视作**一组** |
+| **B · 待上行跨领域（回流母模板）** | A 组中沉淀后判定跨领域通用的经验 | 上行 L1，回流母模板 | **原来的方式**：先存本地提案，再 `submit-proposal` 回流母模板 issue 仓 |
+
+路由规则：**领域专属停在 L2；只有跨领域通用才上行 L1**（见 `template-docs/domain-templates.md` §4 两级回流）。
+
+## 机制（镜像母模板）
+
+- 母模板 `ai-project-template` 的 `_proposals/` 已是完整提案收件箱（GitHub issue 收件、`_remote-issues/` 本地镜像硬门禁、`template-proposal-summary` 汇总）。
+- 本领域模板**镜像同一机制**：派生项目往领域模板回流，用 `submit-proposal` / `submit-feedback` 指向**本仓库**（与回流母模板同命令、不同目标仓）；远端 issue 正文先镜像到 `_proposals/_remote-issues/` 再分析（硬门禁，不得直接基于未落盘正文做去重 / 冲突 / 分批分析）。
+- 当前以本地文件提案为主；issue 收件与镜像机制按需启用（真实 agent 项目增多、回流频率上升后）。
+
+## 命名与结构
 
 ```text
-TEMPLATE-UPGRADE-vX.Y.Z.md        # 提案主体：动机、拟改、版本影响、影响面
-TEMPLATE-UPGRADE-vX.Y.Z-patch.md  # 可选：具体 old→new 修改建议
+TEMPLATE-UPGRADE-<slug>.md        # 提案主体：背景、目标、非目标、架构、分批、验收、待确认项
+TEMPLATE-UPGRADE-<slug>-patch.md  # 可选：具体 old→new 修改建议
+analysis-<slug>.md                # 可选：前置分析 / 评估报告
 ```
 
-提案应保持去项目化，不写入本项目的具体业务需求、技术栈细节或私有信息。提案成熟后，回到模板仓库开 PR，把提案提交到模板仓库的 `_proposals/` 收件箱，由模板维护者汇总分析并落地。
+提案头部建议声明 `状态`、`目标版本`、`Release impact`、`Release strategy`、`仓库角色`，让版本判断前置化（与母模板 `_proposals/README.md` 口径一致）。
 
-模板改动合并并下行同步后，应将本项目内已处理的提案移动到项目历史记录 / `_archive/proposals/` 或删除，避免继续作为待办重复执行。
+## 归档
+
+提案合并并下行同步（或在本仓库落地）后，应移动到 `_archive/proposals/` 或在本仓库历史中留痕，避免作为待办重复执行。回流母模板的提案在母模板 PR 合并后归档。

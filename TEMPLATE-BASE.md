@@ -10,6 +10,7 @@
 - Domain template version file: VERSION
 - Domain template version at sync time: v0.1.0
 - Domain standards scope: Agent 架构（planner / executor / tool router / memory / evaluator）；Tool 权限模型（注册 / 边界 / 危险操作确认 / 沙箱审计）；Memory / state（短期上下文 / 长期记忆 / 持久化 / 清理）；Agent eval（任务集 / 轨迹评估 / 工具调用准确率 / 成本延迟）
+- Layer map: `template-docs/agent-system/layer-map.md`（路径 → 层类 L1/L2/L3 → 同步 / 编辑策略；AI 判层入口，见 buildout 提案 §4.5 G4）
 
 ## Version Semantics
 

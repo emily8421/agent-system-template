@@ -18,15 +18,16 @@
 | `ai/index.md`、`ai/rules-core.md`、`ai/global-rules.md`、`ai/document-lifecycle-rules.md`、`ai/implementation-lifecycle-rules.md`、`ai/session-rules.md` | L1 | sync notice | 母模板 sync 覆盖 | 否；改走回流 |
 | `ai/project-rules.md` | L3 | 撰写提要 | 不参与同步 | 派生项目填 |
 | `ai/doc-standards/README.md`、`ai/doc-standards/00-*.md`、`ai/doc-standards/01-*.md`、`ai/doc-standards/02-*.md`、`ai/doc-standards/03-*.md`、`ai/doc-standards/04-*.md`、`ai/doc-standards/05-*.md`、`ai/doc-standards/06-*.md`、`ai/doc-standards/07-*.md`、`ai/doc-standards/08-*.md`、`ai/doc-standards/09-*.md`、`ai/doc-standards/design-doc.md`、`ai/doc-standards/frontend-interaction.md`、`ai/doc-standards/ui-prototype-strategy.md` | L1 | sync notice | 母模板 sync 覆盖 | 否 |
-| `ai/doc-standards/agent-*.md`（Batch 3b 计划；出现后必须读取） | L2 | 领域所有权标记 | L2→L3 下行 | 是 |
+| `ai/doc-standards/agent-*.md` | L2 | 领域所有权标记 | L2→L3 下行 | 是 |
 | `ai/commands/*`、`ai/prompts/*` | L1 | sync notice | 母模板 sync 覆盖 | 否 |
 | `docs/00-09` 骨架（撰写提要 / 占位） | L1 | sync notice | 母模板 sync 覆盖 | 否 |
 | `docs/00-09` 内容、`docs/design/*`、`docs/research/*` 项目事实 | L3 | 项目事实 | 不参与同步 | 派生项目填 |
 | `scripts/sync-template.*`、`scripts/check-derived-sync.*`、`scripts/check-template.*`、`scripts/new-project.sh` 等通用脚本 | L1 | sync notice | 母模板 sync 覆盖 | 否 |
+| `domain-template-sync.json`、`scripts/sync-domain-template.*`、`scripts/check-domain-derived-sync.*`、`scripts/check-agent-template.*` | L2 | 领域所有权标记 | L2→L3 下行 | 是 |
 | `template-docs/domain-templates.md`、`template-docs/docs-scaffold/*`、`template-docs/beginner-guide.md` 等通用方法论件 | L1 | sync notice | 母模板 sync 覆盖 | 否 |
 | `VERSION`、`CHANGELOG.md`、`TEMPLATE-BASE.md` | L2 | 领域所有权标记 | sync 不覆盖（`--domain-template`） | 是 |
 | `template-docs/agent-system/*`（含本文件） | L2 | 领域所有权标记 | 不参与母模板同步 | 是 |
-| `ai/agent-rules/*`（Batch 3b 计划；出现后必须读取） | L2 | 领域所有权标记 | L2→L3 下行 | 是 |
+| `ai/agent-rules/*` | L2 | 领域所有权标记 | L2→L3 下行 | 是 |
 | `template-docs/agent-system/profiles/*` | L2 | 领域所有权标记 | L2→L3 下行 | 是 |
 | `_proposals/*`、`_archive/*`、`_examples/*` | L2 | 领域所有权标记 | 不参与同步 | 是 |
 | 根 `README.md` | L3 | 项目件 | 不参与同步 | 派生项目填 |

@@ -1,7 +1,7 @@
 # TEMPLATE-UPGRADE: Agent 领域模板建设（机制层 + 规则标准件 + 示例验证）
 
 > 来源：2026-07-27 架构评估会话；前置分析见本仓库 `_proposals/analysis-agent-template-architecture.md`
-> 状态：**草案 · 分批落地中**（Batch 0 / 2 / 3a 已落地；D7 / D8 已按建议关闭；其余待确认项仍非既成事实）
+> 状态：**草案 · 分批落地中**（Batch 0 / 2 / 3a / 3b 已落地；D7 / D8 已按建议关闭；D6 暂缓 CI 接入）
 > 目标版本：领域模板 `v0.1.0` → 拟 `v0.2.0`（Batch 0 治理 + Batch 2 收尾 + 3a）/ `v0.3.0`（Batch 3b 机制层）
 > Release impact：minor（AI 建议，待维护者确认；新增领域标准件与机制层，不改母模板主同步路径）
 > Release strategy：分批落地；本提案只在 `agent-system-template` 仓库内试验；跨领域通用经验成熟后另起提案回流母模板 inheritance Batch 3，不污染母模板主路径
@@ -152,15 +152,16 @@ TEMPLATE-BASE.md                         更新：Domain standards scope + 双�
 - 未写 `domain-template-sync.json`、`sync-domain-template.*`、`check-agent-template.*`，保持 Batch 3a 与 3b 边界。
 - 版本：仍 `v0.2.0`（示例与验证，不改模板主干能力）。
 
-### Batch 3b（机制化，基于 3a 经验）
+### Batch 3b（已落地：机制化，基于 3a 经验）
 
-> **开工前置门禁已关闭**：§9 D7 采用过渡期领域 overlay 读取路径（`TEMPLATE-BASE.md` + agent-system README + layer-map 指针），§9 D8 采用 advisory-first 自检强度。Batch 3b 可基于该口径设计机制层，但仍不得改写母模板 L1 启动路由。
+> **开工前置门禁已关闭**：§9 D7 采用过渡期领域 overlay 读取路径（`TEMPLATE-BASE.md` + agent-system README + layer-map 指针），§9 D8 采用 advisory-first 自检强度。Batch 3b 基于该口径落地机制层，未改写母模板 L1 启动路由。
 
-- 落 `domain-template-sync.json`（通用件 + 领域件下发清单）。
-- 落 `scripts/sync-domain-template.*`（领域→派生，dry-run / commit）+ `scripts/check-domain-derived-sync.*`（边界检查，不覆盖业务事实）。
-- 落领域自检 `scripts/check-agent-template.*`（agent scaffold 完整性 + REQ-ID 可追溯）。
-- 落 `ai/agent-rules/` + `ai/doc-standards/agent-*.md`。
-- 版本：拟 `v0.3.0`（minor，新增机制层与规则标准件）。
+- 已落 `domain-template-sync.json`（通用件 passthrough 说明 + 领域件下发清单；project-owned docs 采用 copy-if-missing）。
+- 已落 `scripts/sync-domain-template.*`（领域→派生，dry-run / commit）+ `scripts/check-domain-derived-sync.*`（边界检查，不覆盖业务事实）。
+- 已落领域自检 `scripts/check-agent-template.*`（agent scaffold 完整性 + REQ-ID / TC-ID 可追溯，advisory-first）。
+- 已落 `ai/agent-rules/` + `ai/doc-standards/agent-*.md`。
+- 未接入 CI：D6 暂缓，本批只提供本地脚本；真实派生项目验证后再评估是否进仓库 CI。
+- 版本：拟 `v0.3.0`（minor，新增机制层与规则标准件）；正式发布号升级另批处理。
 
 ### Batch 4（远期，需真实项目试用后评估）
 
@@ -182,7 +183,7 @@ TEMPLATE-BASE.md                         更新：Domain standards scope + 双�
 
 - Batch 2（已落地）：trace-replay / hitl-safety / profiles 文件存在且关键字段齐全；checklist 单 / 多 agent 分栏可用；TEMPLATE-BASE scope 已更新。
 - Batch 3a（已落地）：`_examples/single-agent-demo` 可手动走通；**显式映射表成文**（逐项对应、REQ-ID / TC-ID 可追溯）；checklist 经实战验证并形成修订反馈。
-- Batch 3b：`domain-template-sync.json` 可解析；`sync-domain-template.*` dry-run 不覆盖 demo 业务事实；`check-agent-template.*` 能检出 scaffold 缺失与 REQ-ID 断链且**按 D8 advisory-first 起步**；`ai/agent-rules/` 被 D7 过渡期领域 overlay 读取路径覆盖。
+- Batch 3b（已落地）：`domain-template-sync.json` 可解析；`sync-domain-template.*` dry-run 不覆盖 demo 业务事实；`check-agent-template.*` 能检出 scaffold 缺失与 REQ-ID / TC-ID 断链且**按 D8 advisory-first 起步**；`ai/agent-rules/` 被 D7 过渡期领域 overlay 读取路径覆盖。
 - 全程：不影响母模板默认项目创建与主同步流程；不绑定特定 runtime。
 
 ## 9. 待确认项
@@ -194,7 +195,7 @@ TEMPLATE-BASE.md                         更新：Domain standards scope + 双�
 | D3 | 单 / 多 agent 拆仓还是领域内 profile | **领域内 profile** | 拆仓成本翻倍且共享内核 | 拆两个领域模板 | 不阻塞；影响 profiles/ 设计 |
 | D4 | 第二跳同步先手动还是直接自动化 | **先手动**（3a demo）再机制化（3b） | inheritance Batch 4「需真实项目试用后再评估」 | 直接写 sync 脚本 | 避免过早固化不成熟结构；决定 3a/3b 顺序 |
 | D5 ✅ | _proposals/ 落点是否合规（原语义仅回流母模板） | **已由 Batch 0 G4 落地**：`_proposals/README.md` 重写为 A 领域级 / B 待上行两类，落点合规 | — | — | 已解决，不阻塞 |
-| D6 | 领域自检是否进 CI | 进本仓库 CI（`.github/workflows/`），不进母模板 | 领域 scaffold 完整性需自动守护 | 仅本地手跑 | CI 配置成本；Batch 3b 决定 |
+| D6 ⏸ | 领域自检是否进 CI | **暂缓**：Batch 3b 先落本地 advisory 脚本，不接 CI；≥1 真实 agent 派生项目验证后再决定是否进本仓库 CI（不进母模板） | 领域 scaffold 完整性需要自动守护，但当前只有 single-agent demo，直接进 CI 容易把未成熟规则固化成 gate | 立即进本仓库 CI / 仅本地手跑 | 不阻塞 Batch 3b；后续若升级为 gate 或接 CI，需另批提案和验证 |
 | D7 ✅ | 领域规则读路径：`ai/agent-rules/` 如何被 AI 路由真正读取（避免无人读的文档库） | **已关闭：过渡期约定指针先行 + 回流候选挂账**。`TEMPLATE-BASE.md` / agent-system README / layer-map 已写明：agent 任务完成 L1 启动路由后，须主动读取领域 overlay；当 `ai/agent-rules/` 与 `ai/doc-standards/agent-*.md` 存在时必须读取相关文件。成熟后再把「领域 overlay 委托钩子」回流母模板。 | `ai/index.md` 母模板下发只读、全文无 overlay 委托；`project-rules.md:3` 不参与同步，故 project-rules.md 桥接无效（不下发）；当前过渡路径可在 L2 自有入口中落地且不污染 L1。 | 直接回流母模板加 overlay 钩子（彻底但跨仓、依赖母模板维护者、可能撞 inheritance 边界） | **已解除 Batch 3b 阻塞**；Batch 3b 可先基于过渡指针落规则件，长期仍保留 L1 overlay 钩子回流候选。 |
 | D8 ✅ | 领域自检强度：`check-agent-template.*` 起步 advisory 还是 gate | **已关闭：advisory 起步**。`check-agent-template.*` 初版默认报告 scaffold 缺失、追溯弱项与映射不完整，不阻断派生项目；只有脚本解析 / 运行错误可失败。≥1 真实项目验证后（Batch 4）才把成熟条目升 gate。 | 「好」未经验证前无法设计强制；与 D1 约束方向不冲突（D1 定方向，D8 定分阶）；Batch 3a demo 只验证了单 agent 最小链路，不足以定义强制门禁。 | 直接 gate（无验证前误杀派生项目风险） | **已解除 Batch 3b 自检行为阻塞**；Batch 3b 自检按 advisory-first 设计。 |
 

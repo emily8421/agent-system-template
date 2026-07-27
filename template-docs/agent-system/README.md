@@ -16,6 +16,13 @@
 | `profiles/single-agent.md` | 单 agent 形态 profile（默认正式标准件，适合一条主线的 agent 项目） |
 | `profiles/multi-agent.md` | 多 agent 形态 profile stub（待真实多 agent 项目验证后补全） |
 | `layer-map.md` | 层映射表：路径 → 层类（L1/L2/L3）→ 同步 / 编辑策略；AI 进项目查此表判层（见 buildout 提案 §4.5） |
+| `../../ai/agent-rules/agent-implementation-rules.md` | agent 实现规则标准件 |
+| `../../ai/agent-rules/tool-safety-rules.md` | agent 工具安全规则标准件 |
+| `../../ai/doc-standards/agent-*.md` | agent 文档审计基线 |
+| `../../domain-template-sync.json` | L2→L3 领域下发清单 |
+| `../../scripts/sync-domain-template.*` | 领域模板到 agent 派生项目的同步入口 |
+| `../../scripts/check-domain-derived-sync.*` | 领域下发状态检查 |
+| `../../scripts/check-agent-template.*` | agent scaffold / 追溯 advisory 自检 |
 
 ## 设计边界
 
@@ -28,10 +35,21 @@ Agent 相关任务在完成母模板 `ai/index.md` / `ai/rules-core.md` 启动�
 
 1. 读 `TEMPLATE-BASE.md` 与 `template-docs/agent-system/layer-map.md`，确认当前仓库是 L2 领域模板还是 L3 agent 派生项目。
 2. 读本文件与对应形态 profile：默认先读 `profiles/single-agent.md`；只有出现明确多 agent 信号时才读 `profiles/multi-agent.md`。
-3. 若当前仓库存在 `ai/agent-rules/`，在 agent 设计、实现、工具权限、memory、trace、HITL、eval、同步或自检任务前读取相关规则文件。
-4. 若当前仓库存在 `ai/doc-standards/agent-*.md`，在生成或审计 agent 文档前读取对应领域文档标准。
+3. 在 agent 设计、实现、工具权限、memory、trace、HITL、eval、同步或自检任务前读取 `ai/agent-rules/` 中的相关规则文件。
+4. 在生成或审计 agent 文档前读取对应 `ai/doc-standards/agent-*.md` 领域文档标准。
 
-如果第 3 / 4 步文件尚未落地，不得虚构规则；继续按本目录已存在的 L2 文档标准执行，并在输出中说明该能力仍待 Batch 3b。
+## L2→L3 同步机制
+
+领域派生项目先完成母模板 L1 同步，再从本领域模板叠加 agent overlay：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\sync-domain-template.ps1 -Source <agent-system-template> -Target <agent-project> -DryRun
+powershell -ExecutionPolicy Bypass -File scripts\sync-domain-template.ps1 -Source <agent-system-template> -Target <agent-project> -Commit
+powershell -ExecutionPolicy Bypass -File scripts\check-domain-derived-sync.ps1 -Source <agent-system-template> -Target <agent-project> -Advisory
+powershell -ExecutionPolicy Bypass -File scripts\check-agent-template.ps1 -Target <agent-project>
+```
+
+策略：`domain-template-sync.json` 中 domain-owned 文件可更新；项目事实 docs 使用 copy-if-missing，默认不覆盖已有需求、设计、REQ-ID、TC-ID 或测试事实。
 
 ## 领域自检强度（D8）
 

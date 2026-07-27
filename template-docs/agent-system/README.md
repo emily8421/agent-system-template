@@ -22,6 +22,21 @@
 - **必须覆盖**（具体项目填写时）：agent 角色边界、tool 权限矩阵、memory 生命周期、trace / replay、eval 指标、human-in-the-loop、prompt injection / 数据泄露 / 越权风险。
 - **暂不覆盖**（不绑定）：具体 agent runtime 框架（LangGraph / AutoGen / CrewAI 等）、具体模型供应商、具体向量库 / memory backend、具体 UI、具体业务 prompt。
 
+## AI 读取路径（D7）
+
+Agent 相关任务在完成母模板 `ai/index.md` / `ai/rules-core.md` 启动路由后，按以下顺序读取领域 overlay：
+
+1. 读 `TEMPLATE-BASE.md` 与 `template-docs/agent-system/layer-map.md`，确认当前仓库是 L2 领域模板还是 L3 agent 派生项目。
+2. 读本文件与对应形态 profile：默认先读 `profiles/single-agent.md`；只有出现明确多 agent 信号时才读 `profiles/multi-agent.md`。
+3. 若当前仓库存在 `ai/agent-rules/`，在 agent 设计、实现、工具权限、memory、trace、HITL、eval、同步或自检任务前读取相关规则文件。
+4. 若当前仓库存在 `ai/doc-standards/agent-*.md`，在生成或审计 agent 文档前读取对应领域文档标准。
+
+如果第 3 / 4 步文件尚未落地，不得虚构规则；继续按本目录已存在的 L2 文档标准执行，并在输出中说明该能力仍待 Batch 3b。
+
+## 领域自检强度（D8）
+
+Batch 3b 的 `check-agent-template.*` 起步为 advisory：发现 scaffold 缺失、追溯弱项或映射不完整时输出告警和修复建议，默认不阻断派生项目工作流。只有脚本解析 / 运行错误可直接失败。将 advisory 升为 gate 需要至少一个真实 agent 派生项目验证后另行提案确认。
+
 ## 形态选型
 
 | 形态 | 适用 | 当前状态 |

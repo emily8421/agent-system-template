@@ -1,9 +1,9 @@
 # TEMPLATE-UPGRADE: Agent 领域模板建设（机制层 + 规则标准件 + 示例验证）
 
 > 来源：2026-07-27 架构评估会话；前置分析见本仓库 `_proposals/analysis-agent-template-architecture.md`
-> 状态：**草案 · 分批落地中**（Batch 0 / 2 / 3a / 3b 已落地；D7 / D8 已按建议关闭；D6 暂缓 CI 接入）
-> 目标版本：领域模板 `v0.1.0` → 拟 `v0.2.0`（Batch 0 治理 + Batch 2 收尾 + 3a）/ `v0.3.0`（Batch 3b 机制层）
-> Release impact：minor（AI 建议，待维护者确认；新增领域标准件与机制层，不改母模板主同步路径）
+> 状态：**草案 · 主体已落地**（Batch 0 / 2 / 3a / 3b 与版本收尾已落地；D7 / D8 已按建议关闭；D6 暂缓 CI 接入；Batch 4 远期）
+> 目标版本：领域模板 `v0.1.0` → `v0.3.0`（已发布；聚合原拟 `v0.2.0` 的治理 / 文档 / 示例批次与 Batch 3b 机制层）
+> Release impact：minor（已按领域模板 `v0.3.0` 发布；新增领域标准件与机制层，不改母模板主同步路径）
 > Release strategy：分批落地；本提案只在 `agent-system-template` 仓库内试验；跨领域通用经验成熟后另起提案回流母模板 inheritance Batch 3，不污染母模板主路径
 > 仓库角色：**领域模板**（相对母模板为下游，相对 agent 派生项目为上游）
 
@@ -161,7 +161,7 @@ TEMPLATE-BASE.md                         更新：Domain standards scope + 双�
 - 已落领域自检 `scripts/check-agent-template.*`（agent scaffold 完整性 + REQ-ID / TC-ID 可追溯，advisory-first）。
 - 已落 `ai/agent-rules/` + `ai/doc-standards/agent-*.md`。
 - 未接入 CI：D6 暂缓，本批只提供本地脚本；真实派生项目验证后再评估是否进仓库 CI。
-- 版本：拟 `v0.3.0`（minor，新增机制层与规则标准件）；正式发布号升级另批处理。
+- 版本：已随 `v0.3.0` 发布（minor，新增机制层与规则标准件）。
 
 ### Batch 4（远期，需真实项目试用后评估）
 

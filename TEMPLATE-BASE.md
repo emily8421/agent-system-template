@@ -9,8 +9,14 @@
 - Synced at: 2026-07-25
 - Domain template version file: VERSION
 - Domain template version at sync time: v0.1.0
-- Domain standards scope: Agent 架构（planner / executor / tool router / memory / evaluator）；Tool 权限模型（注册 / 边界 / 危险操作确认 / 沙箱审计）；Memory / state（短期上下文 / 长期记忆 / 持久化 / 清理）；Agent eval（任务集 / 轨迹评估 / 工具调用准确率 / 成本延迟）
+- Domain standards scope: Agent 架构（planner / executor / tool router / memory / evaluator）；Tool 权限模型（注册 / 边界 / 危险操作确认 / 沙箱审计）；Memory / state（短期上下文 / 长期记忆 / 持久化 / 清理）；Trace / replay（执行轨迹 / 回放模式 / 失败归因 / 隐私保留）；HITL / safety（人工确认 / 接管 / 回滚 / prompt injection / 数据泄露防护）；Agent eval（任务集 / 轨迹评估 / 工具调用准确率 / 成本延迟）；Profiles（single-agent 正式标准件 / multi-agent stub）
 - Layer map: `template-docs/agent-system/layer-map.md`（路径 → 层类 L1/L2/L3 → 同步 / 编辑策略；AI 判层入口，见 buildout 提案 §4.5 G4）
+
+## Domain Template Role
+
+- Downstream role: this repository receives common methodology from `ai-project-template` and does not edit L1 synced files in place.
+- Upstream role: this repository owns L2 agent standards under `template-docs/agent-system/` and will later provide the L2 → L3 path for agent-derived projects.
+- Cross-domain improvements discovered here should be proposed upstream to `ai-project-template`; agent-specific standards stay in this repository.
 
 ## Version Semantics
 

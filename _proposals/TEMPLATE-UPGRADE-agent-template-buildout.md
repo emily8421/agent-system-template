@@ -135,12 +135,12 @@ TEMPLATE-BASE.md                         更新：Domain standards scope + 双�
 - 分析报告自相矛盾：已修（§8「现仅 README」改述）。
 - 版本：随 `v0.2.0`。G3 的 `domain-template-sync.json` 形态在 Batch 3a 映射表产出后、3b 落地前定稿。
 
-### Batch 2 收尾（领域骨架补全，纯文档，低风险）
+### Batch 2 收尾（已落地：领域骨架补全，纯文档，低风险）
 
-- 补 `template-docs/agent-system/docs/design/trace-and-replay.md`、`hitl-and-safety.md`。
-- 新增 `profiles/single-agent.md`（正式落）；`profiles/multi-agent.md` **仅落 stub**（头部标「待真实多 agent 项目验证后补全」，因当前无多 agent 真实项目验证，不宜当既定标准件下发）；README 补单 / 多 agent 选型判定。
-- 更新 `agent-system-checklist.md` 单 / 多 agent 分栏。
-- 更新 `TEMPLATE-BASE.md` 的 `Domain standards scope`（+ trace / hitl）与双重身份说明。
+- 已补 `template-docs/agent-system/docs/design/trace-and-replay.md`、`hitl-and-safety.md`。
+- 已新增 `profiles/single-agent.md`（正式落）；`profiles/multi-agent.md` **仅落 stub**（头部标「待真实多 agent 项目验证后补全」，因当前无多 agent 真实项目验证，不宜当既定标准件下发）；README 已补单 / 多 agent 选型判定。
+- 已更新 `agent-system-checklist.md` 单 / 多 agent 分栏。
+- 已更新 `TEMPLATE-BASE.md` 的 `Domain standards scope`（+ trace / hitl / profiles）与双重身份说明。
 - 版本：拟 `v0.2.0`（minor，新增领域文档件）。
 
 ### Batch 3a（手动验证，先不写自动化脚本）
@@ -178,7 +178,7 @@ TEMPLATE-BASE.md                         更新：Domain standards scope + 双�
 
 - Batch 0：CHANGELOG 为纯领域版本（顶部 v0.1.0、无母模板条目、领域所有权标记）且 sync 不覆盖已验证；`_proposals/README.md` 重同步到母模板当前提案收件箱规格 + 领域自建 / 待上行两类区分；层映射表（layer-map）就位、AI 可据其判层。
 
-- Batch 2：trace-replay / hitl-safety / profiles 文件存在且关键字段齐全；checklist 单 / 多 agent 分栏可用；TEMPLATE-BASE scope 更新。
+- Batch 2（已落地）：trace-replay / hitl-safety / profiles 文件存在且关键字段齐全；checklist 单 / 多 agent 分栏可用；TEMPLATE-BASE scope 已更新。
 - Batch 3a：`_examples/single-agent-demo` 可手动走通；**显式映射表成文**（逐项对应、REQ-ID 可追溯）；checklist 经实战修订。
 - Batch 3b：`domain-template-sync.json` 可解析；`sync-domain-template.*` dry-run 不覆盖 demo 业务事实；`check-agent-template.*` 能检出 scaffold 缺失与 REQ-ID 断链且**强度与 D8 选定一致**；`ai/agent-rules/` 被 AI 任务路由读取（**D7 已关闭**）。
 - 全程：不影响母模板默认项目创建与主同步流程；不绑定特定 runtime。

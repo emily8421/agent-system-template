@@ -26,7 +26,7 @@
 | `VERSION`、`CHANGELOG.md`、`TEMPLATE-BASE.md` | L2 | 领域所有权标记 | sync 不覆盖（`--domain-template`） | 是 |
 | `template-docs/agent-system/*`（含本文件） | L2 | 领域所有权标记 | 不参与母模板同步 | 是 |
 | `ai/agent-rules/*`（计划） | L2 | 领域所有权标记 | L2→L3 下行 | 是 |
-| `profiles/*`（计划） | L2 | 领域所有权标记 | L2→L3 下行 | 是 |
+| `profiles/*` | L2 | 领域所有权标记 | L2→L3 下行 | 是 |
 | `_proposals/*`、`_archive/*`、`_examples/*` | L2 | 领域所有权标记 | 不参与同步 | 是 |
 | 根 `README.md` | L3 | 项目件 | 不参与同步 | 派生项目填 |
 

@@ -28,6 +28,9 @@ Thumbs.db
 NEXT-STEPS.md
 .ai/session-handoff.md
 
+# AI 协作观察记录（本地 meta，不进入正式提交）
+ai-records/token-hotspots/*.md
+
 # 构建产物
 dist/
 build/

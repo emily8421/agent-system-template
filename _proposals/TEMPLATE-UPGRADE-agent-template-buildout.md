@@ -143,11 +143,13 @@ TEMPLATE-BASE.md                         更新：Domain standards scope + 双�
 - 已更新 `TEMPLATE-BASE.md` 的 `Domain standards scope`（+ trace / hitl / profiles）与双重身份说明。
 - 版本：拟 `v0.2.0`（minor，新增领域文档件）。
 
-### Batch 3a（手动验证，先不写自动化脚本）
+### Batch 3a（已落地：手动验证，先不写自动化脚本）
 
-- 建 `_examples/single-agent-demo/`：一个最小可跑的 agent 派生项目，手动把领域标准件落进其 `docs/` 与代码骨架。
-- 验证：`agent-system-checklist.md` 可用、领域文档→项目 docs 映射（D2）成立、REQ-ID 可追溯（沿用 README 既有约定）。
-- 产出：**显式映射表**（「标准件节 → 项目 docs 位置」逐项对应，作为 Batch 3b sync 脚本的硬契约，防双态漂移）+ checklist 修订反馈；**不写 sync 脚本**。
+- 已建 `_examples/single-agent-demo/`：一个最小可跑的单 agent 派生项目，手动把领域标准件落进其 `docs/`、设计记录、eval 计划与代码骨架。
+- 已验证：`agent-system-checklist.md` 可用于具体项目评估；领域文档→项目 docs 映射（D2）成立；REQ-ID / TC-ID 可从需求追到代码测试。
+- 已产出：`_examples/single-agent-demo/docs/research/agent-standard-mapping.md` 显式映射表（标准件 → 项目 docs → 代码 / 测试 → REQ / TC），作为 Batch 3b sync 清单与自检设计的硬契约。
+- 已产出 checklist 实战反馈：`_examples/single-agent-demo/docs/research/checklist-validation.md`；本轮结论是不必改 checklist 正文，Batch 3b 应优先把映射表和 advisory 自检固化。
+- 未写 `domain-template-sync.json`、`sync-domain-template.*`、`check-agent-template.*`，保持 Batch 3a 与 3b 边界。
 - 版本：仍 `v0.2.0`（示例与验证，不改模板主干能力）。
 
 ### Batch 3b（机制化，基于 3a 经验）
@@ -179,7 +181,7 @@ TEMPLATE-BASE.md                         更新：Domain standards scope + 双�
 - Batch 0：CHANGELOG 为纯领域版本（顶部 v0.1.0、无母模板条目、领域所有权标记）且 sync 不覆盖已验证；`_proposals/README.md` 重同步到母模板当前提案收件箱规格 + 领域自建 / 待上行两类区分；层映射表（layer-map）就位、AI 可据其判层。
 
 - Batch 2（已落地）：trace-replay / hitl-safety / profiles 文件存在且关键字段齐全；checklist 单 / 多 agent 分栏可用；TEMPLATE-BASE scope 已更新。
-- Batch 3a：`_examples/single-agent-demo` 可手动走通；**显式映射表成文**（逐项对应、REQ-ID 可追溯）；checklist 经实战修订。
+- Batch 3a（已落地）：`_examples/single-agent-demo` 可手动走通；**显式映射表成文**（逐项对应、REQ-ID / TC-ID 可追溯）；checklist 经实战验证并形成修订反馈。
 - Batch 3b：`domain-template-sync.json` 可解析；`sync-domain-template.*` dry-run 不覆盖 demo 业务事实；`check-agent-template.*` 能检出 scaffold 缺失与 REQ-ID 断链且**强度与 D8 选定一致**；`ai/agent-rules/` 被 AI 任务路由读取（**D7 已关闭**）。
 - 全程：不影响母模板默认项目创建与主同步流程；不绑定特定 runtime。
 

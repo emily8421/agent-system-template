@@ -11,6 +11,7 @@
 - 同步分支：`sync-template-v1.59.0`
 - Bootstrap 提交：`d2162fa`（`chore: bootstrap latest sync script`）
 - 实际同步提交（非 PR merge commit）：`68c39ef`（`sync template v1.59.0 from ai-project-template`）
+- 后续修复提交：`b33132b`（`fix: normalize PATH before derived sync check`）
 - 操作入口：模板仓发起 `/run sync-methodology`
 - AI 工具 / CLI：Codex
 
@@ -23,7 +24,7 @@
 - 是否触发 PowerShell fallback（sync / check）：未触发；Git Bash 路径可用
 - post-sync-cleanup：未执行，仅记录后续建议
 - docs-system-audit（同步后审计）：未执行，仅记录后续建议
-- 项目验证建议 / 已执行验证：仅执行模板同步边界检查；未运行领域模板自身测试 / lint / advisory self-check
+- 项目验证建议 / 已执行验证：已执行模板同步边界检查、领域模板 advisory check 与 L2→L3 advisory check；未运行 Bash 等价入口 / GitHub Actions / docs-system-audit
 
 ### 命令真实性记录
 
@@ -31,10 +32,10 @@
 |---|---|---|---|---|---|---|
 | dry-run 预览 | `powershell -ExecutionPolicy Bypass -File scripts\sync-template.ps1 --summary --domain-template` | EXIT=0；预览 added=3 / modified=24 / deleted=0 / skipped=0；风险路径命中=无 | 是 | 否 | 不适用 | 首次 dry-run 因 `scripts/sync-template.sh` 不是最新版停止；已按脚本提示 bootstrap 后复跑通过 |
 | commit / 同步 | `powershell -ExecutionPolicy Bypass -File scripts\sync-template.ps1 --commit --domain-template` | EXIT=0；生成同步提交 `68c39ef` | 是 | 否 | 不适用 | 保留领域模板 `VERSION` / `CHANGELOG.md` / `CHANGELOG-PLAIN.md`，更新 `TEMPLATE-BASE.md` 与 `upstream/` |
-| check-derived-sync | `powershell -ExecutionPolicy Bypass -File scripts\check-derived-sync.ps1 68c39ef` | EXIT=0；27 个同步清单内文件合规 | 是 | 否 | 不适用 | 未命中项目专属保护文件 |
+| check-derived-sync | `powershell -ExecutionPolicy Bypass -File scripts\check-derived-sync.ps1 68c39ef` | EXIT=0；27 个同步清单内文件合规 | 是 | 否 | 不适用 | 首次复跑因当前 PowerShell 进程同时含 `Path` / `PATH` 导致 `Start-Process` 崩溃；已用 `b33132b` 修复脚本后复跑通过，未命中项目专属保护文件 |
 | post-sync-cleanup | 未执行 | 未执行 | 未执行 | 否 | 否 | 建议另开整理任务；本次不混入同步提交 |
 | docs-system-audit | 未执行 | 未执行 | 未执行 | 否 | 否 | 建议同步 PR 后或单独任务执行同步后审计 |
-| 项目验证 | 未运行项目测试 / lint / advisory self-check | 未验证 | 否 | 否 | 不适用 | 本轮只验证模板同步边界 |
+| 项目验证 | `git diff --check`；`scripts\check-agent-template.ps1`；`scripts\check-domain-derived-sync.ps1 -Source . -Target _examples\single-agent-demo -Advisory` | EXIT=0；agent advisory 7 条；L2→L3 advisory 20 条 | 是 | 否 | 不适用 | advisory 均为非阻断缺口提示；未运行 Bash 等价入口与 GitHub Actions |
 
 ## A13 完成判据矩阵
 
@@ -42,7 +43,7 @@
 |---|---|---|---|---|
 | 标准闭环计划 | 当前会话确认：同步两个 verified 项目，missing 项目先跳过 | 完成 |  | LUMEN-DEMO 同步后汇总 |
 | dry-run 预览 | summary dry-run EXIT=0；风险路径命中=无 | 完成 |  | 已进入 commit |
-| commit + 边界验证 | Bootstrap `d2162fa`；同步提交 `68c39ef`；`check-derived-sync 68c39ef` EXIT=0 | 完成 |  | 可 push / PR（需单步确认） |
+| commit + 边界验证 | Bootstrap `d2162fa`；同步提交 `68c39ef`；修复提交 `b33132b`；`check-derived-sync 68c39ef` EXIT=0 | 完成 |  | 可 push / PR（需单步确认） |
 | post-sync-cleanup | 未执行 | 未执行 | 本轮限定为同步主链与记录；整理需避免混入同步提交 | 另开分支执行 `/run post-sync-cleanup` |
 | docs-system-audit | 未执行 | 未执行 | 本轮未展开 PLM 审计 | 另开任务执行 `/run docs-system-audit` 同步后审计模式 |
 | 提案回流收口 | 只读列出 `_proposals/`，未联网复核 issue / PR | 部分完成 | 远端状态未复核，不能归档 | 后续联网核对模板 issue / PR 后再归档或保留 |
@@ -79,12 +80,12 @@
 ## 项目验证建议
 
 - 建议运行的测试 / lint / 文档检查 / 人工验收：`powershell -ExecutionPolicy Bypass -File scripts\check-agent-template.ps1` 或 Bash 等价入口（advisory）；必要时运行领域 L2→L3 sync/check 脚本 smoke
-- 已执行验证与结果：`check-derived-sync 68c39ef` 通过
-- 未验证项与原因：未运行领域模板 advisory self-check、未运行 GitHub Actions、未执行 docs-system-audit
+- 已执行验证与结果：`check-derived-sync 68c39ef` 通过；`git diff --check` 通过；`check-agent-template.ps1` EXIT=0（7 条 advisory）；`check-domain-derived-sync.ps1 -Advisory` EXIT=0（20 条 advisory）
+- 未验证项与原因：未运行 Bash 等价入口、未运行 GitHub Actions、未执行 docs-system-audit
 
 ## 遇到的问题
 
-- Git / gh / Git Bash / PowerShell / 网络问题：第一次创建 `chore/sync-template-v1.59.0` 分支失败，因为本仓存在 `chore` 分支导致 ref 命名空间冲突；已改用 `sync-template-v1.59.0`
+- Git / gh / Git Bash / PowerShell / 网络问题：第一次创建 `chore/sync-template-v1.59.0` 分支失败，因为本仓存在 `chore` 分支导致 ref 命名空间冲突；已改用 `sync-template-v1.59.0`。复跑 `check-derived-sync.ps1` 时遇到当前 PowerShell 进程 `Path` / `PATH` 重复键导致 `Start-Process` 崩溃；已在 `b33132b` 增加进程内 PATH 归一化后复跑通过
 - 同步脚本问题：首次 dry-run 停止，原因是 `scripts/sync-template.sh` 不是模板远端最新版；已按脚本提示单独提交 bootstrap `d2162fa`
 - Prompt / 快捷命令理解问题：无
 - 文档说明不清：无新增结论
@@ -96,6 +97,7 @@
 |---|---|---|---|
 | `chore/...` 分支名与既有 `chore` 分支冲突 | 否 | 暂不建议 | 可在后续观察中考虑给 SOP 增加 fallback 分支命名建议 |
 | bootstrap 同步脚本需要单独提交 | 否 | 否 | 已是现有脚本提示覆盖的流程 |
+| `check-derived-sync.ps1` 在 PowerShell 进程存在 `Path` / `PATH` 重复键时会在 `Start-Process` 崩溃 | 否 | 是 | 建议回流母模板同等修复，或提交 issue / PR 让模板仓吸收 `b33132b` |
 | 领域模板 `CHANGELOG-PLAIN.md` ownership 未整理 | 是（本仓当前状态） | 待判断 | 先走 post-sync-cleanup；如多个领域模板复现再回流 |
 
 ## 已生成的回流提案
@@ -122,6 +124,6 @@
 - 是否需要 `/run post-sync-cleanup`：需要，建议单独分支处理 `CHANGELOG-PLAIN.md` ownership 提示
 - 是否需要 `/run docs-system-audit`：建议执行同步后审计模式
 - 是否需要按审计结果回梳 `docs/00-09` / `docs/design` / `docs/env`：待审计判断
-- 是否需要补项目验证入口：待领域模板 advisory self-check 结果判断
+- 是否需要补项目验证入口：已执行 PowerShell advisory self-check；是否补齐 advisory 缺口待后续领域模板整理判断
 - 是否需要人工清理旧目录：待 post-sync-cleanup 判断
 - 是否需要同步回模板仓库：本轮无新增回流提案

@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "schema": "agent-domain-template-sync.v1",
+  "description": "L2 agent-system-template -> L3 agent derived project sync manifest. Project facts are never overwritten by default.",
+  "source": {
+    "name": "agent-system-template",
+    "layer": "L2",
+    "version_file": "VERSION"
+  },
+  "target": {
+    "type": "agent-derived-project",
+    "layer": "L3"
+  },
+  "policy": {
+    "requires_l1_sync_first": true,
+    "default_mode": "copy-if-missing",
+    "overwrite_project_facts": false,
+    "self_check_strength": "advisory-first",
+    "commit_message": "sync agent domain template {version} from agent-system-template"
+  },
+  "common_passthrough": {
+    "source_manifest": "template-sync.json",
+    "target_paths": "same-path",
+    "handled_by": "Run ai-project-template sync first; this manifest only adds agent domain overlay files."
+  },
+  "files": [
+    {
+      "source": "domain-template-sync.json",
+      "target": "domain-template-sync.json",
+      "kind": "domain-sync-manifest",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "template-docs/agent-system/README.md",
+      "target": "template-docs/agent-system/README.md",
+      "kind": "domain-reference",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "template-docs/agent-system/layer-map.md",
+      "target": "template-docs/agent-system/layer-map.md",
+      "kind": "domain-reference",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "template-docs/agent-system/agent-system-checklist.md",
+      "target": "template-docs/agent-system/agent-system-checklist.md",
+      "kind": "domain-reference",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "template-docs/agent-system/profiles/single-agent.md",
+      "target": "template-docs/agent-system/profiles/single-agent.md",
+      "kind": "domain-profile",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "template-docs/agent-system/profiles/multi-agent.md",
+      "target": "template-docs/agent-system/profiles/multi-agent.md",
+      "kind": "domain-profile-stub",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "template-docs/agent-system/docs/design/agent-architecture.md",
+      "target": "docs/design/agent-architecture.md",
+      "kind": "project-doc-skeleton",
+      "mode": "copy-if-missing"
+    },
+    {
+      "source": "template-docs/agent-system/docs/design/tool-permission-model.md",
+      "target": "docs/design/tool-permission-model.md",
+      "kind": "project-doc-skeleton",
+      "mode": "copy-if-missing"
+    },
+    {
+      "source": "template-docs/agent-system/docs/design/memory-and-state.md",
+      "target": "docs/design/memory-and-state.md",
+      "kind": "project-doc-skeleton",
+      "mode": "copy-if-missing"
+    },
+    {
+      "source": "template-docs/agent-system/docs/design/trace-and-replay.md",
+      "target": "docs/design/trace-and-replay.md",
+      "kind": "project-doc-skeleton",
+      "mode": "copy-if-missing"
+    },
+    {
+      "source": "template-docs/agent-system/docs/design/hitl-and-safety.md",
+      "target": "docs/design/hitl-and-safety.md",
+      "kind": "project-doc-skeleton",
+      "mode": "copy-if-missing"
+    },
+    {
+      "source": "template-docs/agent-system/docs/research/agent-eval-plan.md",
+      "target": "docs/research/agent-eval-plan.md",
+      "kind": "project-doc-skeleton",
+      "mode": "copy-if-missing"
+    },
+    {
+      "source": "ai/agent-rules/agent-implementation-rules.md",
+      "target": "ai/agent-rules/agent-implementation-rules.md",
+      "kind": "domain-ai-rule",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "ai/agent-rules/tool-safety-rules.md",
+      "target": "ai/agent-rules/tool-safety-rules.md",
+      "kind": "domain-ai-rule",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "ai/doc-standards/agent-architecture.md",
+      "target": "ai/doc-standards/agent-architecture.md",
+      "kind": "domain-doc-standard",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "ai/doc-standards/agent-tool-permission-model.md",
+      "target": "ai/doc-standards/agent-tool-permission-model.md",
+      "kind": "domain-doc-standard",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "ai/doc-standards/agent-memory-and-state.md",
+      "target": "ai/doc-standards/agent-memory-and-state.md",
+      "kind": "domain-doc-standard",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "ai/doc-standards/agent-trace-and-replay.md",
+      "target": "ai/doc-standards/agent-trace-and-replay.md",
+      "kind": "domain-doc-standard",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "ai/doc-standards/agent-hitl-and-safety.md",
+      "target": "ai/doc-standards/agent-hitl-and-safety.md",
+      "kind": "domain-doc-standard",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "ai/doc-standards/agent-eval-plan.md",
+      "target": "ai/doc-standards/agent-eval-plan.md",
+      "kind": "domain-doc-standard",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "scripts/sync-domain-template.ps1",
+      "target": "scripts/sync-domain-template.ps1",
+      "kind": "domain-sync-script",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "scripts/sync-domain-template.sh",
+      "target": "scripts/sync-domain-template.sh",
+      "kind": "domain-sync-script",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "scripts/check-agent-template.ps1",
+      "target": "scripts/check-agent-template.ps1",
+      "kind": "domain-check-script",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "scripts/check-agent-template.sh",
+      "target": "scripts/check-agent-template.sh",
+      "kind": "domain-check-script",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "scripts/check-domain-derived-sync.ps1",
+      "target": "scripts/check-domain-derived-sync.ps1",
+      "kind": "domain-check-script",
+      "mode": "overwrite-domain-owned"
+    },
+    {
+      "source": "scripts/check-domain-derived-sync.sh",
+      "target": "scripts/check-domain-derived-sync.sh",
+      "kind": "domain-check-script",
+      "mode": "overwrite-domain-owned"
+    }
+  ]
+}

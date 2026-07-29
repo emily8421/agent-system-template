@@ -1,137 +1,117 @@
 # 项目专属规则
 
-> 本文件每个新项目都需要重新填写，不参与跨项目同步。
-> 判断标准：一条规则换到另一个完全不同的项目上是否还成立——
-> 不成立（涉及具体技术栈/具体功能/具体Phase定义）就属于本文件。
->
-> 填写时机：§1 Phase边界、§2 技术栈、§3 项目形态与文档裁剪在生成 docs/03-09 **之前**填
-> （作为约束）；§4 目录特例、§5 编码约定与禁区在审核 03-09 **之后**补。
-
-## 初始化必填检查（生成 docs/03-09 前）
-
-在使用 `ai/prompts/docs/01-review-inputs.md` 评审输入材料并用 `ai/prompts/docs/00-generate-or-complete-docs.md` 生成或补全 `docs/03-09` 前，必须确认以下项目已填写，不得保留占位说明直接进入设计阶段：
-
-- `项目名称` 与 `代号/缩写` 已明确；若暂不需要缩写，写“无”。
-- `§1 Phase边界` 已明确当前阶段允许、禁止与下一阶段预告；禁止项不得留空。
-- `§2 技术栈约束` 已列出本项目确定使用的主要技术；不确定版本写“待确认”，不得虚构。
-- `§2.5 运行环境与资源约束` 已通过 `scripts/collect-env.ps1` 生成 `docs/env/local-env.md`，并完成人工确认项；若暂不能采集，必须说明原因。
-- `§2.6 图表格式偏好` 已确认（默认 mermaid，可改 plantuml）；未确认则按默认 mermaid，不阻断。
-- `§3 项目形态与文档裁剪` 已明确持久化、对外接口、演示形态、`docs/06`、`docs/07` 与需要保留的代码目录。
-- 不适用的模板目录或文档已有“保留 / 省略 / 删除”决策；省略 `docs/06` 或 `docs/07` 时必须在 §3 留下说明。
-- 新增项目文档的类型与路径已按 `docs/README.md` 分区规则判断；不得把新增文档直接放到 `docs/` 根目录。
-- 若以上任一项无法判断，AI 必须先向用户提问或提出待确认项，不得继续生成后续设计文档。
+> 本文件记录 `agent-system-template` 仓库自身的维护约束，不参与母模板 L1 同步，也不参与 L2→L3 下行同步。
+> 本仓身份是 L2 领域模板；真正业务项目的 L3 事实应由派生项目填写，不能在本仓预填。
 
 ## 0. 项目标识
 
-项目名称：（如 DigitalCustomerService_Demo）
-代号/缩写：（用于数据库表前缀、包名等，如 cs_sessions）
+- 项目名称：`agent-system-template`
+- 代号 / 缩写：`agent-system-template` / `agent-system`
+- 仓库角色：L2 领域模板，继承 L1 母模板 `ai-project-template`，向 L3 agent 派生项目下发领域标准件。
+- 当前领域模板版本：根 `VERSION`，当前为 `v0.3.0`。
+- 当前继承母模板版本：`TEMPLATE-BASE.md` 的 `Current synced template version`，当前为 `v1.59.0`。
+- 分层权威入口：`TEMPLATE-BASE.md` 与 `template-docs/agent-system/layer-map.md`。
 
-## 1. Phase边界
+## 1. Phase 边界
 
-当前阶段：Phase1
+当前阶段：Domain Template `v0.3.x`，L2 机制稳定化与真实派生验证期。
 
 允许：
-- （本项目当前阶段允许使用的技术/功能）
+
+- 维护 L2 领域自有文件：`template-docs/agent-system/*`、`ai/agent-rules/*`、`ai/doc-standards/agent-*.md`、`domain-template-sync.json`、领域同步 / 检查脚本、`_examples/*`、`_proposals/*`。
+- 对本仓 L2 版本记录做维护：`VERSION`、`CHANGELOG.md`、`CHANGELOG-PLAIN.md`、`TEMPLATE-BASE.md`、`sync-records/template-sync/*`。
+- 运行 L1→L2 母模板同步与 L2→L3 领域同步检查，按同步记录留痕。
+- 为通用问题起草去项目化 `_proposals/TEMPLATE-UPGRADE-*.md`，成熟后回流母模板或领域模板维护流程。
 
 禁止：
-- （本项目当前阶段禁止使用的技术/功能）
+
+- 不得把 L3 业务需求、客户场景、具体数据库 / API / UI 项目事实写进本仓 `docs/00-09`。
+- 不得把 `docs/00-09` scaffold 占位当成本仓已确认业务事实。
+- 不得直接修改 L1 同步文件并长期保留漂移；若为解除同步阻塞做本地兼容修复，必须在同步记录中说明并形成上游回流提案。
+- 不得把 advisory 检查结果写成已阻断或已验收，除非对应脚本 / CI 已升级为 gate 并通过。
 
 下一阶段预告：
-- （Phase2大致会开放什么）
+
+- 通过至少一个真实 L3 agent 派生项目验证 L2→L3 同步、文档骨架和 advisory 检查。
+- 根据真实验证结果决定哪些 agent 领域 advisory 可升级为 gate。
+- 将已验证的跨领域问题回流到母模板，并在母模板合并后再下行同步。
 
 ## 2. 技术栈约束
 
-（本项目确定使用的前端/后端/数据库/AI模型等，及禁止引入的替代品）
+- 本仓不是运行型前后端应用；主要产物是 Markdown 方法论、JSON manifest、PowerShell / Bash 同步与检查脚本、最小示例项目。
+- 脚本需兼容 Windows PowerShell 与 Git Bash；Windows 兼容问题优先用 PowerShell fallback 复现和验证。
+- `_examples/single-agent-demo/` 可使用 Python 标准库测试作为领域标准件 smoke，但不得把示例实现扩展成正式产品能力。
+- 不引入新运行依赖、包管理器、外部服务、LLM 凭据、数据库或前端框架，除非先形成明确维护计划并经人工确认。
 
 ## 2.5 运行环境与资源约束
 
-> 本节用于约束架构与技术方案选择。Demo / MVP 阶段优先保证本机可运行；若本机资源不足，必须在 `docs/05-tech-spec.md` 中明确降级策略或服务器资源预案。
-
-- 本机环境文档：`docs/env/local-env.md`（由 `scripts/collect-env.ps1` 生成，人工补充确认项）
-- 技术环境评估报告：需要 / 不需要 / 豁免（若需要，推荐 `docs/research/YYYY-MM-DD-tech-env-evaluation-<scope>.md`；若豁免，说明原因、风险和补做时点）
-- Demo 阶段必须能在本机运行的部分：待确认
-- 允许降级 / Mock / 远程运行的部分：待确认
-- 禁止在本机运行的重资源部分：待确认
-- 是否允许使用公司服务器：待确认
-- 若需服务器，资源申请口径：待确认
-
-说明：`docs/env/local-env.md` 只记录本机事实，不等于技术路线已被环境支撑。若项目保留 `backend/`、`frontend/`、`docker/`、数据库、本机模型、外部 API 或其他真实运行依赖，生成 / 修订 `docs/05-tech-spec.md` 或进入首个相关编码 Sprint 前，应完成技术路线与环境支撑评估，或在本节记录跳过理由、风险、影响范围和补做时点。
+- 本机环境文档：本仓作为 L2 模板仓，默认豁免 `docs/env/local-env.md`；只有当任务进入真实运行依赖评估、重型示例或可点击 Demo 时，再运行 `scripts/collect-env.ps1` 并补环境事实。
+- 技术环境评估报告：常规文档 / 同步脚本维护不需要；若新增真实运行依赖或重型示例，先执行技术环境评估并写入 `docs/research/`。
+- Demo 阶段必须能在本机运行的部分：同步 / 检查脚本与 `_examples/single-agent-demo` 的最小测试。
+- 允许降级 / Mock / 远程运行的部分：仅限示例项目中的 Mock agent 行为；必须显式标记为示例或 Mock。
+- 禁止在本机运行的重资源部分：本阶段不引入本机模型、数据库、容器集群或长期后台服务。
+- 是否允许使用公司服务器：默认不需要；如需远端资源，必须先人工确认用途、权限和成本。
+- 若需服务器，资源申请口径：待具体任务确认。
 
 ## 2.6 图表格式偏好
 
-> 本项目设计文档（04/05/06/07/`docs/design`）的图表格式偏好。规范见 `ai/document-lifecycle-rules.md §13`，场景引导见 `template-docs/scenario-guides.md §7`。
+- 图表格式：`mermaid`。
+- 仅当 L2 标准件需要表达 agent 架构、工具调用、状态流或 trace / replay 时使用图表；不为 scaffold 占位强行补图。
 
-- 图表格式：`mermaid`（默认）/ `plantuml`
-- 若选 mermaid 以外格式，说明原因（如团队工具链、渲染环境）
+## 2.7 UI 原型策略
 
-## 2.7 UI 原型策略（如适用）
+- 是否涉及可点击 UI：否。
+- 是否需要开发前可视化原型：豁免。
+- 豁免理由：本仓当前阶段是 agent 领域模板与脚本机制维护，不交付前端界面；如未来新增可点击 agent console 示例，应另行补 UI brief、交互设计和原型策略。
 
-> 本节用于 UI 型项目在前端实现前选择可视化原型策略。触发与边界见 `ai/document-lifecycle-rules.md §5.3`。原型只作为已授权需求的可视化证据，不是需求权威源，不得新增未授权需求、接口、权限行为或验收目标。
+## 2.8 项目版本管理
 
-- 是否涉及可点击 UI：是 / 否
-- 是否需要开发前可视化原型：需要 / 不需要 / 豁免
-- 原型形式：Figma / Penpot / Balsamiq / Axure / Storybook / 代码原型 / 截图标注 / 其他
-- 原型权威位置：链接或仓库路径（如设计文件、Storybook、代码原型入口、截图目录）
-- 原型覆盖范围：主流程 / 页面状态 / 响应式范围 / 权限与降级状态
-- 原型与文档关系：承接 `docs/design/frontend-interaction.md`，并映射到 `docs/08-dev-plan.md` Sprint 与 `docs/09-verification.md` 验收用例；不得新增未授权需求、接口或验收目标
-- 豁免理由：仅当不需要原型或暂不补原型时填写，并说明风险、影响范围和补做时点
+- 根 `VERSION` 记录 `agent-system-template` 领域模板自身版本。
+- `CHANGELOG.md` 与 `CHANGELOG-PLAIN.md` 记录领域模板自身演进。
+- `TEMPLATE-BASE.md` 记录继承的母模板版本与同步时间。
+- `upstream/CHANGELOG.md` 与 `upstream/CHANGELOG-PLAIN.md` 是母模板发布历史的只读继承参考。
+- L2 版本递增遵循 `PATCH / MINOR / MAJOR`：兼容修复为 PATCH；新增领域标准件或下游采用面为 MINOR；不兼容分层 / 同步机制变化为 MAJOR。
+- 新增 `_proposals/` 草案默认不递增版本；只有合并到 L2 同步范围并改变下游行为时才递增。
 
 ## 3. 项目形态与文档裁剪
 
-> 本节用于初始化阶段，决定 docs/06、07 是否保留，以及 frontend/backend/tests/scripts/docker
-> 哪些目录真正需要。此节应在生成 docs/03-09 之前先填好。
-
-- 是否有持久化存储：（如有数据库 / 文件存储 / 无）
-- 是否有对外接口：（如 REST API / SDK / CLI / 无）
-- 演示形态：[消息通道内交互 / 独立 Web 页面 / 移动端 / CLI / 不需演示]（决定 `frontend/` 是否启用、`docs/04-05` 是否体现前端架构）
-- 前端交互设计：需要 / 不需要 / 豁免（若需要，推荐 `docs/design/frontend-interaction.md`；若豁免，说明原因）
-- UI 原型策略：需要 / 不需要 / 豁免（若需要，在 §2.7 记录原型形式、位置、覆盖范围和追溯；若豁免，说明原因）
-- 通用详细设计：需要 / 不需要 / 豁免（若存在非平凡子系统、复杂权限 / 安全、AI / 外部服务、导入 / 异步任务、跨模块状态机、Mock / 降级差异或高风险愿景能力，推荐 `docs/design/<subsystem>.md`；若豁免，说明原因、风险和补做时点）
-- docs/06-db-design.md：保留 / 省略
-- docs/07-api-spec.md：保留 / 省略
-- 需要保留的代码目录：（如 frontend/ backend/ tests/ scripts/ docker/；不用的目录可删除）
-
-按项目形态裁剪说明（不适用的行可删除）：
-- 无持久化存储 → `docs/06-db-design.md` 省略
-- 浏览器端 localStorage / IndexedDB / sessionStorage 等非数据库存储 → 不触发 `docs/06-db-design.md`，其数据结构写在 `docs/05-tech-spec.md`
-- 无对外接口（纯内部库、纯计算模块） → `docs/07-api-spec.md` 省略
-- CLI / 本地脚本 → `docs/07-api-spec.md` 保留，但用于描述命令/参数/输出契约，不强求 RESTful
-- 演示形态为消息通道内交互 / CLI / 不需演示 → 通常不启用 `frontend/`；独立 Web 页面 / 移动端 / 小程序 / 桌面端 → 通常启用对应前端目录，并在 `docs/04-05` 体现前端设计
-- 非平凡子系统、复杂权限 / 安全边界、AI / RAG / 外部模型、第三方服务、导入 / 异步任务、跨模块状态机、Mock / 降级差异、候选 / 默认关闭 / 高风险愿景能力 → 开发前应补充 `docs/design/<subsystem>.md`，并按 `ai/doc-standards/design-doc.md` 保留元信息、追溯、readiness gate、验收追溯、实现偏差 / 设计回写和待确认项；简单项目可豁免，但必须写明理由
-- 若存在多页面、多角色、复杂表单、状态流、管理页、搜索 / 问答 UI、验收依赖点击路径，或愿景 / PRD 出现“页面 / 界面 / 点击 / 手机 / Web / App / 小程序”等交互信号 → 开发前应补充 `docs/design/frontend-interaction.md` 或按入口拆分的 `docs/design/*interaction*.md`；不补时必须在本节或 `docs/05-tech-spec.md` 写明豁免理由
-- 前端交互设计是 `docs/design/*` 的页面 / 交互型子类型，只细化既有需求的界面呈现、状态、文案、接口依赖和验收路径；不得新增需求、接口或验收目标；前端隐藏 / 禁用 / 路由守卫不是权限边界，权限必须由后端接口和服务层执行
-- 满足前端交互设计触发条件，且用户需实现前预览界面、页面信息密度高、主流程依赖点击验收、存在加载 / 空态 / 错误 / 禁用 / 成功 / 无权限 / 降级 / 风险提示等多状态、多角色 / 多租户 / 权限可见性，或 Demo / Mock / 降级能力需要界面可见口径 → 开发前应在 §2.7、`docs/05-tech-spec.md` 或 `docs/design/frontend-interaction.md` 选择 UI 原型策略；不需要时必须写明豁免理由
-- UI 原型策略可选择 Figma / Penpot / Balsamiq / Axure / Storybook / 代码原型 / 截图标注 / 其他；工程驱动项目可优先代码原型 + Mock 数据 + 截图 / smoke 证据；不强制所有项目使用 Figma 或高保真设计
-- 原型不得替代 `00-09`、不得替代前端交互设计或 `09` 验收；原型发现的新需求、接口、权限规则或验收目标必须回到正式文档链路修订
-- frontend/ backend/ tests/ scripts/ docker/ 只保留本项目用得到的目录
+- 是否有持久化存储：无。`docs/06-db-design.md` 在本仓保留为 L3 scaffold，不作为本仓当前数据库设计事实。
+- 是否有对外接口：无稳定服务 API。`docs/07-api-spec.md` 在本仓保留为 L3 scaffold；脚本命令契约以脚本帮助、README、同步记录和测试结果为准。
+- 演示形态：不需演示；仅保留脚本 smoke 与 `_examples/single-agent-demo/` 作为领域标准件验证样例。
+- 前端交互设计：豁免，当前无 UI 交付。
+- UI 原型策略：豁免，见 §2.7。
+- 通用详细设计：L2 领域标准件已放在 `template-docs/agent-system/docs/design/*`；根 `docs/design/*` 留给 L3 派生项目。
+- 需要保留的代码 / 资源目录：`scripts/`、`tests/`（如存在）、`_examples/`、`template-docs/agent-system/`、`ai/agent-rules/`、`ai/doc-standards/agent-*.md`、`sync-records/`、`upstream/`、`_proposals/`。
 
 ## 4. 目录规范的项目特例
 
-（如本项目目录结构与 global-rules.md 的通用骨架有差异，在此说明；
- 没有差异则写"无，遵循global-rules通用目录标准"）
+- `template-docs/agent-system/`：L2 agent 领域标准件与分层入口。
+- `ai/agent-rules/`：L2 agent 领域 AI 行为规则 overlay。
+- `ai/doc-standards/agent-*.md`：L2 agent 领域文档标准 overlay。
+- `domain-template-sync.json`：L2→L3 下行同步 manifest。
+- `sync-records/template-sync/`：L1→L2 母模板同步运行记录。
+- `upstream/`：L1 母模板 changelog 继承参考。
+- `_examples/`：领域标准件验证样例，不是本仓产品实现。
 
 ## 5. 编码约定与禁区
 
-> Phase 级功能禁止见 §1，技术栈替代品禁止见 §2，本节只管代码层。
-> 每条尽量具体可执行；没有则写“无”，不要留空占位。
+### 5.1 既有约定
 
-### 5.1 既有约定（新代码必须向其看齐）
-- 命名：（如后端 snake_case、前端 camelCase、组件 PascalCase）
-- 分层与目录：（如 backend 分 api / service / model 三层，接口只进 api 层）
-- 既有模式：（如统一用某基类 / 统一走某中间件鉴权，新代码沿用，勿另起炉灶）
-- 错误处理 / 日志：（如统一异常类型、统一日志格式）
+- PowerShell 脚本保持 Windows PowerShell 5.1 兼容，优先显式 UTF-8 输出，避免依赖交互式 shell 状态。
+- Bash 脚本保持 Git Bash / MSYS 路径守卫语义，成功路径输出摘要，失败路径保留可定位片段。
+- Manifest 使用 JSON，避免用非结构化文本推断同步清单。
+- 示例项目保持最小可验证，不引入真实外部服务或长期凭据。
 
-### 5.2 禁区（未经人工确认不得触碰）
-- 不得擅改的文件 / 模块：（如鉴权模块、数据库迁移脚本、公共配置）
-- 不得擅自引入的依赖：（列出，或写“任何新依赖须先确认”）
-- 不得自行实现的功能：（点名为禁区，与 §1 互为补充）
-- 愿景 / 01 中的功能点不等于已批准实现；阶段归属以 `docs/03-prd.md` §3 路线图为准，编码以 §1 当前阶段为准
+### 5.2 禁区
 
-## 6. AI修改确认规则
+- 不得在未确认前安装依赖、提交、推送、创建 / 合并 PR、删除分支或执行破坏性命令。
+- 不得记录 token、账号密码、客户敏感数据或本机私有路径。
+- 不得把 L1 同步文件的本地修复长期停留为未回流差异。
+- 不得把 L2 领域标准件自动写入 L3 项目事实，除非 L3 同步策略明确为 `copy-if-missing` 且用户确认。
 
-- AI在进行任何文件新增、修改、删除、重命名、格式化、批量替换前，必须先说明目的、影响范围、预计文件、预计变更摘要、风险与验证方式，并等待用户明确确认后再执行。
-- AI在运行任何可能写入文件、安装依赖、生成构建产物、修改配置、提交代码或改变项目状态的命令前，必须先询问用户确认。
-- 若一次 patch / 批量操作涉及多个文件，必须先列出全部文件和每个文件的变更摘要；不得用“批量优化”等模糊表述替代。
-- 只读分析操作（如读取文件、搜索代码、查看 Git 状态）无需逐次确认，但不得借只读分析之名修改项目内容。
-- 用户在单次消息中明确要求“直接修改”“执行修复”“不必确认”等同类授权时，仅对该次明确任务和已说明范围生效；后续新任务仍默认先确认再修改。
-- 模板只能约束 AI 行为和项目期望，不能替代 Claude / Codex / Cursor 等工具自身的权限模型；建议在 AI CLI / IDE 中启用写入前确认、patch 预览或审批模式，并用 `git status` / `git diff` 做兜底审计。
+## 6. AI 修改确认规则
+
+- AI 在进行任何文件新增、修改、删除、重命名、格式化、批量替换前，必须先说明目的、影响范围、预计文件、预计变更摘要、风险与验证方式，并等待用户明确确认后再执行。
+- AI 在运行任何可能写入文件、安装依赖、生成构建产物、修改配置、提交代码或改变项目状态的命令前，必须先询问用户确认。
+- 低风险只读检查可合并执行；命令失败、超时、权限不足、sandbox / network 错误或 CI pending 时必须先停止汇报。
+- `.ai/session-handoff.md` 是本地续接文件，不进入提交；长期事实必须回写正式文档、同步记录、提案或 Git 历史。

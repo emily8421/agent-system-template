@@ -17,6 +17,44 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Repair-ProcessPathEnvironment {
+  $vars = [Environment]::GetEnvironmentVariables("Process")
+  $pathKeys = @()
+  foreach ($key in $vars.Keys) {
+    if ([string]::Equals([string]$key, "Path", [System.StringComparison]::OrdinalIgnoreCase)) {
+      $pathKeys += [string]$key
+    }
+  }
+
+  if ($pathKeys.Count -le 1) {
+    return
+  }
+
+  $pathValue = [Environment]::GetEnvironmentVariable("Path", "Process")
+  if (-not $pathValue) {
+    foreach ($key in $pathKeys) {
+      $candidate = [string]$vars[$key]
+      if ($candidate) {
+        $pathValue = $candidate
+        break
+      }
+    }
+  }
+
+  # Some hosts inject both Path and PATH; Start-Process then fails while building
+  # the child environment. Keep the Windows canonical Path entry in this process.
+  foreach ($key in $pathKeys) {
+    if ($key -cne "Path") {
+      [Environment]::SetEnvironmentVariable($key, $null, "Process")
+    }
+  }
+  if (-not [Environment]::GetEnvironmentVariable("Path", "Process") -and $pathValue) {
+    [Environment]::SetEnvironmentVariable("Path", $pathValue, "Process")
+  }
+}
+
+Repair-ProcessPathEnvironment
+
 function Find-TemplateBash {
   $programFilesX86 = [Environment]::GetEnvironmentVariable("ProgramFiles(x86)")
   $candidates = @($env:GIT_BASH)

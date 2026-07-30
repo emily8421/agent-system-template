@@ -15,6 +15,7 @@
 - `scripts/new-domain-project.{ps1,sh}`：剥离黑名单加 `domain-overlay`，避免 `git archive` 泄漏到 L3。
 - 顺手修正文档一致性：根 README 版本号（v0.3.0 → v0.4.1）与目录表；`domain-derived-scenarios.md` §3/§3.3/C-002「创建脚本远期未做」滞后（v0.4.0 已落地 `new-domain-project.*`）；`ai/project-rules.md` 版本与目录清单。
 - 验证：`sync-domain-template` dry-run、`check-domain-derived-sync`、`check-agent-template` 对 `_examples/single-agent-demo` 通过；`new-domain-project` 实测派生确认 `domain-overlay/` 被剥离、overlay 落到 L3 `ai/agent-rules/`。
+- 附带修复 `new-domain-project.ps1` 的 PS5.1 native stderr 陷阱（`$ErrorActionPreference="Stop"` 把 git CRLF warning 当 `NativeCommandError` 中断，致 ps1 在 Windows PowerShell 5.1 实跑不可用）：新增 `Invoke-SafeNative` helper 包裹 native 调用 + `2>$null`；ps1 现可实跑（此前仅 `.sh` 可跑）。详见 `_proposals/TEMPLATE-UPGRADE-ps1-native-stderr-stop.md`。
 - 已知边界（不假装全清）：L3 派生项目目录仍混层、`scripts/` 内领域脚本仍与通用脚本混——彻底清晰需 B2 / 轨 B（回流母模板 MAJOR）。详见 `_proposals/TEMPLATE-UPGRADE-domain-overlay-relocation.md`。
 
 ## v0.4.0（2026-07-30）

@@ -28,6 +28,22 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# PS5.1 安全调用 native exe（git/gh/powershell）：全局 Stop 会把 native command 的
+# stderr（如 git CRLF warning）当 NativeCommandError 中断。本 helper 临时降为 Continue，
+# 按 $LASTEXITCODE 判成败；非 0 才 throw。
+function Invoke-SafeNative {
+  param([Parameter(Mandatory)][scriptblock]$Block, [string]$Label = 'native command')
+  $prev = $ErrorActionPreference
+  $ErrorActionPreference = 'Continue'
+  try {
+    & $Block
+    $code = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $prev
+  }
+  if ($null -ne $code -and $code -ne 0) { throw ("{0} failed (exit {1})" -f $Label, $code) }
+}
+
 if ([string]::IsNullOrWhiteSpace($Name)) {
   Write-Error "用法: powershell -ExecutionPolicy Bypass -File scripts/new-domain-project.ps1 <项目名> [-Source ..] [-Account ..] [-Visibility private|public] [-NoRemote]"
   exit 1
@@ -87,8 +103,7 @@ Write-Host ""
 # 1) git archive L2 整仓 -> Target（拿通用方法论 + agent overlay 源）
 $null = New-Item -ItemType Directory -Path $Target -Force
 $zip = Join-Path ([System.IO.Path]::GetTempPath()) ("l2-archive-" + [guid]::NewGuid().ToString("N") + ".zip")
-& git -C $Source archive --format=zip -o $zip HEAD
-if ($LASTEXITCODE -ne 0) { Remove-Item $zip -Force -ErrorAction SilentlyContinue; Write-Error "git archive 失败"; exit 1 }
+Invoke-SafeNative { & git -C $Source archive --format=zip -o $zip HEAD 2>$null } "git archive"
 Expand-Archive -LiteralPath $zip -DestinationPath $Target -Force
 Remove-Item $zip -Force
 
@@ -320,21 +335,20 @@ Push-Location $Target
 try {
   & git init -b main *> $null
   if ($LASTEXITCODE -ne 0) { & git init *> $null; & git symbolic-ref HEAD refs/heads/main 2>$null }
-  & git add -A
+  Invoke-SafeNative { & git add -A 2>$null } "git add"
   $msg = "init: $Base (derived from agent-system-template)"
-  $hasId = ((& git config user.name) -and (& git config user.email))
+  $hasId = ((& git config user.name 2>$null) -and (& git config user.email 2>$null))
   if ($hasId) {
-    & git commit -q -m $msg
+    Invoke-SafeNative { & git commit -q -m $msg 2>$null } "git commit"
   } else {
     Write-Host "==> 未检测到 Git 身份，使用临时本地提交身份完成初始化"
-    & git -c user.name="Codex Local Init" -c user.email="codex-local-init@example.invalid" commit -q -m $msg
+    Invoke-SafeNative { & git -c user.name="Codex Local Init" -c user.email="codex-local-init@example.invalid" commit -q -m $msg 2>$null } "git commit (local init identity)"
   }
 
   # 5) 叠加 agent overlay（target 已是干净 git root；sync 复制 overlay 并产生 'sync agent domain template' commit）
   $syncScript = Join-Path $Target "scripts/sync-domain-template.ps1"
   Write-Host "==> 叠加 agent overlay（sync-domain-template）"
-  & powershell -ExecutionPolicy Bypass -File $syncScript -Source $Source -Target $Target -Commit
-  if ($LASTEXITCODE -ne 0) { Write-Error "sync-domain-template 失败"; exit 1 }
+  Invoke-SafeNative { & powershell -ExecutionPolicy Bypass -File $syncScript -Source $Source -Target $Target -Commit 2>$null } "sync-domain-template"
 
   if ($NoRemote) {
     Write-Host "==> 跳过远端建库与推送（-NoRemote）"
@@ -350,8 +364,7 @@ try {
         Write-Host "==> 切换 gh 活跃账号: $active -> $Account"
         & gh auth switch -u $Account 2>$null
       }
-      & gh repo create "$Account/$Base" "--$Visibility" --source=. --remote=origin --push `
-        --description "Agent project derived from agent-system-template"
+      Invoke-SafeNative { & gh repo create "$Account/$Base" "--$Visibility" --source=. --remote=origin --push --description "Agent project derived from agent-system-template" 2>$null } "gh repo create"
     }
   }
 } finally {

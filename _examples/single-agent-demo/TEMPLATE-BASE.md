@@ -7,7 +7,7 @@
 - Domain template: `agent-system-template`
 - Source commit used for manual derivation: `b5cbee4`
 - Domain version target: `v0.2.0`
-- Derivation mode: manual Batch 3a validation; no `domain-template-sync.json` or sync script is used in this example.
+- Derivation mode: manual Batch 3a validation; on 2026-07-29 a Batch 3b sync pilot ran `sync-domain-template.*` against this example as the L3 target, and `domain-template-sync.json` is present. The example remains example-owned and is not a continuously-synced independent project. See `docs/research/checklist-validation.md`.
 
 ## Role
 

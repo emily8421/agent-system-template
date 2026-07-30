@@ -163,11 +163,12 @@ TEMPLATE-BASE.md                         更新：Domain standards scope + 双�
 - 未接入 CI：D6 暂缓，本批只提供本地脚本；真实派生项目验证后再评估是否进仓库 CI。
 - 版本：已随 `v0.3.0` 发布（minor，新增机制层与规则标准件）。
 
-### Batch 4（远期，需真实项目试用后评估）
+### Batch 4（部分落地：领域自建创建脚本；其余远期）
 
-- `new-project --profile agent-system | multi-agent`。
-- 领域发布 / 回流 / 下行同步 SOP。
-- 至少一个真实 agent 项目试用后，评估是否提升主线地位（写进母模板 `template-methodology.md` §5）。
+- ✅ **领域派生项目创建脚本已落地（v0.4.0，2026-07-30）**：`scripts/new-domain-project.*` + `template-docs/agent-system/domain-derived-scenarios.md`，走"领域模板自建"路线（非母模板 `--profile`）；决策见 `_proposals/TEMPLATE-UPGRADE-agent-new-domain-project.md` §4 / C-006。已用本地 `my-agent` 项目验证（`check-domain-derived-sync` 通过、`check-agent-template` advisory 通过）。
+- ⏳ 领域发布 / 回流 / 下行同步 SOP：待办。
+- ⏳ `new-project --profile agent-system | multi-agent`（母模板侧）：暂不采用，改由领域模板自建脚本承担；待多领域模板出现、模式成熟后再评估是否回流母模板收敛。
+- 至少一个真实 agent 项目持续试用后，再评估是否提升主线地位（写进母模板 `template-methodology.md` §5）。
 
 ## 8. 验收标准
 

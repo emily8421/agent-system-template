@@ -5,6 +5,12 @@
 
 本文是 `CHANGELOG.md` 的大白话配套版，按同一版本顺序解释“这版到底改善了什么”。权威版本事实仍以 `VERSION`、`CHANGELOG.md`、`TEMPLATE-BASE.md` 和 Git 历史为准。
 
+## v0.4.2（2026-07-30）
+
+修了"用模板生成新 agent 项目后，AI 进去不知道先读哪个文件"的问题。
+
+之前生成新项目时把母模板的入口文件（目录页）剥掉了，又没补一个新的，导致 AI / 人进新项目两眼一抹黑。这版生成时顺手写一个根 `CLAUDE.md` 当"目录页"，告诉 AI：你是 agent 项目，先看 `TEMPLATE-BASE.md`、`ai/project-rules.md`、`template-docs/agent-system/README.md` 这几个文件。配套把领域说明里"先读母模板 `ai/index.md`"那句话改成区分场景（母模板仓才读 `ai/index.md`，生成出来的项目读自己的 `CLAUDE.md`），不再指向新项目里没有的文件。示例项目也补了同样的目录页。
+
 ## v0.4.1（2026-07-30）
 
 这一版把散落在各处的 agent 领域内容集中收拢到一个 `domain-overlay/` 目录，让仓库一眼能分清"哪些是继承母模板的通用方法、哪些是本领域自己加的"。

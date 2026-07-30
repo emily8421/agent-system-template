@@ -38,4 +38,4 @@
 2. **L1 文件**：不得本地编辑；要改先在本仓库 `_proposals/` 起草，成熟后 `submit-proposal` 回流母模板。
 3. **L2 文件**：领域模板维护者可直接编辑；属本仓库自治范围。
 4. **L3 文件**：派生项目填写；本仓库（作为领域模板）只提供骨架 / 撰写提要，不预填业务事实。
-5. **领域规则件**（L2 源 `domain-overlay/rules/`、`domain-overlay/doc-standards/agent-*.md`；下发 L3 后在 `ai/agent-rules/`、`ai/doc-standards/agent-*.md`）采用 D7 过渡期读取路径：AI 处理 agent 任务时，完成 L1 启动路由后，**在 L2 仓**按 `TEMPLATE-BASE.md` 与 `domain-overlay/README.md`、**在 L3 项目**按 `TEMPLATE-BASE.md` 与 `template-docs/agent-system/README.md` 主动读取领域 overlay；不等母模板强制路由钩子。
+5. **领域规则件**（L2 源 `domain-overlay/rules/`、`domain-overlay/doc-standards/agent-*.md`；下发 L3 后在 `ai/agent-rules/`、`ai/doc-standards/agent-*.md`）采用 D7 过渡期读取路径：AI 处理 agent 任务时，**在 L2 仓**完成母模板 `ai/index.md` 启动路由后按 `TEMPLATE-BASE.md` 与 `domain-overlay/README.md`、**在 L3 项目**以根 `CLAUDE.md` 为入口按 `TEMPLATE-BASE.md` 与 `template-docs/agent-system/README.md` 主动读取领域 overlay；不等母模板强制路由钩子。

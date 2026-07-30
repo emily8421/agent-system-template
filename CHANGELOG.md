@@ -5,6 +5,17 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。
 
+## v0.4.2（2026-07-30）
+
+补 L3 agent 派生项目的 AI 启动入口（修评审遗留的"L3 入口断裂"）：`new-domain-project` 生成 L3 时写根 `CLAUDE.md`；`agent-system/README` 的 D7 段改双视角；`layer-map` D7 补 L3 入口；demo 补同结构 `CLAUDE.md`。
+
+- `scripts/new-domain-project.{ps1,sh}`：生成 L3 根 `CLAUDE.md`（AI 启动入口：`TEMPLATE-BASE.md` → `ai/project-rules.md` → `agent-system/README.md` + `layer-map.md` → agent overlay；明确"不挂 `ai/index.md`，以本文件为入口"）。
+- `domain-overlay/agent-system/README.md` D7 段：双视角（L2 仓按母模板 `ai/index.md`；L3 项目按根 `CLAUDE.md`），不再单向指向 L3 不存在的 `ai/index.md`。
+- `domain-overlay/agent-system/layer-map.md` D7 第 5 条：L3 入口补"根 `CLAUDE.md`"。
+- `_examples/single-agent-demo/CLAUDE.md`：新增，L3 样本入口完整。
+- 验证：`new-domain-project` 实测派生 L3 含根 `CLAUDE.md`、入口指向文件均存在；demo check 通过；markdown clean。
+- 详见 `_proposals/TEMPLATE-UPGRADE-l3-ai-entrypoint.md`。
+
 ## v0.4.1（2026-07-30）
 
 领域增量收拢到 `domain-overlay/`（轨 A · B1）：让 L2 仓库根目录自带层归属——通用方法论（继承、随 sync 刷新）与 agent 领域增量（`domain-overlay/`）物理可分，AI 与人不再靠交叉查表判层。L3 下发行为不变（target 不变）。

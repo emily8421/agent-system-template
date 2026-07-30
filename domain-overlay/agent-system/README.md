@@ -31,9 +31,14 @@
 
 ## AI 读取路径（D7）
 
-Agent 相关任务在完成母模板 `ai/index.md` / `ai/rules-core.md` 启动路由后，按以下顺序读取领域 overlay：
+启动入口按仓库角色区分：
 
-1. 读 `TEMPLATE-BASE.md` 与 `template-docs/agent-system/layer-map.md`，确认当前仓库是 L2 领域模板还是 L3 agent 派生项目。
+- **L2 领域模板仓（agent-system-template）**：完成母模板 `ai/index.md` / `ai/rules-core.md` 启动路由后，读 `TEMPLATE-BASE.md` 与本目录 `layer-map.md`。
+- **L3 agent 派生项目**：本项目不挂母模板 `ai/index.md`；以根 `CLAUDE.md` 为 AI 启动入口（→ `TEMPLATE-BASE.md` → `ai/project-rules.md` → 本目录 README / `layer-map.md`）。
+
+随后（两类仓库通用）按以下顺序读领域 overlay：
+
+1. 读 `TEMPLATE-BASE.md` 与同目录 `layer-map.md`，确认仓库角色与 L1 / L2 / L3 归属。
 2. 读本文件与对应形态 profile：默认先读 `profiles/single-agent.md`；只有出现明确多 agent 信号时才读 `profiles/multi-agent.md`。
 3. 在 agent 设计、实现、工具权限、memory、trace、HITL、eval、同步或自检任务前读取 `ai/agent-rules/` 中的相关规则文件。
 4. 在生成或审计 agent 文档前读取对应 `ai/doc-standards/agent-*.md` 领域文档标准。

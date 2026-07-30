@@ -1,6 +1,6 @@
 # Agent Implementation Rules
 
-> Layer: L2 domain-owned. These rules apply to agent-system-template and agent-derived projects when `ai/agent-rules/` is present.
+> Layer: L2 domain-owned. These rules apply to agent-system-template and agent-derived projects when agent domain rules are present (L2 source `domain-overlay/rules/`; L3 delivered at `ai/agent-rules/`).
 
 ## Read Path
 

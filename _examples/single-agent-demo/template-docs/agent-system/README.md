@@ -40,7 +40,7 @@ Agent 相关任务在完成母模板 `ai/index.md` / `ai/rules-core.md` 启动�
 
 ## L2→L3 同步机制
 
-领域派生项目先完成母模板 L1 同步，再从本领域模板叠加 agent overlay：
+领域派生项目**单源锚定本领域模板（L2）**：L1 母模板通用方法论已由 `agent-system-template` 吸收并随 agent overlay 一起下发，L3 只从 L2 同步、不直连 L1（详见 `domain-derived-scenarios.md` §1）。叠加 agent overlay：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\sync-domain-template.ps1 -Source <agent-system-template> -Target <agent-project> -DryRun

@@ -5,6 +5,23 @@
 
 本文是 `CHANGELOG.md` 的大白话配套版，按同一版本顺序解释“这版到底改善了什么”。权威版本事实仍以 `VERSION`、`CHANGELOG.md`、`TEMPLATE-BASE.md` 和 Git 历史为准。
 
+## v0.4.1（2026-07-30）
+
+这一版把散落在各处的 agent 领域内容集中收拢到一个 `domain-overlay/` 目录，让仓库一眼能分清"哪些是继承母模板的通用方法、哪些是本领域自己加的"。
+
+以前 agent 的规则、文档标准、标准件散在 `ai/`、`template-docs/`、`scripts/` 里，和母模板下发的东西混在一起，要靠查表才能判断一个文件是哪一层的、能不能改、会不会被同步覆盖——既容易看错，AI 也得猜。现在这些领域内容统一放进 `domain-overlay/`：根目录左边是继承来的通用方法（会同步、别动），`domain-overlay/` 是本领域自己加的部分（自己维护、整体下发给 agent 项目）。
+
+主要变化：
+
+- 把 `ai/agent-rules/`、`ai/doc-standards/agent-*.md`、`template-docs/agent-system/` 这些领域件用 `git mv` 挪进 `domain-overlay/`，文件历史保留；新增 `domain-overlay/README.md` 当入口说明。
+- 同步清单 `domain-template-sync.json` 改了源头路径指向新位置，但**派生项目里落到哪里不变**（所以已有 agent 项目和示例完全不受影响）。
+- 判层用的 `layer-map.md` 改成同时写"L2 源位置 → 派生项目里位置"两套路径，顺手修了把根 README 错分到 L3 的老问题；同步脚本、检查脚本主体不用改（它们按清单走）。
+- 派生脚本 `new-domain-project.*` 加了一条：派生时把 `domain-overlay/` 剥掉（不然它会和下发的标准件重复）。
+- 顺手修了几处过时：根 README 的版本号、说明书写"创建脚本还没做"（其实上版已做）。
+- 顺手修了 `new-domain-project.ps1` 在 Windows PowerShell 5.1 下会崩的问题（git 的换行符提示被当成致命错误、把脚本中断）：加了个小帮手函数兜住这类提示，ps1 现在也能正常跑完了（之前只有 `.sh` 版能跑）。
+
+还没彻底清的（老实说）：派生出来的 agent 项目目录里，agent 规则还在 `ai/` 下混着；同步脚本也还和通用脚本混在 `scripts/`。这俩要彻底分开，得改母模板的目录约定（大改、走回流），等真有 agent 项目用起来再说。
+
 ## v0.4.0（2026-07-30）
 
 这一版补上了"从本模板一键创建一个 agent 项目"的能力——之前只能同步已有项目，现在能直接生成新的。

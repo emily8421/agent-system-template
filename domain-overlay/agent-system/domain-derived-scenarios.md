@@ -51,7 +51,7 @@
 
 ## 3. 创建领域派生项目
 
-> 现状：尚无领域版一键创建脚本（`new-domain-project.*` 或 `new-project --profile agent-system` 属母模板 inheritance 提案 **Batch 4，远期未做**，前置条件是至少一个真实 agent 项目试用）。当前走**过渡期组合流程（手动）**，实证样本为 `_examples/single-agent-demo`。
+> 现状：领域版一键创建脚本 `scripts/new-domain-project.*` 已落地（v0.4.0；见根 `CHANGELOG.md`）：从 L2 整仓派生、剥离所有 L1 同步入口与 L2 维护件（含 `domain-overlay/`）、叠加 agent overlay、装领域 check workflow、`git init`。**优先用脚本**；手动组合流程（§3.2）作为脚本不可用时的等价回退，实证样本为 `_examples/single-agent-demo`。脚本的命令入口（`ai/commands/*` 属 L1 下发）、加入 `domain-template-sync.json` 下发清单与 CI 接入仍待办（见 §10 C-001 / C-002）。
 
 ### 3.1 为什么不能直接用母模板 `new-project.sh` 建底座
 
@@ -97,9 +97,15 @@
 5. **`git init` + 首提交 + 可选建远端**（`gh repo create`）。
 6. **跑领域自检**（见 §5）。
 
-### 3.3 成熟期（远期）
+### 3.3 一键脚本（已落地 v0.4.0）
 
-`scripts/new-domain-project.sh` / `.ps1`，或母模板 `new-project --profile agent-system`，把 §3.2 固化为脚本。前置条件：至少一个真实 agent 项目跑通 §3.2 组合流程后再固化形态（见 §10 C-002）。
+`scripts/new-domain-project.sh` / `.ps1` 已把 §3.2 的组合流程固化为脚本：整仓 `git archive` 派生 → 剥离 L1 同步入口与 L2 维护件（含 `domain-overlay/`）→ 写领域派生身份 → 叠加 agent overlay → 装领域版 `project-check.yml` → `git init`。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\new-domain-project.ps1 <项目名> [-Source <agent-system-template>] [-NoRemote]
+```
+
+仍待办：命令入口（`ai/commands/*` 属 L1 下发）、加入 `domain-template-sync.json` 下发清单（C-001）、CI 接入——等真实 agent 项目增多后再评估。
 
 ## 4. 同步领域模板更新
 
@@ -167,7 +173,7 @@ L3 完成同步后记录：同步前后版本、DryRun 摘要、实际变更文�
 | ID | 待确认项 | AI 建议 | 阻塞 |
 |---|---|---|---|
 | C-001 | 本剧本 `domain-derived-scenarios.md` 是否加入 `domain-template-sync.json` 下发清单（让每个 L3 创建时自动拿到） | 第一步先不下发；等第一个真实 agent 项目试用后再评估，按 `overwrite-domain-owned` 下发 | 不阻塞 |
-| C-002 | 是否将 §3.2 组合流程固化为 `new-domain-project.*` 脚本 | 待至少一个真实 agent 项目跑通后再固化形态（对齐 inheritance 提案 D4 / Batch 4） | 不阻塞 |
+| C-002 | `new-domain-project.*` 已固化 §3.2 组合流程（v0.4.0 落地）；待评估是否加入下发清单与命令入口 | 已落地脚本；下发清单 / 命令入口 / CI 待真实项目增多后评估 | 不阻塞 |
 
 ## 11. 禁止事项
 

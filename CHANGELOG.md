@@ -5,6 +5,19 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。
 
+## v0.4.1（2026-07-30）
+
+领域增量收拢到 `domain-overlay/`（轨 A · B1）：让 L2 仓库根目录自带层归属——通用方法论（继承、随 sync 刷新）与 agent 领域增量（`domain-overlay/`）物理可分，AI 与人不再靠交叉查表判层。L3 下发行为不变（target 不变）。
+
+- 物理收拢（`git mv`，保留历史）：`ai/agent-rules/*`、`ai/doc-standards/agent-*.md`、`template-docs/agent-system/**` → `domain-overlay/{rules,doc-standards,agent-system}/`；新增 `domain-overlay/README.md`（L2 入口）。
+- `domain-template-sync.json`：19 条 source 改指向 `domain-overlay/`，**target 不变**（L3 落点不变）。
+- D7 指针对齐：`TEMPLATE-BASE.md` scope 改 L2 视角；`layer-map.md` 重写为「L2 源 → L3 target」双路径映射表，并修正根 README 归类（L2，非 L3）；`agent-system/README.md` 与 `agent-implementation-rules.md` 保持 L3 下发视角（target 不变，天然准确）。
+- `scripts/new-domain-project.{ps1,sh}`：剥离黑名单加 `domain-overlay`，避免 `git archive` 泄漏到 L3。
+- 顺手修正文档一致性：根 README 版本号（v0.3.0 → v0.4.1）与目录表；`domain-derived-scenarios.md` §3/§3.3/C-002「创建脚本远期未做」滞后（v0.4.0 已落地 `new-domain-project.*`）；`ai/project-rules.md` 版本与目录清单。
+- 验证：`sync-domain-template` dry-run、`check-domain-derived-sync`、`check-agent-template` 对 `_examples/single-agent-demo` 通过；`new-domain-project` 实测派生确认 `domain-overlay/` 被剥离、overlay 落到 L3 `ai/agent-rules/`。
+- 附带修复 `new-domain-project.ps1` 的 PS5.1 native stderr 陷阱（`$ErrorActionPreference="Stop"` 把 git CRLF warning 当 `NativeCommandError` 中断，致 ps1 在 Windows PowerShell 5.1 实跑不可用）：新增 `Invoke-SafeNative` helper 包裹 native 调用 + `2>$null`；ps1 现可实跑（此前仅 `.sh` 可跑）。详见 `_proposals/TEMPLATE-UPGRADE-ps1-native-stderr-stop.md`。
+- 已知边界（不假装全清）：L3 派生项目目录仍混层、`scripts/` 内领域脚本仍与通用脚本混——彻底清晰需 B2 / 轨 B（回流母模板 MAJOR）。详见 `_proposals/TEMPLATE-UPGRADE-domain-overlay-relocation.md`。
+
 ## v0.4.0（2026-07-30）
 
 补齐 L2→L3 的"创建"半边：新增领域派生项目一键创建脚本，确立 L3 单源锚定 L2。

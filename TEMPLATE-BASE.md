@@ -9,7 +9,7 @@
 - Synced at: 2026-07-29
 - Domain template version file: VERSION
 - Domain template version at sync time: v0.3.0
-- Domain standards scope: Agent 架构（planner / executor / tool router / memory / evaluator）；Tool 权限模型（注册 / 边界 / 危险操作确认 / 沙箱审计）；Memory / state（短期上下文 / 长期记忆 / 持久化 / 清理）；Trace / replay（执行轨迹 / 回放模式 / 失败归因 / 隐私保留）；HITL / safety（人工确认 / 接管 / 回滚 / prompt injection / 数据泄露防护）；Agent eval（任务集 / 轨迹评估 / 工具调用准确率 / 成本延迟）；Profiles（single-agent 正式标准件 / multi-agent stub）；Domain rules（`ai/agent-rules/`）；Agent doc standards（`ai/doc-standards/agent-*.md`）；L2→L3 sync and advisory self-check scripts
+- Domain standards scope: Agent 架构（planner / executor / tool router / memory / evaluator）；Tool 权限模型（注册 / 边界 / 危险操作确认 / 沙箱审计）；Memory / state（短期上下文 / 长期记忆 / 持久化 / 清理）；Trace / replay（执行轨迹 / 回放模式 / 失败归因 / 隐私保留）；HITL / safety（人工确认 / 接管 / 回滚 / prompt injection / 数据泄露防护）；Agent eval（任务集 / 轨迹评估 / 工具调用准确率 / 成本延迟）；Profiles（single-agent 正式标准件 / multi-agent stub）；Domain rules（`domain-overlay/rules/`）；Agent doc standards（`domain-overlay/doc-standards/agent-*.md`）；L2→L3 sync and advisory self-check scripts
 
 ## Version Semantics
 

@@ -88,6 +88,7 @@ rm_target "_examples"
 rm_target "_archive"
 rm_target "sync-records"
 rm_target "upstream"
+rm_target "domain-overlay"
 for s in \
   scripts/sync-template.ps1 scripts/sync-template.sh \
   scripts/check-template.ps1 scripts/check-template.sh \

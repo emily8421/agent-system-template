@@ -31,115 +31,115 @@
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "template-docs/agent-system/README.md",
+      "source": "domain-overlay/agent-system/README.md",
       "target": "template-docs/agent-system/README.md",
       "kind": "domain-reference",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "template-docs/agent-system/layer-map.md",
+      "source": "domain-overlay/agent-system/layer-map.md",
       "target": "template-docs/agent-system/layer-map.md",
       "kind": "domain-reference",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "template-docs/agent-system/agent-system-checklist.md",
+      "source": "domain-overlay/agent-system/agent-system-checklist.md",
       "target": "template-docs/agent-system/agent-system-checklist.md",
       "kind": "domain-reference",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "template-docs/agent-system/profiles/single-agent.md",
+      "source": "domain-overlay/agent-system/profiles/single-agent.md",
       "target": "template-docs/agent-system/profiles/single-agent.md",
       "kind": "domain-profile",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "template-docs/agent-system/profiles/multi-agent.md",
+      "source": "domain-overlay/agent-system/profiles/multi-agent.md",
       "target": "template-docs/agent-system/profiles/multi-agent.md",
       "kind": "domain-profile-stub",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "template-docs/agent-system/docs/design/agent-architecture.md",
+      "source": "domain-overlay/agent-system/docs/design/agent-architecture.md",
       "target": "docs/design/agent-architecture.md",
       "kind": "project-doc-skeleton",
       "mode": "copy-if-missing"
     },
     {
-      "source": "template-docs/agent-system/docs/design/tool-permission-model.md",
+      "source": "domain-overlay/agent-system/docs/design/tool-permission-model.md",
       "target": "docs/design/tool-permission-model.md",
       "kind": "project-doc-skeleton",
       "mode": "copy-if-missing"
     },
     {
-      "source": "template-docs/agent-system/docs/design/memory-and-state.md",
+      "source": "domain-overlay/agent-system/docs/design/memory-and-state.md",
       "target": "docs/design/memory-and-state.md",
       "kind": "project-doc-skeleton",
       "mode": "copy-if-missing"
     },
     {
-      "source": "template-docs/agent-system/docs/design/trace-and-replay.md",
+      "source": "domain-overlay/agent-system/docs/design/trace-and-replay.md",
       "target": "docs/design/trace-and-replay.md",
       "kind": "project-doc-skeleton",
       "mode": "copy-if-missing"
     },
     {
-      "source": "template-docs/agent-system/docs/design/hitl-and-safety.md",
+      "source": "domain-overlay/agent-system/docs/design/hitl-and-safety.md",
       "target": "docs/design/hitl-and-safety.md",
       "kind": "project-doc-skeleton",
       "mode": "copy-if-missing"
     },
     {
-      "source": "template-docs/agent-system/docs/research/agent-eval-plan.md",
+      "source": "domain-overlay/agent-system/docs/research/agent-eval-plan.md",
       "target": "docs/research/agent-eval-plan.md",
       "kind": "project-doc-skeleton",
       "mode": "copy-if-missing"
     },
     {
-      "source": "ai/agent-rules/agent-implementation-rules.md",
+      "source": "domain-overlay/rules/agent-implementation-rules.md",
       "target": "ai/agent-rules/agent-implementation-rules.md",
       "kind": "domain-ai-rule",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "ai/agent-rules/tool-safety-rules.md",
+      "source": "domain-overlay/rules/tool-safety-rules.md",
       "target": "ai/agent-rules/tool-safety-rules.md",
       "kind": "domain-ai-rule",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "ai/doc-standards/agent-architecture.md",
+      "source": "domain-overlay/doc-standards/agent-architecture.md",
       "target": "ai/doc-standards/agent-architecture.md",
       "kind": "domain-doc-standard",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "ai/doc-standards/agent-tool-permission-model.md",
+      "source": "domain-overlay/doc-standards/agent-tool-permission-model.md",
       "target": "ai/doc-standards/agent-tool-permission-model.md",
       "kind": "domain-doc-standard",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "ai/doc-standards/agent-memory-and-state.md",
+      "source": "domain-overlay/doc-standards/agent-memory-and-state.md",
       "target": "ai/doc-standards/agent-memory-and-state.md",
       "kind": "domain-doc-standard",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "ai/doc-standards/agent-trace-and-replay.md",
+      "source": "domain-overlay/doc-standards/agent-trace-and-replay.md",
       "target": "ai/doc-standards/agent-trace-and-replay.md",
       "kind": "domain-doc-standard",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "ai/doc-standards/agent-hitl-and-safety.md",
+      "source": "domain-overlay/doc-standards/agent-hitl-and-safety.md",
       "target": "ai/doc-standards/agent-hitl-and-safety.md",
       "kind": "domain-doc-standard",
       "mode": "overwrite-domain-owned"
     },
     {
-      "source": "ai/doc-standards/agent-eval-plan.md",
+      "source": "domain-overlay/doc-standards/agent-eval-plan.md",
       "target": "ai/doc-standards/agent-eval-plan.md",
       "kind": "domain-doc-standard",
       "mode": "overwrite-domain-owned"

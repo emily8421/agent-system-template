@@ -109,6 +109,7 @@ Remove-TargetPath "_examples"
 Remove-TargetPath "_archive"
 Remove-TargetPath "sync-records"
 Remove-TargetPath "upstream"
+Remove-TargetPath "domain-overlay"
 $scriptsToDrop = @(
   "scripts/sync-template.ps1", "scripts/sync-template.sh",
   "scripts/check-template.ps1", "scripts/check-template.sh",

@@ -23,7 +23,7 @@
 
 ## 当前状态
 
-- 版本：`v0.3.0`（领域机制层初版；详见 `VERSION` / `CHANGELOG.md`）
+- 版本：`v0.4.1`（领域机制层；详见 `VERSION` / `CHANGELOG.md`）
 - 状态：候选 / 演进中；已具备 agent 领域标准件、示例验证、L2→L3 dry-run / commit 同步与 advisory 自检。
 
 ## 目录速览
@@ -31,11 +31,9 @@
 | 路径 | 作用 |
 |---|---|
 | `TEMPLATE-BASE.md` | 领域模板溯源（继承自 ai-project-template 的 base version + 版本演进，不被 sync 覆盖） |
-| `template-docs/agent-system/` | agent 领域标准件（架构 / 工具权限 / memory-state / eval + 检查表） |
-| `ai/agent-rules/` | agent 任务执行规则 overlay（实现边界、工具安全、HITL 等） |
-| `ai/doc-standards/agent-*.md` | agent 领域文档审计基线 |
-| `domain-template-sync.json` | 领域模板 → agent 派生项目的同步清单 |
-| `scripts/sync-domain-template.*` / `scripts/check-domain-derived-sync.*` / `scripts/check-agent-template.*` | 领域下发与 advisory 自检入口 |
+| `domain-overlay/` | **agent 领域增量集中区**：`rules/`（执行规则 overlay）、`doc-standards/agent-*.md`（文档审计基线）、`agent-system/`（标准件 / layer-map / checklist / profiles / L2→L3 playbook）；入口见 `domain-overlay/README.md` |
+| `domain-template-sync.json` | 领域模板 → agent 派生项目的同步清单（source 在 `domain-overlay/`，target 见清单） |
+| `scripts/sync-domain-template.*` / `check-domain-derived-sync.*` / `check-agent-template.*` / `new-domain-project.*` | 领域下发、advisory 自检、派生入口（因脚本路径约束留 `scripts/`） |
 | `ai/` `template-docs/` `scripts/` `docs/` 骨架 | 继承自母模板的通用方法论（随 sync 刷新） |
 | `docs/` | 具体 agent 项目派生后填写的业务事实 scaffold；本仓内 `00-09` 默认不是已确认业务事实 |
 

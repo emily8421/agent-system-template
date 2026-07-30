@@ -5,6 +5,19 @@
 
 本文是 `CHANGELOG.md` 的大白话配套版，按同一版本顺序解释“这版到底改善了什么”。权威版本事实仍以 `VERSION`、`CHANGELOG.md`、`TEMPLATE-BASE.md` 和 Git 历史为准。
 
+## v0.4.0（2026-07-30）
+
+这一版补上了"从本模板一键创建一个 agent 项目"的能力——之前只能同步已有项目，现在能直接生成新的。
+
+主要变化：
+
+- 新增 `scripts/new-domain-project.ps1`（PowerShell）和 `.sh`（Git Bash）：一条命令从本模板派生出一个干干净净的 agent 项目——自动把母模板的同步入口剥掉（agent 项目只认本模板这一层，不直连母模板）、写好 agent 项目身份文件、把 agent 标准件铺进去、配上领域 CI。
+- 新增 `template-docs/agent-system/domain-derived-scenarios.md` 这份"创建 / 同步说明书"，并修了 README 里一句容易让人误解的话（明确 agent 项目单源锚定本模板）。
+
+踩到的坑（给以后维护者）：PowerShell 5.1 要求脚本存成 **UTF-8 with BOM + CRLF**，否则中文会乱码、脚本会崩。已处理好并写进 `.gitattributes`（强制 CRLF），但 BOM 要靠编辑时保持。另外 `.sh` 还没在 Git Bash 实测。
+
+还没做的：让"说一句新建项目"就能触发（命令入口）、把说明书自动塞给每个新项目、接入 CI——等真有多几个 agent 项目再说。
+
 ## v0.3.0（2026-07-27）
 
 这一版把 `agent-system-template` 从“有一组 agent 文档骨架”推进到真正可作为 L2 领域模板使用。

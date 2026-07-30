@@ -5,6 +5,18 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。
 
+## v0.4.0（2026-07-30）
+
+补齐 L2→L3 的"创建"半边：新增领域派生项目一键创建脚本，确立 L3 单源锚定 L2。
+
+- 新增 `scripts/new-domain-project.ps1` + `.sh`：从 `agent-system-template` 整仓派生 L3 骨架，**剥离所有 L1 同步入口**（sync-template / check-derived-sync / check-template / new-project），写领域派生身份（`TEMPLATE-BASE.md` lineage = agent derived project），叠加 agent overlay，装领域版 `project-check.yml`，`git init`。
+- 新增 `template-docs/agent-system/domain-derived-scenarios.md`（L2→L3 场景剧本），并修正 `README.md`「L2→L3 同步机制」一节的歧义句为"L3 单源锚定 L2"。
+- 关键决策：采用"领域模板自建创建脚本"路线（非母模板 `new-project --profile`）；路线分歧记于 `_proposals/TEMPLATE-UPGRADE-agent-new-domain-project.md` §4 / C-006。
+- 验证：用脚本创建本地 `my-agent` 项目，`check-domain-derived-sync` 通过、`check-agent-template` advisory 通过（仅 `agent-standard-mapping.md` 待项目侧填写）。
+- 已知约束：`new-domain-project.ps1` 必须以 **UTF-8 with BOM + CRLF** 保存（Windows PowerShell 5.1 要求，否则中文乱码、here-string 解析失败）；`.gitattributes` 已加 `*.ps1 text eol=crlf`，BOM 需编辑时保持。`.sh` 未在 Git Bash 实测。
+- 未落地：命令入口（`ai/commands/*` 属 L1 下发）、加入 `domain-template-sync.json` 下发清单（C-001）、CI 接入——留待真实项目增多后再评估。
+- 顺手修正：`_examples/single-agent-demo/TEMPLATE-BASE.md` 与 7-29 sync pilot 现状的漂移。
+
 ## v0.3.0（2026-07-27）
 
 Agent 领域模板从 scaffold MVP 升级为具备第二跳同步能力的领域模板。本版聚合原拟 `v0.2.0` 的治理 / 文档 / 示例批次与 `v0.3.0` 的机制层批次；此前未单独发布 `v0.2.0`。

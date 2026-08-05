@@ -1,5 +1,8 @@
 # TEMPLATE-UPGRADE: token-hotspots 本地化与 Git 忽略约束
 
+> **📦 已归档（2026-08-05）** · 主体已落地 —— 母模板 v1.57.2 起采纳：`.gitignore` 忽略 `.ai/token-hotspots/`、`ai/session-rules.md §4.1` 路径分层（单条本地 gitignored vs summary 入库）、`scripts/check-template.*` 断言。
+> - 残留待办：无。
+
 > 来源：agent-system-template（emily8421/agent-system-template）派生项目回流
 > 状态：草案 · 待母模板维护者确认（B 组 · 待上行跨领域）
 > 目标仓库：母模板 `ai-project-template`（本提案先存派生项目 `_proposals/`，成熟后 `submit-proposal` 回流）

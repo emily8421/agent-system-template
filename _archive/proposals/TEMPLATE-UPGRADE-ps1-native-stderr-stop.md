@@ -1,5 +1,8 @@
 # TEMPLATE-UPGRADE: 修 new-domain-project.ps1 的 PS5.1 native stderr 陷阱
 
+> **📦 已归档（2026-08-05）** · 主体（本仓 `new-domain-project.ps1` 的 `Invoke-SafeNative` 修复）已落地 —— PR [#13](https://github.com/emily8421/agent-system-template/pull/13)，VERSION v0.4.1。原状态字段"执行中"已过时（实际已合并）。
+> - 残留待办（已转 `_proposals/_archive-followups.md`）：母模板 wrapper（`sync-template.ps1` 等）是否需同类 stderr 陷阱修复 / 回流（与 issue #293 同类但不同问题，未核实）。
+
 > 类型：L2 领域模板自身建设提案（agent-system-template 自治；脚本可用性修复）。
 > Release impact：patch（AI 建议，待维护者确认）——并入 v0.4.1。
 > Release strategy：同主题聚合（与 domain-overlay-relocation 同分支同版本）。

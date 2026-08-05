@@ -1,5 +1,8 @@
 # TEMPLATE-UPGRADE: 补 L3 agent 派生项目的 AI 启动入口
 
+> **📦 已归档（2026-08-05）** · 主体已落地 —— PR [#15](https://github.com/emily8421/agent-system-template/pull/15)，VERSION v0.4.2。原状态字段"执行中"已过时（实际已合并）。
+> - 残留待办：无。
+
 > 类型：L2 领域模板自身建设提案。
 > Release impact：patch（待确认）—— v0.4.2。
 > Release strategy：单独发布。

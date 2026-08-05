@@ -1,5 +1,8 @@
 # TEMPLATE-UPGRADE: scenario-guides 三层路径矩阵与领域派生项目场景
 
+> **📦 已归档（2026-08-05）** · 主体已落地 —— 母模板 `template-docs/scenario-guides.md §2.1 三层路径矩阵`（L1→普通 L3 / L1→L2 / L2→领域 L3 + A0-A28/C1-C8 适用性分类）、`ai/prompts/maintainers/23-domain-template-lab.md` L2→L3 playbook 必备项均已就位。
+> - 残留待办：无。
+
 > 来源：agent-system-template（emily8421/agent-system-template）派生项目回流
 > 状态：草案 · 待母模板维护者确认（B 组 · 待上行跨领域）
 > 目标仓库：母模板 `ai-project-template`（本提案先存派生项目 `_proposals/`，成熟后 `submit-proposal` 回流）

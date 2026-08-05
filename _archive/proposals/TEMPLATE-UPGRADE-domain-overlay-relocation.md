@@ -1,5 +1,8 @@
 # TEMPLATE-UPGRADE: 领域增量收拢到 `domain-overlay/`（轨 A · B1）
 
+> **📦 已归档（2026-08-05）** · 主体（轨 A · B1）已落地 —— PR [#13](https://github.com/emily8421/agent-system-template/pull/13)，VERSION v0.4.1。原状态字段"执行中"已过时（实际已合并）。
+> - 残留待办（已转 `_proposals/_archive-followups.md`）：B2 / 轨 B（`scripts/` 领域脚本与通用脚本混层、L3 派生目录混层，彻底清晰需回流母模板 MAJOR）。
+
 > 类型：L2 领域模板自身建设提案（agent-system-template 自治；不改 L1 母模板、不改 L1 主同步路径）。
 > Release impact：patch（AI 建议，待维护者确认）。
 > Release strategy：单独发布。

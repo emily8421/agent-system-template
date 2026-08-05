@@ -1,5 +1,8 @@
 # TEMPLATE-UPGRADE: 派生项目 changelog 归属与继承参考分离（upstream/ + 大白话版配对）
 
+> **📦 已归档（2026-08-05）** · 主体已落地 —— 母模板 `ai-project-template` v1.60.1 已独立采纳：`sync-template.*` 保留清单含 `CHANGELOG-PLAIN.md`、`upstream/CHANGELOG{,-PLAIN}.md` 下发机制、`CHANGELOG-PLAIN.md:6` ownership 措辞。本提案未正式 `submit-proposal` 回流，但目标已由母模板等价实现。
+> - 残留待办：无（母模板已完整落地三层闭环：脚本逻辑 + 文档措辞 + check 断言）。
+
 > 来源：agent-system-template（emily8421/agent-system-template）派生项目回流
 > 状态：草案 · 待母模板维护者确认（B 组 · 待上行跨领域）；设计决策 C1-C4 已由派生项目维护者锁定（2026-07-27），可回流
 > 目标仓库：母模板 `ai-project-template`（本提案先存派生项目 `_proposals/`，成熟后 `submit-proposal` 回流）

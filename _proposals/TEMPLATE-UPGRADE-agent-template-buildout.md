@@ -6,6 +6,7 @@
 > Release impact：minor（已按领域模板 `v0.3.0` 发布；新增领域标准件与机制层，不改母模板主同步路径）
 > Release strategy：分批落地；本提案只在 `agent-system-template` 仓库内试验；跨领域通用经验成熟后另起提案回流母模板 inheritance Batch 3，不污染母模板主路径
 > 仓库角色：**领域模板**（相对母模板为下游，相对 agent 派生项目为上游）
+> 后续待办（2026-08-05）：其余已归档提案（new-domain-project / domain-overlay-relocation / ps1-native-stderr-stop）的活跃尾巴集中转 `_proposals/_archive-followups.md`；本提案自身 D6（CI 暂缓）/ Batch 4（远期）开放项亦在该文件 §4 镜像登记。**本提案保留原位，不归档**（总纲，含开放项）。
 
 ## 1. 背景
 

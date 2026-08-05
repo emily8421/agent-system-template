@@ -1,5 +1,8 @@
 # TEMPLATE-UPGRADE: PowerShell wrapper scripts normalize duplicate Path / PATH before Start-Process
 
+> **📦 已归档（2026-08-05）** · 主体已落地 —— 母模板三脚本（`sync-template.ps1` / `check-derived-sync.ps1` / `check-template.ps1`）均已含 `Repair-ProcessPathEnvironment` helper + check 断言锁边界；回流 issue [emily8421/ai-project-template#293](https://github.com/emily8421/ai-project-template/issues/293) 已 CLOSED（2026-08-02，label `from:agent-system-template`）。
+> - 残留待办：无（本提案 PATH 修复完整闭环）。
+
 > 来源：agent-system-template（emily8421/agent-system-template）派生项目回流
 > 状态：草案 · 待母模板维护者确认
 > 目标仓库：母模板 `ai-project-template`

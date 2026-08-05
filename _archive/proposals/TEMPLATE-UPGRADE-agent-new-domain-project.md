@@ -1,5 +1,8 @@
 # TEMPLATE-UPGRADE: agent 领域派生项目一键创建脚本（new-domain-project）
 
+> **📦 已归档（2026-08-05）** · 主体已落地 —— PR [#12](https://github.com/emily8421/agent-system-template/pull/12)，VERSION v0.4.0（`scripts/new-domain-project.{ps1,sh}` + `domain-derived-scenarios.md`，经 `my-agent` 验证）。
+> - 残留待办（已转 `_proposals/_archive-followups.md`）：C-001（加入 `domain-template-sync.json` 下发清单）、命令入口（L1 边界）、CI 接入。
+
 > 来源：模板维护者（agent-system-template）。本提案为 **A 组·领域级（本仓库落地）**，不上行母模板（见 `_proposals/README.md`）。
 > 状态：**已落地（v0.4.0，2026-07-30）** —— `scripts/new-domain-project.ps1` + `.sh` 与 `template-docs/agent-system/domain-derived-scenarios.md` 经本地 `my-agent` 项目验证通过（`check-domain-derived-sync` 通过、`check-agent-template` advisory 通过）。C-003 版本已递增 v0.4.0、C-004 CI 已做进脚本、C-005 demo 漂移已修、C-006 路线确认为领域自建。**仍待办**：C-001（加入下发清单）、命令入口（L1 边界）、CI 接入。
 > 目标版本：领域模板 `v0.4.0`（MINOR，已发布）

@@ -87,6 +87,7 @@
    - 检查 §2.1 是否引用 `docs/env/local-env.md`，并保留待人工确认项。
    - 检查 §3 是否明确 `docs/06`、`docs/07`、`project/frontend/`、`project/backend/`、`project/tests/`、`scripts/`、`project/docker/` 的保留 / 省略 / 删除决策。
    - 检查 §3 裁剪决策与目录结构是否一致：**「§3 声明不启用 / 省略，但目录或骨架文档仍存在」**（如声明无持久化但 `docs/06-db-design.md` 骨架仍在、声明纯文档仓但 `project/frontend/`/`project/backend/`/`project/tests/`/`project/docker/` 仍以 `.gitkeep` + README 占位）——逐项列出具体路径；发现即提示按 `ai/doc-standards/project-rules.md` §3 裁剪执行步骤补执行（删除占位并把执行事实回填 §3 / §4）。该审计同样适用于普通项目自查，不限于同步后。
+   - 检查根目录点目录准入：**「准入清单外点目录」**——对照 `ai/global-rules.md` §5 点目录准入清单，列出清单外的点目录（含空目录），逐个核对三问：谁创建的 / 还在用吗 / 该收容（gitignore）还是该删。空目录必删或必溯源（不留幽灵目录）；`.ai/` 根部堆文件、无点 `tmp/`、任务级临时目录（如 `.tmp-sprint*/`）遗留同属命中。该审计同样适用于普通项目自查，不限于同步后。
    - `ai/project-rules.md` 字段规范基线在 `ai/doc-standards/project-rules.md`（随模板同步刷新）；审计实例时对照规范基线，只补项目专属约束和裁剪决策，不把模板方法论长文复制进实例。
    - 审计版本机制启用状态：检查 `ai/project-rules.md` 是否含「项目版本管理」规则（辅信号，对应 §2.4 的 PATCH/MINOR/MAJOR 语义），以及 `.github/workflows/project-check.yml` 是否含「Check project version consistency」校验（主信号，防 VERSION↔CHANGELOG 漂移）。
      - 双信号都在：版本机制已启用，无需迁移。
@@ -97,6 +98,7 @@
    - **审计 `scripts/` 模板仓专用脚本残留（v1.65.0 起）**：检查 `scripts/` 中是否存在已移出同步清单的模板仓专用脚本——`check-template.sh` / `check-template.ps1` / `sync-all-derived.sh` / `e2e-sync-check.sh` / `new-project.sh`（历史版本曾下行，v1.65.0 起不再下发、也不再被同步覆盖）。发现即逐项列出路径并提示可安全删除：它们是模板仓维护者 / CI 专用工具，不是项目资产，删除无需回填任何字段（§3 / §4 均不用改）；如需恢复可从模板仓复制。v1.65.0 之后经 `new-project.sh` 创建的项目初始即不含这批脚本，本审计项应为空。
    - **审计 `template-docs/` 模板仓 / 领域专用文档残留（v1.66.0 起）**：检查 `template-docs/` 中是否存在已移出 `files_all` 的文档——`e2e-regression-checklist.md` / `e2e-report-template.md` / `rd-data-chain.md`（模板仓专用）与 `domain-derived-scenarios-template.md`（普通项目不接收，仅领域路线下行）。发现即逐项列出路径并提示可安全删除：同脚本残留口径，不是项目资产、删除无需回填任何字段；如需恢复可从模板仓复制。v1.66.0 之后经 `new-project.sh` 创建的项目初始即不含这批文档，本审计项应为空。
    - **审计 `template-docs/` 旧路径残留（v1.66.0 目录重组）**：v1.66.0 起 `template-docs/` 重组为 `profiles/`（专项说明）、`templates/`（使用时复制的模板）、`maintainer/`（模板仓 / 领域专用）三个子目录，约 19 个文件迁移了路径（根目录现仅保留 9 件手册）。同步是覆盖式、不删除，派生项目 `template-docs/` 根目录可能残留旧路径文件（如根目录的 `web-fullstack-profile.md`、`demo-runbook-template.md` 等）——它们不再被同步覆盖，与新路径文件内容重复。发现即列出旧路径并提示可安全删除（新路径文件已是权威版本，删除旧路径无需回填字段）；领域模板仓自建文档中对旧路径的引用需其维护者自行改为新路径。
+   - **审计模板仓自留内容残留（v1.70.0 起）**：检查三类「模板仓自留、不应存在于派生项目」的内容——① 根级 `MAINTAINERS.md`（模板维护者手册，v1.70.0 起移出 `files_all`、不再被同步覆盖，历史版本曾下行且随同步更新）；② `.github/ISSUE_TEMPLATE/`（`template-change.md` / `derived-feedback.md`，模板仓收件箱 issue 表单）与 `.github/pull_request_template.md`（模板治理 PR 检查单）；③ `docs/research/`、`docs/archive/` 中与模板仓当前文件**同名**的治理记录（v1.70.0 前 `new-project.sh` 全量复制带入的母仓调研 / e2e 归档）。①②发现即提示可安全删除（同脚本残留口径，不是项目资产、无需回填字段；如需恢复从模板仓复制）；③须对照模板仓 `docs/research/`、`docs/archive/` 文件名逐份确认，**项目自建的调研 / 归档内容一律不动**。v1.70.0 之后经 `new-project.sh` 创建的项目初始即不含这三类内容，本审计项应为空。
    - 启用项目自有版本机制 checklist（当上述审计判定需要启用时，按以下步骤；版本号必须人工确认）：
      - 前置判断：确认项目类型（普通派生 / 领域模板 / 领域派生）；读取 `VERSION`、`CHANGELOG.md` 顶部、`TEMPLATE-BASE.md`、`ai/project-rules.md`、`.github/workflows/`。
      - 普通派生项目启用步骤：

@@ -9,6 +9,87 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v1.70.0（2026-08-27）
+
+派生项目初始化裁剪补全 MINOR（提案 `_governance/_proposals/TEMPLATE-UPGRADE-derived-init-trim.md`）：`new-project.sh` 是「git archive 全量复制 + 显式删除」机制，v1.65.0（脚本）/ v1.66.0（template-docs）两批裁剪后仍有三类模板仓自留内容随全量复制进入每个新项目首提交（flowkit 实证残留）。本版补齐第三批边界：**模板仓自留内容不随 new-project 复制、MAINTAINERS.md 移出同步清单**。
+
+**new-project.sh 黑名单扩展**：
+
+- `docs/research/`、`docs/archive/` 清空母仓治理记录（调研报告 + e2e 归档），重建空分区 + 种子 README（与 `_governance/` 5 分区种子同款做法；分区本身保留，`check-template` `require_dir` 断言不变）。
+- 删 `MAINTAINERS.md`（模板维护者手册，文件自述派生使用者不用读）。
+- 删 `.github/ISSUE_TEMPLATE/`（模板变更 / 派生反馈 issue 表单，模板仓收件箱配置）与 `.github/pull_request_template.md`（模板治理 PR 检查单）；`project-check.yml` 不变。
+
+**同步清单调整**：
+
+- `template-sync.json` `files_all` 移除 `MAINTAINERS.md`（151 项），`description` 补边界说明；`sync-template.sh` 兜底数组 `DEFAULT_SYNC_FILES` 同步移除（`.ps1` 从 json 读取无需改）；`check-derived-sync` 动态解析自动一致。
+- `CONTRIBUTING.md` 维持下行（§2 三方向文件流 / §5.1 跨仓发起目录被派生仓会话与 `ai/session-rules.md` §3.4 实际引用）。
+
+**配套规则与审计**：
+
+- `MAINTAINERS.md` §4 新增「根级文档与仓库配置同步边界（v1.70.0 起）」条目，延续 v1.65.0 脚本边界 / v1.66.0 文档边界的分层模式。
+- `ai/session-rules.md` §3.4 同步覆盖件保护：覆盖件清单移除 `MAINTAINERS.md`，存量残留走 post-sync-cleanup。
+- post-sync-cleanup 新增审计项 4e「模板仓自留内容残留」（`ai/commands/post-sync-cleanup.md` + `ai/prompts/maintainers/15-post-sync-cleanup.md`）：存量派生仓检测 `MAINTAINERS.md` / `.github` 收件箱件 / `docs/research|archive` 母仓同名记录，提示可安全删除；项目自建内容一律不动。
+- `check-template.sh`：新增 `MAINTAINERS.md` 防回流断言（不得回流 `template-sync.json`）+ new-project 烟测断言 8 项（absent 四类 + 种子 README 存在 + 两分区 `.md` 计数 == 1）；删除与裁剪冲突的旧正断言「template-sync 同步 MAINTAINERS」。
+
+**验证**：`check-template.sh` / `.ps1` 双 2104 项 0 失败（基线 2096 → 2104，新增 8 项全过）；`bash -n` 语法通过；本轮 md 清洁 5 文件通过。
+
+**存量影响**：既有派生仓残留随 v1.70.0 同步窗口 post-sync-cleanup 4e 一趟清理；本机 5 仓同步窗口目标版本由 v1.69.0 顺升 v1.70.0。
+
+## v1.69.0（2026-08-26）
+
+目录治理全景 MINOR（Batch B，三提案聚合，triage 报告 `docs/research/2026-08-26-batch-b-triage.md`）：落地 issue #370（目录划分依据）+ issue #374（文件治理三层体系）+ 点目录治理提案（PR #400 入箱的 `TEMPLATE-UPGRADE-root-dot-directory-governance.md`）。主题：让「放哪个目录、凭什么」（#370）、「放哪个文件、文件里放什么」（#374）、「根目录谁能建什么」（点目录）三个粒度用同一判断口径（「这行代码 / 这个文件因为什么而变？」）成套成立。
+
+**目录划分依据五条（#370，PR #401）**：
+
+- `ai/global-rules.md` §5 三层区表后新增「目录划分依据」五条表（部署 / 运行时边界 → 架构分层 → 业务特性纵切 → 契约单源 → 开发生命周期），每条配一句判断口径；依据引软件工程稳定原理，主流框架布局只作印证注脚不作约束源；派生项目可在 `docs/05-tech-spec.md` 登记「本项目目录 → 依据映射表」。
+- `template-docs/profiles/web-fullstack-profile.md` §4 新增「目录树 → 划分依据映射」表（Web 特化示例）+ 与既有四问（入口 / 纵切 / API client 追溯 / 状态样式）的关系说明——四问即依据 2/3/4/5 的提问式速查。
+
+**文件治理三层体系（#374，PR #402）**：
+
+- `web-fullstack-profile.md` §5 从「文件膨胀阈值建议」升级为「文件治理三层体系」：L1 职责表（写之前，§5.1）+ L2 结构检查（提交时，§5.2）+ L3 阈值信号（兜底，§5.3），规范与约束成对。
+- §5.1 新增通用「文件职责表」（传输 / 业务 / 持久 / 前端 client / feature 域 / 样式 / 测试 7 类 × 只准放 / 不准放 / 超出职责去哪）；原「主应用文件职责边界」保留为聚合文件特例子节。
+- §5.2 结构检查机制描述：按内容拦分层违规（import 方向）不看行数；基线三条（业务层不 import web 框架（FastAPI 规范源按 Q-B 拍板引 issue #334 §2.1 第 1 条，本体维持暂缓）/ 传输层不 import ORM / 持久层不 import web 框架）；实现零门槛（~80 行脚本 + CI step），模板不内置脚本（§8 脚手架边界，派生项目按 `implementation-lifecycle-rules §6.2` 自建声明）。
+- §5.3 原阈值表迁移：表头「提醒阈值 / 建议动作」→「症状信号阈值（约定值）/ 处置（先对照 §5.1 职责表）」；行数定位为职责混居的间接代理指标，250/300 标注约定值，数字不变向后兼容。
+- `ai/global-rules.md` §2.1 L0-11 补一行指针（超阈值先查职责表）。
+
+**根级命名空间三分与点目录治理（点目录提案，PR #403）**：
+
+- `ai/global-rules.md` §5 新增「根级命名空间三分与点目录准入」段：`.`=外部系统拥有（平台 / 工具链 / 本机私有）`_`=治理容器、无前缀=正文；**项目不自建新点目录**；准入清单制（平台 `.git` `.github` / 模板机制 `.ai` / AI CLI `.claude` `.cursor` / 工具运行时白名单）。
+- `.ai/` 内部白名单：子目录只准 `token-hotspots/` `pitfalls/` `session-handoff-archive/` `e2e-reports/`，顶层只准 `session-handoff.md`；禁根部堆文件（运行日志进 `e2e-reports/` 或 `.tmp/`）；整目录 ignore `.ai/` 会使 `*.log` 失效，应按子路径 ignore。
+- 临时目录统一 `.tmp/`（gitignored），禁无点 `tmp/`（`git add -A` 即误入库）；任务级临时目录随收尾即删。
+- 密钥编辑器快照排除（安全条款）：`.env*` 加入 Local History / 时间线排除；`.history/` 类快照目录视同密钥副本，列定期清理。
+- `ai/commands/post-sync-cleanup.md` + `ai/prompts/maintainers/15-post-sync-cleanup.md` 新增「准入清单外点目录」审计项（谁创建 / 还在用 / 收容还是删；空目录必溯源；`.ai/` 根堆文件、无点 `tmp/`、任务级临时遗留同属命中）；不引入 check-template 断言（人工审计项，遵循「无自检门禁」口径）。
+- `.gitignore` 补 `.tmp/`；`template-docs/beginner-guide.md` §5 补命名空间速记 + 密钥快照安全提示。
+
+本版为 MINOR：三份提案全是规则 / 文档层新增与措辞升级，无 sync 清单路径变更、无脚本断言变更、阈值数字不变——既有派生项目兼容，下行同步即生效。发版验证：check-template 全量 + 三形态 new-project smoke（docs / cli / web 裁剪正确 + Batch B 内容随 archive 下行 + 点目录仅准入清单内）。发版后启动 6 仓同步窗口（本机 5 仓 → v1.69.0，一次带上 v1.68.0 + v1.69.0；LumiOne / gmbl not-local 不动）。
+
+## v1.68.0（2026-08-26）
+
+LUMEN 回流三提案聚合（MINOR，三 PR 一版本）：落地 issue #392 / #390 / #386（triage 报告 `docs/research/2026-08-26-c1-proposal-triage.md`，Batch A）。主题：跨仓角色隔离 + doc 元信息指针式默认值 + 根目录重组执行层核对清单。
+
+**跨仓角色声明（#392，PR #395）**：
+
+- `ai/session-rules.md` 新增 §3.4：派生仓会话中执行模板维护者任务（triage / 模板仓分支 / 模板 PR / 发版 / 同步登记）前，AI 必须输出角色切换声明（目标仓库 / 本轮将动 / 建议）；声明是可审计标记不是二次授权，跨仓操作仍走 Checkpoint 单步确认。含维护者任务残留边界（维护者计划不写入派生仓 handoff）与同步覆盖件保护提示（`MAINTAINERS.md` / `CONTRIBUTING.md` / `ai/prompts/maintainers/*` 直改会被下次同步覆盖）。
+- `ai/session-rules.md` §6 行动卡结构增加 `Role` 字段（maintainer / derived-user / both）；`ai/commands/resume.md` 恢复摘要契约补跨仓参考裁决（非本会话角色的行动卡只作背景参考、不接续）。
+- `CONTRIBUTING.md` §5.1 操作发起目录对照表：回流 / 治理 / 同步 / 整理四类任务的建议发起目录与理由。
+
+**doc 元信息指针式默认值（#390，PR #396）**：
+
+- `ai/doc-standards/00/08/09` 元信息字段行统一补写法约束：「当前状态 / 当前 Phase」为**一句话状态 + 权威源指针**（默认指向 `ai/project-rules.md` §1），不整段重述阶段演进史 / Sprint / TC 收口摘要；演进叙事归 `09` 验收记录与 CHANGELOG。
+- `template-docs/docs-scaffold/00/08/09` 元信息默认值直接给指针式，派生项目初始化即是指针形态，不经历「先重述后矫正」。
+- 收口纪律：doc-standards 08 审计检查 + 09 回写触发清单各补一行——阶段 / Sprint / Wave 收口时状态标记推进须 grep 全部重述点，不凭记忆只改两处。
+
+**根目录重组执行层核对清单（#386，本 PR）**：
+
+- 新增 `template-docs/root-reorg-execution-checklist.md`（入 `files_all` 下行）：存量派生仓迁移到 `project/` / `_governance/` 布局时的 12 类执行层断点载体（CI checker / workflow working-directory / 相对路径深度 / 内联片段 / 类型检查配置 / 工具脚本导入根 / 包管理器 scripts / 启动器 / Dockerfile / compose 相对路径 / 治理目录嵌套 / 注释路径）+ 三段验证纪律（本地全量 + CI 全链 + 部署面，`docker compose config --quiet` 静态验证）。runbook 性质，不引入 CI 硬门禁。
+- `ai/commands/post-sync-cleanup.md` 新增审计项 4d：同步引入目录布局变更时挂接本清单；`template-docs/README.md` 手册导航补登记；`scripts/sync-template.sh` 兜底清单同步。
+
+本版为 MINOR：新增同步范围 runbook 文件（新下游文件）+ doc-standards / scaffold 改变派生项目文档默认生成写法（新下游采用面）+ session-rules 新流程纪律（§3.4 角色声明下行即生效）。非 MAJOR：`files_all` 仅增 1 件 runbook、覆盖式同步机制、文档编号体系均不变；派生仓无迁移成本（存量头部随下次整理自然收敛）。实证：来源仓 486 文件 / 386 rename 迁移 + 本仓生态两例治理目录迁移（含一例引用漏改实证，即清单第 12 类载体）。
+
+## v1.67.1（2026-08-22）
+
+快速续接输出契约与行动卡（PATCH）：落地 `_governance/_proposals/TEMPLATE-UPGRADE-resume-action-card.md`。`ai/commands/resume.md` 成为恢复摘要格式的唯一权威源，要求将唯一下一步、阻塞 / 待确认、独立 backlog 和依据分开输出；`ai/session-rules.md` 与命令路由改为强制引用该契约。handoff 推荐结构与同步示例在元数据后新增 `Current Action Card`，作为经 Git 裁决的默认决策入口，历史 checkpoint 仅保留为解释与证据。未改变快速续接的只读边界、stale 裁决、同步清单成员或脚本行为；派生项目同步后无需迁移已有 handoff，可在后续更新时补行动卡。
+
 ## v1.67.0（2026-08-21）
 
 workspace project-container 引入（MINOR）：落地 `_governance/_proposals/TEMPLATE-UPGRADE-workspace-project-container.md`（嵌套 B，docs 缓移）。主题：根目录引入 `project/`（项目代码骨架单一入口）与 `_governance/`（治理记录容器）两个容器，根目录可见项从 38 → 约 15。

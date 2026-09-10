@@ -88,23 +88,40 @@ foreach ($file in $required) {
 }
 
 $overlay = @(
-  "ai/agent-rules/agent-implementation-rules.md",
-  "ai/agent-rules/tool-safety-rules.md",
-  "ai/doc-standards/agent-architecture.md",
-  "ai/doc-standards/agent-tool-permission-model.md",
-  "ai/doc-standards/agent-memory-and-state.md",
-  "ai/doc-standards/agent-trace-and-replay.md",
-  "ai/doc-standards/agent-hitl-and-safety.md",
-  "ai/doc-standards/agent-eval-plan.md"
+  "domain/README.md",
+  "domain/layer-map.md",
+  "domain/scenarios.md",
+  "domain/scaffold/agent-system-checklist.md",
+  "domain/standards/profiles/single-agent.md",
+  "domain/standards/doc-standards/agent-architecture.md",
+  "domain/standards/doc-standards/agent-tool-permission-model.md",
+  "domain/standards/doc-standards/agent-memory-and-state.md",
+  "domain/standards/doc-standards/agent-trace-and-replay.md",
+  "domain/standards/doc-standards/agent-hitl-and-safety.md",
+  "domain/standards/doc-standards/agent-eval-plan.md"
 )
 
 foreach ($file in $overlay) {
   $path = Join-Path $targetRoot $file
   if (Test-Path -LiteralPath $path -PathType Leaf) {
-    Pass "domain overlay exists: $file"
+    Pass "domain file exists: $file"
   } else {
-    Add-Finding "domain overlay missing or not yet synced: $file"
+    Add-Finding "domain file missing or not yet synced: $file"
   }
+}
+
+# v0.5.0: L3 does not receive ai/domain-rules.md as a file; rules are projectized
+# into ai/project-rules.md at creation time (ai/domain-rules.md seed lives at L2 only).
+$projectRulesPath = Join-Path $targetRoot "ai/project-rules.md"
+if (Test-Path -LiteralPath $projectRulesPath -PathType Leaf) {
+  $projectRules = Get-Content -Raw -Encoding UTF8 $projectRulesPath
+  if ($projectRules -match '领域规则|domain rules|domain-rules') {
+    Pass "domain rules projectized into ai/project-rules.md"
+  } else {
+    Add-Finding "ai/project-rules.md lacks projectized domain rules section (expected from L2 ai/domain-rules.md seed)"
+  }
+} else {
+  Add-Finding "ai/project-rules.md missing; domain rules projectization cannot be checked"
 }
 
 Write-Host ""

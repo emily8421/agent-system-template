@@ -101,23 +101,39 @@ required = [
     "docs/research/agent-eval-plan.md",
 ]
 overlay = [
-    "ai/agent-rules/agent-implementation-rules.md",
-    "ai/agent-rules/tool-safety-rules.md",
-    "ai/doc-standards/agent-architecture.md",
-    "ai/doc-standards/agent-tool-permission-model.md",
-    "ai/doc-standards/agent-memory-and-state.md",
-    "ai/doc-standards/agent-trace-and-replay.md",
-    "ai/doc-standards/agent-hitl-and-safety.md",
-    "ai/doc-standards/agent-eval-plan.md",
+    "domain/README.md",
+    "domain/layer-map.md",
+    "domain/scenarios.md",
+    "domain/scaffold/agent-system-checklist.md",
+    "domain/standards/profiles/single-agent.md",
+    "domain/standards/doc-standards/agent-architecture.md",
+    "domain/standards/doc-standards/agent-tool-permission-model.md",
+    "domain/standards/doc-standards/agent-memory-and-state.md",
+    "domain/standards/doc-standards/agent-trace-and-replay.md",
+    "domain/standards/doc-standards/agent-hitl-and-safety.md",
+    "domain/standards/doc-standards/agent-eval-plan.md",
 ]
 
 for rel in required:
     require_file(rel)
 for rel in overlay:
     if os.path.isfile(os.path.join(target, *rel.split("/"))):
-        ok(f"domain overlay exists: {rel}")
+        ok(f"domain file exists: {rel}")
     else:
-        warn(f"domain overlay missing or not yet synced: {rel}")
+        warn(f"domain file missing or not yet synced: {rel}")
+
+# v0.5.0: L3 does not receive ai/domain-rules.md as a file; rules are projectized
+# into ai/project-rules.md at creation time (ai/domain-rules.md seed lives at L2 only).
+project_rules_path = os.path.join(target, "ai", "project-rules.md")
+if os.path.isfile(project_rules_path):
+    with open(project_rules_path, "r", encoding="utf-8") as f:
+        project_rules = f.read()
+    if re.search("领域规则|domain rules|domain-rules", project_rules, re.IGNORECASE):
+        ok("domain rules projectized into ai/project-rules.md")
+    else:
+        warn("ai/project-rules.md lacks projectized domain rules section (expected from L2 ai/domain-rules.md seed)")
+else:
+    warn("ai/project-rules.md missing; domain rules projectization cannot be checked")
 
 texts = []
 for root, _, files in os.walk(target):

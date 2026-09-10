@@ -8,9 +8,9 @@
 - 项目名称：`agent-system-template`
 - 代号 / 缩写：`agent-system-template` / `agent-system`
 - 仓库角色：L2 领域模板，继承 L1 母模板 `ai-project-template`，向 L3 agent 派生项目下发领域标准件。
-- 当前领域模板版本：根 `VERSION`，当前为 `v0.4.2`。
+- 当前领域模板版本：根 `VERSION`，当前为 `v0.5.0`。
 - 当前继承母模板版本：`TEMPLATE-BASE.md` 的 `Current synced template version`，当前为 `v1.75.0`。
-- 分层权威入口：`TEMPLATE-BASE.md` 与 `template-docs/agent-system/layer-map.md`。
+- 分层权威入口：`TEMPLATE-BASE.md` 与 `domain/layer-map.md`；领域规则种子 `ai/domain-rules.md`。
 
 ## 1. Phase 边界
 
@@ -18,7 +18,7 @@
 
 允许：
 
-- 维护 L2 领域自有文件：`domain-overlay/*`（rules / doc-standards / agent-system）、`domain-template-sync.json`、领域同步 / 检查脚本、`_examples/*`、`_proposals/*`。
+- 维护 L2 领域自有文件：`domain/*`（README / layer-map / scenarios / scaffold / standards）、`ai/domain-rules.md`（领域规则种子）、`domain-template-sync.json`、领域同步 / 检查脚本、`_examples/*`、`_proposals/*`。
 - 对本仓 L2 版本记录做维护：`VERSION`、`CHANGELOG.md`、`CHANGELOG-PLAIN.md`、`TEMPLATE-BASE.md`、`sync-records/template-sync/*`。
 - 运行 L1→L2 母模板同步与 L2→L3 领域同步检查，按同步记录留痕。
 - 为通用问题起草去项目化 `_proposals/TEMPLATE-UPGRADE-*.md`，成熟后回流母模板或领域模板维护流程。
@@ -80,12 +80,13 @@
 - 演示形态：不需演示；仅保留脚本 smoke 与 `_examples/single-agent-demo/` 作为领域标准件验证样例。
 - 前端交互设计：豁免，当前无 UI 交付。
 - UI 原型策略：豁免，见 §2.7。
-- 通用详细设计：L2 领域标准件已放在 `template-docs/agent-system/docs/design/*`；根 `docs/design/*` 留给 L3 派生项目。
-- 需要保留的代码 / 资源目录：`scripts/`、`tests/`（如存在）、`_examples/`、`domain-overlay/`（rules / doc-standards / agent-system）、`sync-records/`、`upstream/`、`_proposals/`。
+- 通用详细设计：L2 领域标准件已放在 `domain/scaffold/docs/design/*` 与 `domain/standards/`；根 `docs/design/*` 留给 L3 派生项目。
+- 需要保留的代码 / 资源目录：`scripts/`、`tests/`（如存在）、`_examples/`、`domain/`（README / layer-map / scenarios / scaffold / standards）、`sync-records/`、`upstream/`、`_proposals/`。
 
 ## 4. 目录规范的项目特例
 
-- `domain-overlay/`：L2 agent 领域增量集中区（rules / doc-standards / agent-system）；分层入口见 `domain-overlay/README.md` 与 `domain-overlay/agent-system/layer-map.md`。
+- `domain/`：L2 唯一领域目录（根级保留名，母模板 v1.75.0 三层布局）：`README.md` / `layer-map.md` / `scenarios.md`（L2→L3 剧本）/ `scaffold/`（checklist + 项目文档骨架）/ `standards/`（profiles + doc-standards）；L3 侧为同路径覆盖同步区。分层入口见 `domain/README.md` 与 `domain/layer-map.md`。
+- `ai/domain-rules.md`：领域规则种子（`domain/` 的唯一例外件，按 `ai/doc-standards/domain-rules.md` 基线 §0-§4 维护）；不入任何同步清单，L3 创建时项目化进派生项目 `ai/project-rules.md`。
 - `domain-template-sync.json`：L2→L3 下行同步 manifest。
 - `sync-records/template-sync/`：L1→L2 母模板同步运行记录。
 - `upstream/`：L1 母模板 changelog 继承参考。

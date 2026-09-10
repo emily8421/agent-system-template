@@ -4,7 +4,7 @@ This file is the Batch 3a hard contract for Batch 3b. It maps L2 agent standards
 
 | L2 Standard | L3 Destination | Code / Test Hook | Requirement / Test |
 |---|---|---|---|
-| `template-docs/agent-system/README.md` profile selection | `README.md`, `docs/03-prd.md` | `run_agent()` single-agent loop | U-001, REQ-001, TC-001 |
+| `domain/README.md` profile selection | `README.md`, `docs/03-prd.md` | `run_agent()` single-agent loop | U-001, REQ-001, TC-001 |
 | `profiles/single-agent.md` | `docs/design/agent-architecture.md` | `run_agent()` | REQ-001, TC-001 |
 | `docs/design/agent-architecture.md` | `docs/04-architecture.md`, `docs/design/agent-architecture.md` | `TraceRecorder`, `ToolRouter`, `DemoMemory` | REQ-001 to REQ-004 |
 | `docs/design/tool-permission-model.md` | `docs/design/tool-permission-model.md` | `ToolRouter.run()` | REQ-002, TC-003, TC-005 |

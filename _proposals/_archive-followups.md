@@ -13,9 +13,8 @@
 
 ## 2. domain-overlay 彻底清晰（来源：TEMPLATE-UPGRADE-domain-overlay-relocation，PR#13 v0.4.1，B1）
 
-- **B2 / 轨 B**：`scripts/` 内领域脚本仍与通用脚本混层；L3 派生项目目录仍混层。
-- 当前评估：B1（L2 根目录层归属）已落地；彻底清晰需 MAJOR 重构。
-- 建议处置：回流母模板 MAJOR 提案前不单独动；与 inheritance Batch 3 / 母模板层治理一并评估。
+- **B2 / 轨 B**：~~`scripts/` 内领域脚本仍与通用脚本混层；L3 派生项目目录仍混层。~~ **已解决（v0.5.0 Batch C）**：母模板 v1.75.0 定型三层布局后，本仓已迁移为根级 `domain/`（README / layer-map / scenarios / scaffold / standards），L3 布局同步收敛（`domain/` 覆盖区，无第三份领域规则文件）；`scripts/` 内领域脚本与通用脚本共存为 v1.75.0 §5.4 索引表认定的正式口径（机制件按功能归位，文件名含 domain 可 grep），不再视为混层问题。
+- 当前评估：已关闭（2026-09-11 Batch C 迁移）。
 
 ## 3. 母模板 wrapper PS5.1 stderr 陷阱（来源：TEMPLATE-UPGRADE-ps1-native-stderr-stop，PR#13 v0.4.1）
 

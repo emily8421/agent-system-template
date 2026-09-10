@@ -11,7 +11,7 @@
 
 ## Role
 
-This directory is an L3 agent project example. It consumes the L2 standards in `template-docs/agent-system/` and turns them into project-level docs, implementation, and tests.
+This directory is an L3 agent project example. It consumes the L2 standards in `domain/` and turns them into project-level docs, implementation, and tests.
 
 ## Local Ownership
 

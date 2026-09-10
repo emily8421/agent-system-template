@@ -1,7 +1,7 @@
 # Domain-Derived Scenarios（agent-system 领域派生项目场景剧本）
 
 > 层归属：L2 领域自有。本剧本是 `agent-system-template` 的 **L2→L3 场景剧本（playbook）**：从母模板下发骨架 `template-docs/domain-derived-scenarios-template.md` 复制后领域化；不参与母模板同步，由本仓库（agent-system-template）自治维护。
-> 配套文件：`template-docs/agent-system/README.md`、`layer-map.md`、`agent-system-checklist.md`、根 `domain-template-sync.json`、`scripts/sync-domain-template.*`、`scripts/check-domain-derived-sync.*`、`scripts/check-agent-template.*`。
+> 配套文件：`domain/README.md`、`domain/layer-map.md`、`domain/scaffold/agent-system-checklist.md`、`ai/domain-rules.md`（领域规则种子）、根 `domain-template-sync.json`、`scripts/sync-domain-template.*`、`scripts/check-domain-derived-sync.*`、`scripts/check-agent-template.*`。
 
 ## 0. 元信息与使用边界
 
@@ -51,7 +51,7 @@
 
 ## 3. 创建领域派生项目
 
-> 现状：领域版一键创建脚本 `scripts/new-domain-project.*` 已落地（v0.4.0；见根 `CHANGELOG.md`）：从 L2 整仓派生、剥离所有 L1 同步入口与 L2 维护件（含 `domain-overlay/`）、叠加 agent overlay、装领域 check workflow、`git init`。**优先用脚本**；手动组合流程（§3.2）作为脚本不可用时的等价回退，实证样本为 `_examples/single-agent-demo`。脚本的命令入口（`ai/commands/*` 属 L1 下发）、加入 `domain-template-sync.json` 下发清单与 CI 接入仍待办（见 §10 C-001 / C-002）。
+> 现状：领域版一键创建脚本 `scripts/new-domain-project.*` 已落地（v0.4.0；v0.5.0 Batch C 起按三层布局改造）：从 L2 整仓派生、剥离 L1 同步入口与 L2 维护件、保留 `domain/` 覆盖同步区、把 `ai/domain-rules.md` 种子项目化进 L3 `ai/project-rules.md`、装领域 check workflow、`git init`。**优先用脚本**；手动组合流程（§3.2）作为脚本不可用时的等价回退，实证样本为 `_examples/single-agent-demo`。脚本的命令入口（`ai/commands/*` 属 L1 下发）与 CI 接入仍待办（见 §10 C-002）。
 
 ### 3.1 为什么不能直接用母模板 `new-project.sh` 建底座
 
@@ -83,7 +83,7 @@
      ```
 
    - 根 `README.md`：改写为 agent 项目说明。
-3. **叠加 agent overlay**（核心下发动作）：
+3. **叠加 agent 领域件**（核心下发动作）：
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File scripts\sync-domain-template.ps1 -Source <agent-system-template> -Target <agent-project> -DryRun
@@ -91,7 +91,9 @@
    powershell -ExecutionPolicy Bypass -File scripts\sync-domain-template.ps1 -Source <agent-system-template> -Target <agent-project> -Commit
    ```
 
-   - `domain-template-sync.json` 中 `overwrite-domain-owned` 文件（README/layer-map/checklist/profiles/agent-rules/doc-standards/脚本）会更新；`copy-if-missing` 的项目骨架（`docs/design/agent-*.md` 等）只在缺失时写入，**不覆盖已有项目事实**。
+   - v0.5.0 起 `domain/` 整目录以**同路径覆盖**下行（`domain/README.md`、`layer-map.md`、`scenarios.md`、`scaffold/`、`standards/`）；L3 的 `domain/` 不得直改。
+   - L3 项目自己的 `docs/design/agent-*.md`、`docs/research/agent-eval-plan.md` 是项目事实：创建时从 `domain/scaffold/docs/` 种子化（copy-if-missing），之后同步**永不覆盖**。
+   - 领域规则不下发文件副本：创建时由脚本把 `ai/domain-rules.md` 种子约束项目化进 L3 `ai/project-rules.md`（见 §3.2 第 2 步与 `ai/domain-rules.md` §4）。
 4. **配置领域同步边界检查**（过渡期手动；自动注入属 Batch 4 远期）：
    - 确保 `.github/workflows/project-check.yml`：普通 PR 跑 `git diff --check`；当提交信息匹配 `^sync agent domain template v… from agent-system-template` 时跑 `scripts/check-domain-derived-sync.sh`。不要沿用 `new-project.sh` 注入的、指向 L1 的 workflow。
 5. **`git init` + 首提交 + 可选建远端**（`gh repo create`）。
@@ -99,13 +101,13 @@
 
 ### 3.3 一键脚本（已落地 v0.4.0）
 
-`scripts/new-domain-project.sh` / `.ps1` 已把 §3.2 的组合流程固化为脚本：整仓 `git archive` 派生 → 剥离 L1 同步入口与 L2 维护件（含 `domain-overlay/`）→ 写领域派生身份 → 叠加 agent overlay → 装领域版 `project-check.yml` → `git init`。
+`scripts/new-domain-project.sh` / `.ps1` 已把 §3.2 的组合流程固化为脚本：整仓 `git archive` 派生 → 剥离 L1 同步入口与 L2 维护件 → 保留 `domain/` 覆盖同步区并从 `domain/scaffold/docs/` 种子化项目 `docs/design\|research/` → 把 `ai/domain-rules.md` 项目化进 L3 `ai/project-rules.md` → 写领域派生身份 → 装领域版 `project-check.yml` → `git init`。
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\new-domain-project.ps1 <项目名> [-Source <agent-system-template>] [-NoRemote]
 ```
 
-仍待办：命令入口（`ai/commands/*` 属 L1 下发）、加入 `domain-template-sync.json` 下发清单（C-001）、CI 接入——等真实 agent 项目增多后再评估。
+仍待办：命令入口（`ai/commands/*` 属 L1 下发）与 CI 接入——等真实 agent 项目增多后再评估。剧本自身已随 `domain/` 覆盖同步下发（C-001 已解决）。
 
 ## 4. 同步领域模板更新
 
@@ -124,7 +126,7 @@ L3 只从 L2 同步 agent overlay。最小流程：
 创建或同步后，按顺序整理：
 
 1. 填写项目身份、目标用户、交付边界、运行环境前提。
-2. agent 形态选型：先按 `profiles/single-agent.md` 判断是否足够；只有出现明确多 agent 信号才进入 `profiles/multi-agent.md`（当前为 stub）。
+2. agent 形态选型：先按 `domain/standards/profiles/single-agent.md` 判断是否足够；只有出现明确多 agent 信号才进入 `domain/standards/profiles/multi-agent.md`（当前为 stub）。
 3. 填写 agent 必需 facts：架构（`docs/design/agent-architecture.md`）、工具权限、memory/state、trace/replay、HITL/safety、eval 计划；agent 标准件必须能追溯到 `docs/02-srs.md` 的 REQ-ID。
 4. 跑领域自检：
 
@@ -142,9 +144,9 @@ L3 只从 L2 同步 agent overlay。最小流程：
 
 agent 任务在执行这些场景前，额外叠加领域 overlay（D7 读取路径）：
 
-- 进项目先读 `TEMPLATE-BASE.md` 与 `template-docs/agent-system/layer-map.md` 判层；
-- agent 设计/实现/工具权限/memory/trace/HITL/eval/同步/自检任务前读 `ai/agent-rules/`；
-- 生成或审计 agent 文档前读 `ai/doc-standards/agent-*.md`。
+- 进项目先读 `TEMPLATE-BASE.md` 与 `domain/layer-map.md` 判层；
+- agent 设计/实现/工具权限/memory/trace/HITL/eval/同步/自检任务前读 `ai/project-rules.md` 中的领域规则项目化实例（源种子为 L2 `ai/domain-rules.md`）；
+- 生成或审计 agent 文档前读 `domain/standards/doc-standards/agent-*.md`。
 
 ## 7. L3→L2 回流
 
@@ -172,7 +174,7 @@ L3 完成同步后记录：同步前后版本、DryRun 摘要、实际变更文�
 
 | ID | 待确认项 | AI 建议 | 阻塞 |
 |---|---|---|---|
-| C-001 | 本剧本 `domain-derived-scenarios.md` 是否加入 `domain-template-sync.json` 下发清单（让每个 L3 创建时自动拿到） | 第一步先不下发；等第一个真实 agent 项目试用后再评估，按 `overwrite-domain-owned` 下发 | 不阻塞 |
+| C-001 | ~~本剧本是否加入 `domain-template-sync.json` 下发清单~~ **已解决（v0.5.0 Batch C）**：剧本落位 `domain/scenarios.md`，随 `domain/` 同路径覆盖自然下发 | — | 不阻塞 |
 | C-002 | `new-domain-project.*` 已固化 §3.2 组合流程（v0.4.0 落地）；待评估是否加入下发清单与命令入口 | 已落地脚本；下发清单 / 命令入口 / CI 待真实项目增多后评估 | 不阻塞 |
 
 ## 11. 禁止事项

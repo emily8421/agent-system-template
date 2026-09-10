@@ -2,7 +2,7 @@
 
 ## Source
 
-Checklist under test: `template-docs/agent-system/agent-system-checklist.md`.
+Checklist under test: `domain/scaffold/agent-system-checklist.md`.
 
 ## Result
 
@@ -53,7 +53,7 @@ Gate interpretation:
 | Missing domain-owned overlay in an L3 target before sync | Resolved by running domain sync. | Candidate gate after sync; before sync it is an actionable advisory. |
 | Existing project-owned docs differ from L2 source skeleton | Correctly skipped by `copy-if-missing`. | Do not gate; project facts must remain owned by L3. |
 | Missing agent standard mapping | Present in pilot and detected by `check-agent-template`. | Candidate gate for mature L3 agent projects. |
-| L2 root missing `docs/design/*` project docs | Not relevant to this L3 pilot; L2 keeps standards under `template-docs/agent-system/docs/*`. | Do not gate on the L2 root. |
+| L2 root missing `docs/design/*` project docs | Not relevant to this L3 pilot; L2 keeps standards under `domain/scaffold/docs/*`. | Do not gate on the L2 root. |
 
 Recommendation:
 

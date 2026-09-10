@@ -5,6 +5,21 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。
 
+## v0.5.0（2026-09-11）
+
+**Batch C：对齐母模板 v1.75.0 三层布局**（结构性 MINOR；上游 changelog 明示「存量 agent-system-template 按 Batch C 另行迁移」，本版执行）。领域增量从 `domain-overlay/` 迁移到根级唯一领域目录 `domain/`（布局规范见母模板 `template-docs/profiles/domain-templates.md` §5.1），并完成领域规则机制对齐与母仓残留清理。决策：规则件完整对齐（方案 A）/ 版本 v0.5.0 / 残留一并清理（D1/D2/D3，2026-09-11 用户裁决）。
+
+- **目录重排**（`git mv`，保留历史）：`domain-overlay/agent-system/domain-derived-scenarios.md` → `domain/scenarios.md`（剧本路径收敛）；`agent-system-checklist.md` → `domain/scaffold/`；`agent-system/docs/**` → `domain/scaffold/docs/**`（L3 项目文档骨架）；`agent-system/profiles/` 与 `doc-standards/agent-*.md` → `domain/standards/`；`domain-overlay/README.md` + `agent-system/README.md` 合并为 `domain/README.md`；`layer-map.md` → `domain/layer-map.md`（重写为同路径覆盖口径）。`domain-overlay/` 目录废除。
+- **领域规则机制对齐（语义变化）**：原 `domain-overlay/rules/{agent-implementation-rules,tool-safety-rules}.md` 合并为 `ai/domain-rules.md` 种子（按 `ai/doc-standards/domain-rules.md` 基线 §0-§4；规则内容全量保留进 §2/§3）。L3 不再接收 `ai/agent-rules/*` 第三份领域规则文件：`new-domain-project.*` 创建时把种子**项目化**进 L3 `ai/project-rules.md` §5 并移除种子文件（v1.75.0「不设第三份领域规则种子」口径）。
+- **`domain-template-sync.json` 重写**：`domain/**` 改为**同路径覆盖**下发（L3 `domain/` 为覆盖同步区，不得直改）；scaffold 骨架保留 `copy-if-missing` 种子化到 L3 `docs/design\|research/`（项目事实永不覆盖）；移除 `ai/agent-rules/*`、`ai/doc-standards/agent-*`、`template-docs/agent-system/*` 旧目标。
+- **脚本适配**：`check-agent-template.{ps1,sh}` overlay 清单改 `domain/**`（11 件）+ 新增「领域规则已项目化」检查（迁移前 15 findings → 0 findings）；`new-domain-project.{ps1,sh}` 不再剥离 `domain/`、新增规则项目化块、L3 身份文件与 README/CLAUDE.md 路径口径更新。`sync-domain-template.*` / `check-domain-derived-sync.*` 纯 manifest 驱动，零改动。
+- **`_examples/single-agent-demo/` 迁移到新 L3 布局**：`template-docs/agent-system/*` → `domain/*`；`ai/agent-rules/*` 移除并项目化进 `ai/project-rules.md` §5；`ai/doc-standards/agent-*.md` → `domain/standards/`；脚本副本同步更新；研究记录路径指针更新。
+- **母仓残留清理**（v1.72.1 审计口径）：删除 `MAINTAINERS.md`（v1.70.0 起不下行的母仓维护者手册）、`.github/ISSUE_TEMPLATE/`（2 个模板均引导用户向母仓开 issue，对本仓误导）、`.github/pull_request_template.md`（母仓 PR 模板）。
+- **文档指针更新**：根 `README.md`、`TEMPLATE-BASE.md` scope（Domain rules = `ai/domain-rules.md` 种子 + `domain/standards/` doc standards + 根级 `domain/`）、`ai/project-rules.md` §0/§1/§3/§4、`_proposals/_archive-followups.md` §2（B2 随 Batch C 关闭）。
+- **C-001 随迁移解决**：剧本落位 `domain/scenarios.md`，随 `domain/` 覆盖同步自然下发（原待确认项关闭）。
+- 验证：`check-agent-template.{ps1,sh}` 对 demo 0 findings；`check-domain-derived-sync.{ps1,sh}` 通过；`sync-domain-template.ps1 -DryRun` 新 manifest 全链路通过；demo `python -m unittest` 5/5 OK；脚本语法校验（bash -n / PS Parser）通过。
+- 已知边界（不假装全清）：`new-domain-project.*` 端到端实跑派生未在本版验证（仅 dry-run + demo 等价物验证；真实派生留待首个 L3 项目）；`domain/checks/`（领域自检成熟位）暂空，advisory 脚本仍留 `scripts/`（§5.4 索引表认定口径）。
+
 ## v0.4.2（2026-07-30）
 
 补 L3 agent 派生项目的 AI 启动入口（修评审遗留的"L3 入口断裂"）：`new-domain-project` 生成 L3 时写根 `CLAUDE.md`；`agent-system/README` 的 D7 段改双视角；`layer-map` D7 补 L3 入口；demo 补同结构 `CLAUDE.md`。

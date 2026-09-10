@@ -11,7 +11,9 @@
 - Persistence: none; memory is in-process only.
 - UI/API: none.
 
-## Agent Rules
+## 5. 领域规则（agent-system 项目化实例 / Domain Rules）
+
+> 来源：agent-system-template 的 `ai/domain-rules.md` 种子项目化（L3 不设第三份领域规则文件，v0.5.0 Batch C 起）。本项目按 single-agent demo 形态细化执行口径。
 
 - The agent must keep every run traceable through ordered trace steps.
 - Low-risk local tools may run without interruption.

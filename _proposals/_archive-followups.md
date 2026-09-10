@@ -20,7 +20,7 @@
 ## 3. 母模板 wrapper PS5.1 stderr 陷阱（来源：TEMPLATE-UPGRADE-ps1-native-stderr-stop，PR#13 v0.4.1）
 
 - 母模板 `sync-template.ps1` / `check-derived-sync.ps1` / `check-template.ps1` 的 `$ErrorActionPreference="Stop"` 是否把 native command stderr（如 git CRLF warning）当 `NativeCommandError` 中断。
-- 当前评估：**未核实**。本仓 `new-domain-project.ps1` 已修（`Invoke-SafeNative`）；母模板 wrapper 同类风险待核。
+- 当前评估：**本机实证未命中**（2026-09-10 v1.75.0 同步轮：Windows PowerShell 5.1 下 `sync-template.ps1` / `check-derived-sync.ps1` 带 git CRLF stderr 警告完整跑通，EXIT=0，见 `sync-records/template-sync/2026-09-10-sync-template-v1.75.0.md`）；证据仅覆盖 CRLF warning 类 stderr，其他 stderr 类别仍未核。本仓 `new-domain-project.ps1` 已修（`Invoke-SafeNative`）。
 - 建议处置：核实母模板三脚本；若命中，与 issue #293（PATH，已修）同类但不同问题，另起回流提案。
 
 ## 4. buildout 开放项（保留提案，未归档）

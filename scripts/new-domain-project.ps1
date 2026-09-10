@@ -122,9 +122,7 @@ function Write-File($rel, $content) {
 # 2) 清理 L2 维护件 + 剥离所有 L1 同步入口（L3 单源锚定 L2，不挂 L1）
 #    注意：domain/ 是 L3 的覆盖同步区，保留不删（v0.5.0 三层布局）。
 Write-Host "==> 剥离 L2 维护件与 L1 同步入口"
-Remove-TargetPath "_examples"
-Remove-TargetPath "_archive"
-Remove-TargetPath "sync-records"
+Remove-TargetPath "_governance"
 Remove-TargetPath "upstream"
 $scriptsToDrop = @(
   "scripts/sync-template.ps1", "scripts/sync-template.sh",
@@ -137,8 +135,7 @@ $scriptsToDrop = @(
 foreach ($s in $scriptsToDrop) { Remove-TargetPath $s }
 Get-ChildItem -LiteralPath (Join-Path $Target ".github/workflows") -Filter *.yml -ErrorAction SilentlyContinue |
   Remove-Item -Force -ErrorAction SilentlyContinue
-Remove-TargetPath "_proposals"
-$null = New-Item -ItemType Directory -Path (Join-Path $Target "_proposals") -Force
+$null = New-Item -ItemType Directory -Path (Join-Path $Target "_governance/_proposals") -Force
 
 # 3) 写领域派生身份文件
 Write-Host "==> 写领域派生身份文件"
@@ -278,7 +275,7 @@ if (Test-Path -LiteralPath $seedPath -PathType Leaf) {
 }
 Remove-TargetPath "ai/domain-rules.md"
 
-Write-File "_proposals/README.md" @'
+Write-File "_governance/_proposals/README.md" @'
 # 提案起草区
 
 本目录用于在本 agent 项目内临时起草可回流到 agent-system-template（L2 领域模板）的优化提案。

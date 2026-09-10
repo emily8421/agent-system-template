@@ -28,13 +28,13 @@
 | `scripts/sync-template.*`、`scripts/check-derived-sync.*`、`scripts/check-template.*`、`scripts/new-project.sh` 等通用脚本 | L1 | sync notice | 母模板 sync 覆盖 | 否 |
 | `domain-template-sync.json`、`scripts/sync-domain-template.*`、`scripts/check-domain-derived-sync.*`、`scripts/check-agent-template.*`、`scripts/new-domain-project.*` | L2 | 领域所有权标记 | L2→L3 下行（脚本留 `scripts/` 原位） | 是 |
 | `VERSION`、`CHANGELOG.md`、`CHANGELOG-PLAIN.md`、`TEMPLATE-BASE.md` | L2 | 领域所有权标记 | sync 不覆盖（`--domain-template`） | 是 |
-| `_proposals/*`、`_archive/*`、`_examples/*`、`upstream/*`、`sync-records/*` | L2 | 领域所有权标记 | 不参与同步 / 不下发 | 是 |
+| `_governance/*`（_proposals / _archive / _examples / sync-records / ai-records）、`upstream/*`、`tasks/*` | L2 | 领域所有权标记 | 不参与同步 / 不下发 | 是 |
 | 根 `README.md` | L2 | 领域所有权标记 | 不参与同步 | 是（本仓为领域模板说明；派生项目根 README 才由 L3 项目填写） |
 
 ## AI 判层规则
 
 1. 查本表定位路径所属层类。
-2. **L1 文件**：不得本地编辑；要改先在本仓库 `_proposals/` 起草，成熟后 `submit-proposal` 回流母模板。
+2. **L1 文件**：不得本地编辑；要改先在本仓库 `_governance/_proposals/` 起草，成熟后 `submit-proposal` 回流母模板。
 3. **L2 文件**：领域模板维护者可直接编辑；属本仓库自治范围。
 4. **L3 文件**：派生项目填写；本仓库（作为领域模板）只提供骨架 / 撰写提要，不预填业务事实。
 5. **领域规则件**（L2 `ai/domain-rules.md` + `domain/standards/doc-standards/agent-*.md`；L3 落位为 `ai/project-rules.md` 领域规则段 + `domain/standards/doc-standards/`）采用 D7 读取路径：AI 处理 agent 任务时，**在 L2 仓**完成母模板 `ai/index.md` 启动路由后按 `TEMPLATE-BASE.md` 与 `domain/README.md` 主动读取，**在 L3 项目**以根 `CLAUDE.md` 为入口按 `TEMPLATE-BASE.md` 与 `domain/README.md` 主动读取；不等母模板强制路由钩子。

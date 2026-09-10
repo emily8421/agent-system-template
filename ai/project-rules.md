@@ -18,10 +18,10 @@
 
 允许：
 
-- 维护 L2 领域自有文件：`domain/*`（README / layer-map / scenarios / scaffold / standards）、`ai/domain-rules.md`（领域规则种子）、`domain-template-sync.json`、领域同步 / 检查脚本、`_examples/*`、`_proposals/*`。
-- 对本仓 L2 版本记录做维护：`VERSION`、`CHANGELOG.md`、`CHANGELOG-PLAIN.md`、`TEMPLATE-BASE.md`、`sync-records/template-sync/*`。
+- 维护 L2 领域自有文件：`domain/*`（README / layer-map / scenarios / scaffold / standards）、`ai/domain-rules.md`（领域规则种子）、`domain-template-sync.json`、领域同步 / 检查脚本、`_governance/*`（治理记录：_proposals / _archive / _examples / sync-records / ai-records）。
+- 对本仓 L2 版本记录做维护：`VERSION`、`CHANGELOG.md`、`CHANGELOG-PLAIN.md`、`TEMPLATE-BASE.md`、`_governance/sync-records/template-sync/*`。
 - 运行 L1→L2 母模板同步与 L2→L3 领域同步检查，按同步记录留痕。
-- 为通用问题起草去项目化 `_proposals/TEMPLATE-UPGRADE-*.md`，成熟后回流母模板或领域模板维护流程。
+- 为通用问题起草去项目化 `_governance/_proposals/TEMPLATE-UPGRADE-*.md`，成熟后回流母模板或领域模板维护流程。
 
 禁止：
 
@@ -40,14 +40,14 @@
 
 - 本仓不是运行型前后端应用；主要产物是 Markdown 方法论、JSON manifest、PowerShell / Bash 同步与检查脚本、最小示例项目。
 - 脚本需兼容 Windows PowerShell 与 Git Bash；Windows 兼容问题优先用 PowerShell fallback 复现和验证。
-- `_examples/single-agent-demo/` 可使用 Python 标准库测试作为领域标准件 smoke，但不得把示例实现扩展成正式产品能力。
+- `_governance/_examples/single-agent-demo/` 可使用 Python 标准库测试作为领域标准件 smoke，但不得把示例实现扩展成正式产品能力。
 - 不引入新运行依赖、包管理器、外部服务、LLM 凭据、数据库或前端框架，除非先形成明确维护计划并经人工确认。
 
 ## 2.5 运行环境与资源约束
 
 - 本机环境文档：本仓作为 L2 模板仓，默认豁免 `docs/env/local-env.md`；只有当任务进入真实运行依赖评估、重型示例或可点击 Demo 时，再运行 `scripts/collect-env.ps1` 并补环境事实。
 - 技术环境评估报告：常规文档 / 同步脚本维护不需要；若新增真实运行依赖或重型示例，先执行技术环境评估并写入 `docs/research/`。
-- Demo 阶段必须能在本机运行的部分：同步 / 检查脚本与 `_examples/single-agent-demo` 的最小测试。
+- Demo 阶段必须能在本机运行的部分：同步 / 检查脚本与 `_governance/_examples/single-agent-demo` 的最小测试。
 - 允许降级 / Mock / 远程运行的部分：仅限示例项目中的 Mock agent 行为；必须显式标记为示例或 Mock。
 - 禁止在本机运行的重资源部分：本阶段不引入本机模型、数据库、容器集群或长期后台服务。
 - 是否允许使用公司服务器：默认不需要；如需远端资源，必须先人工确认用途、权限和成本。
@@ -71,27 +71,28 @@
 - `TEMPLATE-BASE.md` 记录继承的母模板版本与同步时间。
 - `upstream/CHANGELOG.md` 与 `upstream/CHANGELOG-PLAIN.md` 是母模板发布历史的只读继承参考。
 - L2 版本递增遵循 `PATCH / MINOR / MAJOR`：兼容修复为 PATCH；新增领域标准件或下游采用面为 MINOR；不兼容分层 / 同步机制变化为 MAJOR。
-- 新增 `_proposals/` 草案默认不递增版本；只有合并到 L2 同步范围并改变下游行为时才递增。
+- 新增 `_governance/_proposals/` 草案默认不递增版本；只有合并到 L2 同步范围并改变下游行为时才递增。
 
 ## 3. 项目形态与文档裁剪
 
 - 是否有持久化存储：无。`docs/06-db-design.md` 在本仓保留为 L3 scaffold，不作为本仓当前数据库设计事实。
 - 是否有对外接口：无稳定服务 API。`docs/07-api-spec.md` 在本仓保留为 L3 scaffold；脚本命令契约以脚本帮助、README、同步记录和测试结果为准。
-- 演示形态：不需演示；仅保留脚本 smoke 与 `_examples/single-agent-demo/` 作为领域标准件验证样例。
+- 演示形态：不需演示；仅保留脚本 smoke 与 `_governance/_examples/single-agent-demo/` 作为领域标准件验证样例。
 - 前端交互设计：豁免，当前无 UI 交付。
 - UI 原型策略：豁免，见 §2.7。
 - 通用详细设计：L2 领域标准件已放在 `domain/scaffold/docs/design/*` 与 `domain/standards/`；根 `docs/design/*` 留给 L3 派生项目。
-- 需要保留的代码 / 资源目录：`scripts/`、`_examples/`、`domain/`（README / layer-map / scenarios / scaffold / standards）、`sync-records/`、`upstream/`、`_proposals/`。
-- 裁剪执行记录（v0.5.0）：建仓期旧布局带入的根级 `backend/`、`frontend/`、`docker/`、`tests/`、`tasks/` 占位（`.gitkeep` + README）已删除——本仓非运行型前后端应用（§2），占位与 §3 裁剪决策不符且会随 `git archive` 泄漏进新建 L3；`tasks/` 按需启用，需要任务单时再建。
+- 需要保留的代码 / 资源目录：`scripts/`、`_governance/`（_proposals / _archive / _examples / sync-records / ai-records）、`domain/`（README / layer-map / scenarios / scaffold / standards）、`upstream/`、`tasks/`（按需启用，占位 README 保留）。
+- 裁剪执行记录（v0.5.0）：建仓期旧布局带入的根级 `backend/`、`frontend/`、`docker/`、`tests/` 占位（`.gitkeep` + README）已删除——本仓非运行型前后端应用（§2），占位与 §3 裁剪决策不符且会随 `git archive` 泄漏进新建 L3；`project/` 容器整体不启用。同批完成 v1.67.0 存量容器迁移：根级 `_proposals/`、`_archive/`、`_examples/`、`sync-records/` 迁入 `_governance/`（`tasks/` 保留，对齐母模板根目录）。
 
 ## 4. 目录规范的项目特例
 
+- `_governance/`：治理记录容器（母模板 v1.67.0 容器口径，本仓 v0.5.0 迁入）：`_proposals/`（提案收件箱）、`_archive/`（归档）、`_examples/`（领域标准件验证样例）、`sync-records/`（L1→L2 同步运行记录）、`ai-records/`（AI 协作记录入库位，默认空种子）；不参与同步。
 - `domain/`：L2 唯一领域目录（根级保留名，母模板 v1.75.0 三层布局）：`README.md` / `layer-map.md` / `scenarios.md`（L2→L3 剧本）/ `scaffold/`（checklist + 项目文档骨架）/ `standards/`（profiles + doc-standards）；L3 侧为同路径覆盖同步区。分层入口见 `domain/README.md` 与 `domain/layer-map.md`。
 - `ai/domain-rules.md`：领域规则种子（`domain/` 的唯一例外件，按 `ai/doc-standards/domain-rules.md` 基线 §0-§4 维护）；不入任何同步清单，L3 创建时项目化进派生项目 `ai/project-rules.md`。
 - `domain-template-sync.json`：L2→L3 下行同步 manifest。
-- `sync-records/template-sync/`：L1→L2 母模板同步运行记录。
+- `_governance/sync-records/template-sync/`：L1→L2 母模板同步运行记录。
 - `upstream/`：L1 母模板 changelog 继承参考。
-- `_examples/`：领域标准件验证样例，不是本仓产品实现。
+- `_governance/_examples/`：领域标准件验证样例，不是本仓产品实现。
 
 ## 5. 编码约定与禁区
 

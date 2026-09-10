@@ -86,9 +86,7 @@ rm_target() { [[ -e "$TARGET/$1" ]] && rm -rf "$TARGET/$1" || true; }
 # 2) 清理 L2 维护件 + 剥离所有 L1 同步入口（L3 单源锚定 L2，不挂 L1）
 #    注意：domain/ 是 L3 的覆盖同步区，保留不删（v0.5.0 三层布局）。
 echo "==> 剥离 L2 维护件与 L1 同步入口"
-rm_target "_examples"
-rm_target "_archive"
-rm_target "sync-records"
+rm_target "_governance"
 rm_target "upstream"
 for s in \
   scripts/sync-template.ps1 scripts/sync-template.sh \
@@ -101,8 +99,7 @@ for s in \
 done
 mkdir -p "$TARGET/.github/workflows"
 find "$TARGET/.github/workflows" -maxdepth 1 -name '*.yml' -delete 2>/dev/null || true
-rm_target "_proposals"
-mkdir -p "$TARGET/_proposals"
+mkdir -p "$TARGET/_governance/_proposals"
 
 # 3) 写领域派生身份文件
 echo "==> 写领域派生身份文件"
@@ -245,7 +242,7 @@ if [[ -f "$SOURCE/ai/domain-rules.md" ]]; then
 fi
 rm_target "ai/domain-rules.md"
 
-cat > "$TARGET/_proposals/README.md" <<'EOF'
+cat > "$TARGET/_governance/_proposals/README.md" <<'EOF'
 # 提案起草区
 
 本目录用于在本 agent 项目内临时起草可回流到 agent-system-template（L2 领域模板）的优化提案。

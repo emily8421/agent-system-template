@@ -21,7 +21,7 @@
 | Agent eval（任务集 / 轨迹评估 / 工具调用准确率 / 成本延迟） | `domain/scaffold/docs/research/agent-eval-plan.md` + 对应 doc-standard | advisory | 母模板 eval 不含 agent 维度 |
 | 形态 profile（single-agent 正式 / multi-agent stub） | `domain/standards/profiles/` | advisory | 母模板形态 profile 管工程形态，不管 agent 拓扑 |
 
-> 新增领域标准件经本仓 PR 演进；跨领域通用结论再经 `_proposals/` 回流母模板。
+> 新增领域标准件经本仓 PR 演进；跨领域通用结论再经 `_governance/_proposals/` 回流母模板。
 
 ## §2 领域裁剪与禁止
 

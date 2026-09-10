@@ -35,6 +35,8 @@
 | `ai/domain-rules.md` | 领域规则种子（`domain/` 的唯一例外件，v1.75.0 三层布局；L3 不设副本，创建时项目化进 `ai/project-rules.md`） |
 | `domain-template-sync.json` | 领域模板 → agent 派生项目的同步清单（`domain/**` 同路径覆盖 + 领域脚本 + scaffold 种子化） |
 | `scripts/sync-domain-template.*` / `check-domain-derived-sync.*` / `check-agent-template.*` / `new-domain-project.*` | 领域下发、advisory 自检、派生入口（因脚本路径约束留 `scripts/`） |
+| `_governance/` | 治理记录容器（v1.67.0 容器口径）：`_proposals/`（回流提案收件箱）、`_archive/`、`_examples/`（single-agent-demo 验证样例）、`sync-records/`（L1→L2 同步记录）、`ai-records/`（AI 协作记录入库位） |
+| `tasks/` | AI 任务单（按需启用，Phase1 默认用 `docs/08-dev-plan.md` 内 Sprint 结构） |
 | `ai/` `template-docs/` `scripts/` `docs/` 骨架 | 继承自母模板的通用方法论（随 sync 刷新） |
 | `docs/` | 具体 agent 项目派生后填写的业务事实 scaffold；本仓内 `00-09` 默认不是已确认业务事实 |
 

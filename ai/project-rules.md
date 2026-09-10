@@ -81,7 +81,8 @@
 - 前端交互设计：豁免，当前无 UI 交付。
 - UI 原型策略：豁免，见 §2.7。
 - 通用详细设计：L2 领域标准件已放在 `domain/scaffold/docs/design/*` 与 `domain/standards/`；根 `docs/design/*` 留给 L3 派生项目。
-- 需要保留的代码 / 资源目录：`scripts/`、`tests/`（如存在）、`_examples/`、`domain/`（README / layer-map / scenarios / scaffold / standards）、`sync-records/`、`upstream/`、`_proposals/`。
+- 需要保留的代码 / 资源目录：`scripts/`、`_examples/`、`domain/`（README / layer-map / scenarios / scaffold / standards）、`sync-records/`、`upstream/`、`_proposals/`。
+- 裁剪执行记录（v0.5.0）：建仓期旧布局带入的根级 `backend/`、`frontend/`、`docker/`、`tests/`、`tasks/` 占位（`.gitkeep` + README）已删除——本仓非运行型前后端应用（§2），占位与 §3 裁剪决策不符且会随 `git archive` 泄漏进新建 L3；`tasks/` 按需启用，需要任务单时再建。
 
 ## 4. 目录规范的项目特例
 

@@ -15,6 +15,7 @@
 - **脚本适配**：`check-agent-template.{ps1,sh}` overlay 清单改 `domain/**`（11 件）+ 新增「领域规则已项目化」检查（迁移前 15 findings → 0 findings）；`new-domain-project.{ps1,sh}` 不再剥离 `domain/`、新增规则项目化块、L3 身份文件与 README/CLAUDE.md 路径口径更新。`sync-domain-template.*` / `check-domain-derived-sync.*` 纯 manifest 驱动，零改动。
 - **`_examples/single-agent-demo/` 迁移到新 L3 布局**：`template-docs/agent-system/*` → `domain/*`；`ai/agent-rules/*` 移除并项目化进 `ai/project-rules.md` §5；`ai/doc-standards/agent-*.md` → `domain/standards/`；脚本副本同步更新；研究记录路径指针更新。
 - **母仓残留清理**（v1.72.1 审计口径）：删除 `MAINTAINERS.md`（v1.70.0 起不下行的母仓维护者手册）、`.github/ISSUE_TEMPLATE/`（2 个模板均引导用户向母仓开 issue，对本仓误导）、`.github/pull_request_template.md`（母仓 PR 模板）。
+- **根目录占位清理**（post-sync-cleanup §3 裁剪一致性审计）：删除建仓期旧布局带入的根级 `backend/`、`frontend/`、`docker/`、`tests/`、`tasks/` 占位目录（`.gitkeep` + README，共 14 文件；非同步清单、零引用、与 §3 裁剪决策不符，且会随 `git archive` 泄漏进新建 L3）；裁剪事实回填 `ai/project-rules.md` §3。
 - **文档指针更新**：根 `README.md`、`TEMPLATE-BASE.md` scope（Domain rules = `ai/domain-rules.md` 种子 + `domain/standards/` doc standards + 根级 `domain/`）、`ai/project-rules.md` §0/§1/§3/§4、`_proposals/_archive-followups.md` §2（B2 随 Batch C 关闭）。
 - **C-001 随迁移解决**：剧本落位 `domain/scenarios.md`，随 `domain/` 覆盖同步自然下发（原待确认项关闭）。
 - 验证：`check-agent-template.{ps1,sh}` 对 demo 0 findings；`check-domain-derived-sync.{ps1,sh}` 通过；`sync-domain-template.ps1 -DryRun` 新 manifest 全链路通过；demo `python -m unittest` 5/5 OK；脚本语法校验（bash -n / PS Parser）通过。

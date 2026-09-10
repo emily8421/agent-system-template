@@ -239,7 +239,7 @@ docs/inputs/*
 | 实现前 UI 原型 | 代码原型 / HTML / Storybook / Figma / 截图证据 | 实现前确认 | 验证正式设计的视觉、点击路径、组件密度和覆盖状态 | 用户确认 + `08/09` 就绪 | 不替代 `09`，不新增需求 |
 | 实现与验证 | `project/frontend/*`、`tests`、`08`、`09` | 实现 / 已验证 | 按任务实现并留存验证证据 | `09` 记录 TC / smoke / 截图 / 人工验收结论 | 不实现 research 未确认内容 |
 
-> 知识来源与选择规则见 `template-docs/ui-knowledge/README.md`（视觉 / 交互模式与来源索引，按 scope 读取）；项目级参考分析落盘模板见 `template-docs/templates/frontend-ui-reference-analysis-template.md`。
+> 知识来源与选择规则见 `template-docs/ui-knowledge/README.md`（视觉 / 交互模式与来源索引，按 scope 读取）；项目级参考分析落盘模板见 `template-docs/templates/frontend-ui-reference-analysis-template.md`。实践观察与选型结论的回流去向见同文件 §9.1（两仓分工与项目回流）；回流沿用 `ai/global-rules.md` §9 提案通道，不新增阶段或 Gate。
 
 晋级 Gate 至少包含：
 
@@ -288,7 +288,7 @@ UI 原型策略至少记录：是否需要开发前可视化原型、原型形�
 
 原型不替代 `00-09`、不替代前端交互设计、不替代 `09` 验收记录，也不新增需求、接口、表字段、权限规则或验收目标。原型发现的新需求、接口、权限或验收变化必须回到 `02/03/06/07/08/09` 和相关 `docs/design/*` 修订流程；若原型与正式文档冲突，以正式文档为准，先修订文档再进入实现。
 
-### 5.4 04-05 总体设计风险验证规则
+### 5.5 04-05 总体设计风险验证规则
 
 `04-05` 是需求链进入详细设计、Sprint 和验证前的总体设计门禁。生成、修订或审计 `04-05` 时必须对照 `ai/doc-standards/04-architecture.md`、`ai/doc-standards/05-tech-spec.md`：
 
@@ -298,7 +298,7 @@ UI 原型策略至少记录：是否需要开发前可视化原型、原型形�
 - `候选`、`已验证`、`已启用`、`默认关闭`、`Mock`、`降级`、`禁止` 等状态不得混用；状态变化必须传播到 `04/05/08/09` 和相关详细设计。
 - Readiness gate 条件触发：真实外部服务、数据库、LLM、Docker / 部署、重型 SDK、权限安全或真实数据处理进入 Sprint / Phase 前，必须有 Go / Conditional Go / No-Go 结论；No-Go 阻止相关实现，Conditional Go 必须列限制条件和补做时点。
 
-### 5.5 06-07 DB / API 契约状态与升阶段门槛
+### 5.6 06-07 DB / API 契约状态与升阶段门槛
 
 `06-07` 是详细设计进入实现计划、验证和 Phase 升级前的契约门禁。生成、修订或审计 `06-07` 时必须对照 `ai/doc-standards/06-db-design.md`、`ai/doc-standards/07-api-spec.md`：
 

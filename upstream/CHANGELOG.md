@@ -9,6 +9,73 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v1.75.0（2026-09-10）
+
+三层布局模式定型 MINOR（提案 `_governance/_proposals/TEMPLATE-UPGRADE-domain-layout.md`，C-001~C-005 全按 AI 建议裁决；结构级规则变更发 MINOR，先例 v1.67.0 治理目录迁移）：
+
+- **L2 根级 `domain/` 保留名**：领域模板仓 = 母模板同步结构 + 唯一领域目录 `domain/`（standards / scenarios.md / scaffold / checks + README），L2 自有、L1 同步永不触碰；`ai/domain-rules.md` 种子为唯一例外（规则入口约定，v1.60.0）。L3 领域派生项目：`domain/` 为 L2→L3 覆盖同步区，不设第三份领域规则种子（领域规则到 L3 落 `ai/project-rules.md` 项目化）。保留名登记 `ai/global-rules.md` §5 根级命名空间（三层区表 + 保留名条目）。
+- **多领域扩展语义**（一仓一领域）：扩展单元是仓库不是目录，L2 仓内结构不随领域数量变化；L1 机制件领域无关、不随领域数量增长；形态 profile（web-fullstack 等，管工程形态）与领域模板（管领域标准件，§2 三条件判定）判分；跨领域项目单继承边界（选主领域 L2，另一边靠形态 profile；多领域叠加不设计）；L2 间不做横向同步、共享标准经两级回流上浮。
+- **L1 机制件索引表（R0+，零迁移）**：`template-docs/profiles/domain-templates.md` 新增 §5 三层布局模式（§5.1 L2 / §5.2 L3 / §5.3 L1 边界 / §5.4 索引表 / §5.5 多领域语义）——机制件共 5 文件 + 脚本内分支，文件名均含 domain 且已可 grep，物理迁移收益小且 `template-docs/domain/` 命名会在 L2 与根 `domain/` 形成双同名目录碰撞，故不迁移；4 个机制件头部加「领域层机制件」标记行（domain-rules 基线 / 剧本骨架 / lab 命令 / lab prompt）。
+- **剧本路径收敛**：L2→L3 场景剧本入口 `template-docs/<domain>/domain-derived-scenarios.md` → `domain/scenarios.md`；同步更新 `domain-templates.md` §4.1、`ai/doc-standards/domain-rules.md` §4、`domain-derived-scenarios-template.md`（定位段 + §4 示例：checklist 入 `domain/scaffold/`、rules 即 `ai/domain-rules.md`）、`ai/commands/domain-template-lab.md`、`ai/prompts/maintainers/23-domain-template-lab.md`（资产表 + 执行流程）、`scenario-guides.md` A20 步骤 5；inheritance 提案 Batch 2 最小文件集按新布局修订（散布布局废止）。
+- **保护扩展**：`scripts/check-derived-sync.sh` + `.ps1` 项目保护清单补 `domain/*`（L2 自有内容不被误判为清单外变更；普通路线无此目录、空匹配零影响）。
+- 验证：全量自检非沙箱直跑 2114 项 / 0 失败 + CI Template Check；e2e 回归 R1-R3 自动化通过、R6 PowerShell fallback 冒烟补偿（本轮改 check-derived-sync 双语实现）、R4/R5 经触达面评估豁免（不触场景路由链路与文档生成 prompt 链路），报告 `_governance/ai-records/e2e-reports/2026-09-10-v1.75.0.md`。对派生项目：普通路线零影响（同步清单不变、无新断言，`domain/*` 保护为空匹配；check-derived-sync 双语随既有清单下行更新）；领域路线为纯增量文档 + 剧本路径口径更新 + 保护扩展，零迁移（存量 agent-system-template 按 Batch C 另行迁移）。
+
+## v1.74.0（2026-09-10）
+
+zhiyan 派生项目回流批 MINOR（三提案一版聚合，先例 v1.68.0 / v1.73.0；issue #447 / #451，C1 triage 2026-09-10 通过）：UI 设计知识回流入口与配方类记录、Web 组件库选型承载声明、Web 领域模板候选观察。
+
+- **知识回流入口 + REC-\* 配方记录（#447，PR #452）**：`template-docs/ui-knowledge/README.md` §2.1 扩为五类记录（+Recipe `REC-*`——按产品类型组织的选型结论与推荐组合）；新增 §4.3 Recipe 字段规范与使用边界（整体证据等级不超过所引证据最高级；条目承载写明核心层暂不存放 REC 条目、由项目族群自建收集层仓库承接）；§9 新增 §9.1「两仓分工与项目回流」（核心层 ↔ 收集层分工 + 回流内容 / 边界 / 上浮通道三件事；上浮沿用 `ai/global-rules.md` §9 既有提案通道，不改变 core 晋升标准）。指针 ×2：`ai/commands/ui-prototype-exploration.md` 执行流程第 2 步、`ai/document-lifecycle-rules.md` §5.2.1 知识来源注。
+- **Web 组件库与样式承载声明（#451A，PR #453）**：`template-docs/profiles/web-fullstack-profile.md` 新增 §10（advisory，与 §9 同强度）——组件库选型 / 明确自绘属结构性决策须声明（落 `ai/project-rules.md` §2 + `docs/05-tech-spec.md` 依赖登记）、引入前核对前端框架 major 版本 × 组件库官方支持矩阵（补丁包一并登记）、版本锁定不随 `latest`、主题接入点声明（token 单源 → 主题种子映射，不与 §4 双写）；与 `REC-*` 配方双向交叉引用。
+- **Web 领域模板候选观察（#451B，PR #454）**：`template-docs/profiles/domain-templates.md` §2 末补「候选观察」档位（三条件前的例证积累：例证须「项目名 + 形态 + 日期」齐备方计入，仅代号占位不计入；3-5 例后另起提案按三条件正式评估；不建仓库、不改三层主线）+ §7 状态表 Batch 0 行（Web 类候选已登记）。#290（docs 重组 DEFER）维持——候选观察 ≠ 第二个领域模板建成。
+- 验证：每 PR 全量自检非沙箱直跑 2112 项 / 0 失败 + CI Template Check 通过；MINOR 发版门 L3 e2e 回归 R1-R3 通过，R4-R6 经触达面评估（本轮零脚本 / 零 prompt / 零场景路由改动）豁免，报告 `_governance/ai-records/e2e-reports/2026-09-10-v1.74.0.md`。对派生项目：纯文档 / 指针增量，零迁移、零断言变更、同步清单不变。
+
+## v1.73.0（2026-09-09）
+
+LUMEN_demo_T2.1 派生项目回流批 MINOR（三提案一版聚合，先例 v1.68.0；PR #443–#446，C1 triage 2026-09-09 通过）：规则路由粒度分层、任务卡执行记录形态、阶段准出档位判据基准。
+
+- **规则路由粒度分层（#441，PR #443）**：`ai/index.md` 路由表新增章节级标注（首批：回流/提案评估场景 global-rules §9 §10；评估/回测场景 document-lifecycle §2 §7.1、doc-standards 03 §3 §4 / 09 §3 §4）+ 表脚注定义标注语义与同会话复用注记（§3.2）；`ai/rules-core.md` §3 目录/章节启发式升格为路由表显式合规选项。力度为建议+默认：未标注条目行为不变（整文件），标注场景按所列章节读取即合规，标注外内容仍读全文；零脚本、零 CI 断言、不改路由门禁与完整回退包。与本仓 token-hotspot「路由包裁读」窄提案候选（累计 7+ 次命中）合流，以 #441 为准。
+- **任务卡执行记录形态（#440，PR #444）**：`ai/implementation-lifecycle-rules.md` 新增 §4.1——范围决策记录、开工前技术事实基线、完成记录叙事结构（五要素）、自包含执行节（可选，多机/跨环境）、可接续自检；执行记录与代码同一 PR 入库，与 gitignored 续接文件分工互补。§4 第 4 条「完成记录」要素挂接指针。非平凡任务默认、轻量可裁剪、不设机器门禁、存量卡不回溯。落地位置按 triage 校正：原提案引 §4.3/§4.4 实为 §4 编号列表第 3/4 条，新子节定号 §4.1（同文件孤子节先例）。
+- **阶段准出档位判据基准（#439，PR #445）**：新增规范基线 `ai/doc-standards/stage-exit-baseline.md`（随模板下行）——L0-L3 判据阶梯及格线、7 维 × 4 档判据矩阵（含增量判据读法）、跨档红线 ×5、准出条目三要素与证据形式枚举、反浮于表面对照表 ×9（fail-closed）、阶梯↔交付物形态标签映射、判据质量校准方法论（五步流程 + 逐格回测）。挂接 ×2：`ai/global-rules.md` §8.1 档位判据指针、`ai/doc-standards/03-prd.md` §4 退出标准三要素指针。同步清单 `template-sync.json` 登记 + `check-template.sh` doc-standards fixture 计数断言 11→12 + 防滞后断言 ×3。裁决点（维护者拍板）：「可试用 / Beta」不升正式交付物形态标签，L2 判据照用、对外宣称仍 MVP。
+- **document-lifecycle §5 重复编号修正（PR #446，维护者自产）**：两个 `### 5.4` 存量残留——04-05 风险验证顺延为 §5.5、06-07 DB/API 顺延为 §5.6；修正后 §5 子节序列无重复无断档；全仓核查旧编号无交叉引用。支撑 #441 章节级标注的「编号唯一锚点」前提。
+- 验证：每 PR 全量自检非沙箱直跑通过（2106→2112 项 / 0 失败）+ CI Template Check 通过；MINOR 发版门 L3 e2e 回归已跑（自动化 R1-R3 通过，R4-R6 经触达面评估 + ps1 通知函数三分支单元实测补偿，报告 `_governance/ai-records/e2e-reports/2026-09-09-v1.73.0.md`）。对派生项目：分析/提案/回测类任务规则读取成本下降（来源实测约 30~40%）、新拆卡任务默认按执行记录形态、同步即获得准出判据基准；均不要求迁移、存量不回溯。
+
+## v1.72.2（2026-09-09）
+
+CHANGELOG-PLAIN 存量迁移提示对「项目自有双版本结构」误报修复 PATCH（提案 `_governance/_proposals/TEMPLATE-UPGRADE-v1.72.2-changelog-plain-heuristic.md`，zhiyan-digital-cs-platform 派生项目回流，GitHub issue #433）：`--preserve-project-version` / 领域模板模式下，已完成「项目版本段 + 模板继承历史」双版本改写的派生仓，此前每轮同步都被误报「可能仍是母模板内容，请改写」。
+
+- 根因：改写提示的版本对比取文件首个 `## vX.Y.Z（` 标题；双版本结构的项目版本段用三级（`###`）标题记录项目自有版本，首个二级命中落在模板继承历史段（母模板历史版本号），与本地项目 `VERSION` 对比必然不一致（2026-09-09 triage 以真实双版本仓文件实证）。
+- `sync-template.sh` / `sync-template.ps1` 改两段判定：文件含「## 项目版本」段 → 提取段内首个版本标题（`##` / `###` / `####` 均可）作为项目自有版本——与本地 `VERSION` 一致降级为 ✓ info（保留不动）；不一致改报「版本漂移」提示；段存在但未提取到版本标题时保守落入存量判定。无该段时维持既有两条改写警告分支，行为不变。
+- 搭车统一（吸收 issue #412 残留）：`sync-template.sh` 逐文件 no-diff 状态行 `（无差异）` → `(no diff)`（3 处），与 `.ps1` 输出对齐；该 token 不在 SOP grep 提取面，纯人读一致性修正。
+- 边界：仅提示逻辑 / 文案；同步覆盖行为（CHANGELOG-PLAIN 自 v1.69 起保留不覆盖）、同步清单、断言语义零变化，派生项目零迁移。已核实 `check-derived-sync.*` 无同类改写提示，无需统一；`warn_if_changelog_plain_needs_project_rewrite` / `Show-ChangelogPlainMigrationNotice` 函数名保留，check-template 存在性断言不受影响。
+
+## v1.72.1（2026-09-03）
+
+自留内容审计扩展 PATCH（提案 `_governance/_proposals/TEMPLATE-UPGRADE-init-residue-audit-scope-extension.md`，LumiOne-Framework / gmbl_project 派生项目回流，PR #433）：补 v1.70.0 自留内容审计三类清单对存量派生仓的第④类缺口。
+
+- 起因：2026-09-03 两仓 v1.72.0 同步轮 post-sync-cleanup 实证——v1.67.0 前初始化的存量派生仓，治理记录目录（`sync-records/`、`ai-records/`、`_archive/`）中带入母仓自留内容（母仓视角下行同步汇总记录、母仓治理副本、母仓归档方法论历史文档），既有三类审计（根 `MAINTAINERS.md` / `.github` 收件箱模板 / `docs/research·archive` 同名记录）不覆盖。
+- `ai/prompts/maintainers/15-post-sync-cleanup.md`「模板仓自留内容残留」段新增「审计治理记录目录中的母仓自留内容（v1.72.1 起）」：母仓视角同步汇总记录、母仓治理副本（`project-registry/` / `token-hotspots/` / `e2e-reports/` 过期副本）、母仓归档方法论历史文档 → 可安全删除（真值以母模板仓为准）；派生自建同步运行记录、提案、归档一律保留；无法区分列待确认项。
+- `scripts/check-template.sh` +1 条防漂移断言锁定新审计项关键词。
+- 边界：init 黑名单裁剪（方案 B）已由 v1.70.0 derived-init-trim 实现（`new-project.sh` 整删根级治理目录并重建 `_governance/` 空种子），本版仅补存量仓审计指引；不新增自检门禁、不改同步清单与默认行为。归档提案走合并后独立 PR，不单独触发版本递增。
+
+## v1.72.0（2026-09-03）
+
+沙箱环境验证降级与 spawn 失败分流 MINOR（模板维护者自产提案，PR #429）：补「沙箱化 CLI 内能否跑全量验证、进程创建类错误如何定性」两个相邻缺口。起因：2026-09-02 registry 登记被自检故障阻塞约 20 小时——自检死于子进程 spawn 阶段（Win32「系统找不到指定的文件」），复核确认为 Codex CLI 沙箱限制进程创建所致，同一脚本在非沙箱环境与 CI 均通过，脚本无缺陷；既有规则只规定失败即停，未规定停后如何定性与继续。
+
+- `ai/rules-core.md` §2 新增「沙箱 / 受限环境验证降级与 spawn 失败分流」：运行会大量创建子进程的全量自检 / 全量验证前，先自问当前环境是否沙箱或权限受限（如 Codex CLI 沙箱）；受限则不在本地跑全量验证，改用非沙箱 shell 直跑或以 CI 为准，并在收尾说明验证环境局限。验证命令以进程创建类系统错误中断（如 spawn 失败、Win32「系统找不到指定的文件」，且无断言失败输出）时，先判定为环境故障——换非沙箱环境复核一次再定性，不得记为脚本或产物缺陷，也不得以此阻塞登记 / 收尾类工作；验证结论仍须以 CI 或非沙箱复核为准。
+- `ai/session-rules.md` §3.3「失败即停」追加一句 spawn 分流口径并指回 rules-core §2，只补停后分流语义，不重复停止语义。
+- `AGENTS.md` Checkpoint 节拍段「命令失败」行微扩，Codex 入口直接可见分流口径。
+- 边界：问句式自检而非关键词硬拦；不放宽既有失败即停——构建、测试、写入、迁移、网络、CI、远端与断言类失败仍一律停止；分流仅适用于无断言失败输出的进程创建类错误。PR #430 仅归档提案，不单独触发版本递增。
+
+## v1.71.1（2026-09-01）
+
+跨 Shell 路径预检 PATCH（issue #423，PR #424）：补发 #424 合并时遗漏的版本记录。该 PR 改动同步范围内的 `ai/rules-core.md` 与 `ai/commands/README.md`，因此按 PATCH 发布。
+
+- 明确 PowerShell、Bash 等不同 Shell 的路径预检边界：有限已知目标优先精确探测与字面路径 API；可选只读路径的 `not-found` / `no-match` 不得掩盖已确认的 Git、版本或谱系事实。
+- 失败域隔离仅适用于无副作用定位；构建、测试、权限、sandbox、网络、CI、远端及所有状态变更失败仍必须立即停止，不得将其降级为可选结果。
+- 命令示例必须标明适用 Shell，不能假设 Bash 通配语义会在 PowerShell 中展开。
+
+**版本治理更正**：归档提案已标记 `Release impact: patch` 与独立发布，但实施 PR 未同步更新 `VERSION` 和 changelog；本版补齐该发布边界。PR #425 仅归档提案，不单独触发版本递增。
+
 ## v1.71.0（2026-08-28）
 
 规则链路补强 MINOR（Batch B 两件，issue #407 / #408）：补「设计能否开工」和「阶段放行看什么」两个相邻缺口——#407 管单模块粒度的编码前检查，#408 管阶段粒度的产物对照，与 E4 阶段评估（`E4 管「这批设计文档整体能否进入计划阶段」，六问管「这个模块能否开工」」）层级互补。

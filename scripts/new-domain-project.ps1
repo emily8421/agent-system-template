@@ -1,9 +1,10 @@
 ﻿<#
 new-domain-project.ps1 - 从 agent-system-template（L2）派生 agent 领域派生项目（L3）。
 
-单源锚定 L2：从 L2 整仓派生通用方法论 + agent overlay，写领域派生身份，
+单源锚定 L2：从 L2 整仓派生通用方法论 + 根级 domain/ 覆盖同步区，写领域派生身份，
 剥离所有 L1 同步入口（sync-template / check-derived-sync / check-template / new-project），
-叠加 agent overlay，装领域 check workflow，git init。L3 只从 L2 同步，不直连 L1。
+把 L2 ai/domain-rules.md 种子项目化进 L3 ai/project-rules.md（L3 不设第三份领域规则文件），
+装领域 check workflow，git init。L3 只从 L2 同步，不直连 L1。
 
 用法:
   powershell -ExecutionPolicy Bypass -File scripts/new-domain-project.ps1 <项目名> [-Source <agent-system-template>] [-Account <login>] [-Visibility private|public] [-NoRemote]
@@ -14,7 +15,7 @@ new-domain-project.ps1 - 从 agent-system-template（L2）派生 agent 领域派
     -NoRemote       只本地，不建 GitHub 仓库、不推送
 
 依赖: git（本地派生）；建远端需 gh（目标账号已登录）。Windows PowerShell 5.1 兼容。
-配套: template-docs/agent-system/domain-derived-scenarios.md §3（创建流程）。
+配套: domain/scenarios.md §3（创建流程）。
 #>
 param(
   [Parameter(Position = 0)]
@@ -119,12 +120,10 @@ function Write-File($rel, $content) {
 }
 
 # 2) 清理 L2 维护件 + 剥离所有 L1 同步入口（L3 单源锚定 L2，不挂 L1）
+#    注意：domain/ 是 L3 的覆盖同步区，保留不删（v0.5.0 三层布局）。
 Write-Host "==> 剥离 L2 维护件与 L1 同步入口"
-Remove-TargetPath "_examples"
-Remove-TargetPath "_archive"
-Remove-TargetPath "sync-records"
+Remove-TargetPath "_governance"
 Remove-TargetPath "upstream"
-Remove-TargetPath "domain-overlay"
 $scriptsToDrop = @(
   "scripts/sync-template.ps1", "scripts/sync-template.sh",
   "scripts/check-template.ps1", "scripts/check-template.sh",
@@ -136,8 +135,7 @@ $scriptsToDrop = @(
 foreach ($s in $scriptsToDrop) { Remove-TargetPath $s }
 Get-ChildItem -LiteralPath (Join-Path $Target ".github/workflows") -Filter *.yml -ErrorAction SilentlyContinue |
   Remove-Item -Force -ErrorAction SilentlyContinue
-Remove-TargetPath "_proposals"
-$null = New-Item -ItemType Directory -Path (Join-Path $Target "_proposals") -Force
+$null = New-Item -ItemType Directory -Path (Join-Path $Target "_governance/_proposals") -Force
 
 # 3) 写领域派生身份文件
 Write-Host "==> 写领域派生身份文件"
@@ -207,10 +205,10 @@ Write-File "README.md" @"
 
 ## 快速开始
 
-1. 初填 ai/project-rules.md（项目身份、Phase、技术栈、运行环境、形态裁剪）。
-2. 按 template-docs/agent-system/profiles/single-agent.md 选型；按 docs/design/agent-*.md 填 agent 设计。
-3. agent 相关任务额外读 ai/agent-rules/ 与 ai/doc-standards/agent-*.md。
-4. 创建 / 同步领域标准件见 template-docs/agent-system/domain-derived-scenarios.md。
+1. 初填 ai/project-rules.md（项目身份、Phase、技术栈、运行环境、形态裁剪；§5 为领域规则项目化实例）。
+2. 按 domain/standards/profiles/single-agent.md 选型；按 docs/design/agent-*.md 填 agent 设计（骨架源在 domain/scaffold/docs/）。
+3. agent 相关任务额外读 ai/project-rules.md §5 领域规则段与 domain/standards/doc-standards/agent-*.md。
+4. 创建 / 同步领域标准件见 domain/scenarios.md。
 
 ## 模板关系
 
@@ -229,8 +227,8 @@ Write-File "CLAUDE.md" @'
 
 1. 读 `TEMPLATE-BASE.md`：确认本项目是 agent 派生项目，继承自哪个 L2 版本。
 2. 读 `ai/project-rules.md`：本项目专属约束（身份、Phase、技术栈、形态）。
-3. 读 `template-docs/agent-system/README.md` 与 `template-docs/agent-system/layer-map.md`：领域标准件导航与判层（L1 / L2 / L3 归属）。
-4. agent 相关任务（设计 / 实现 / 工具权限 / memory / trace / HITL / eval）前读 `ai/agent-rules/` 与对应 `ai/doc-standards/agent-*.md`。
+3. 读 `domain/README.md` 与 `domain/layer-map.md`：领域标准件导航与判层（L1 / L2 / L3 归属）。
+4. agent 相关任务（设计 / 实现 / 工具权限 / memory / trace / HITL / eval）前读 `ai/project-rules.md` §5 领域规则项目化实例与对应 `domain/standards/doc-standards/agent-*.md`。
 5. 同步领域模板更新用 `scripts/sync-domain-template.*`；领域自检 `scripts/check-domain-derived-sync.*` + `scripts/check-agent-template.*`。
 
 > 本项目不挂母模板 `ai/index.md` 启动路由（L1 入口已随 L2 传递）；以本文件为本项目的 AI 启动入口。
@@ -247,7 +245,7 @@ Write-File "ai/project-rules.md" @"
 - 项目名称：$Base（待确认）
 - 仓库角色：领域派生项目（L3），单源锚定 agent-system-template（L2）。
 - 继承领域模板版本：见 TEMPLATE-BASE.md。
-- 分层权威入口：TEMPLATE-BASE.md 与 template-docs/agent-system/layer-map.md。
+- 分层权威入口：TEMPLATE-BASE.md 与 domain/layer-map.md。
 
 ## 1. Phase 边界
 
@@ -267,7 +265,17 @@ Write-File "ai/project-rules.md" @"
 - 继承的领域模板 / 母模板版本见 TEMPLATE-BASE.md。
 "@
 
-Write-File "_proposals/README.md" @'
+# 领域规则项目化：把 L2 ai/domain-rules.md 种子实例化为 L3 ai/project-rules.md 的 §5 领域规则段，
+# 并从 L3 移除种子文件（L3 不设第三份领域规则文件，v1.75.0 三层布局 / 本仓 v0.5.0 Batch C）。
+$seedPath = Join-Path $Source "ai/domain-rules.md"
+if (Test-Path -LiteralPath $seedPath -PathType Leaf) {
+  $seed = Get-Content -Raw -Encoding UTF8 $seedPath
+  $section = "`r`n## 5. 领域规则（agent-system 项目化实例）`r`n`r`n> 来源：agent-system-template $DomainVersion 的 `ai/domain-rules.md` 种子项目化（L3 不设第三份领域规则文件）。项目按需细化执行口径；与本段冲突的项目决策须回写本段。`r`n`r`n" + $seed
+  [System.IO.File]::AppendAllText((Join-Path $Target "ai/project-rules.md"), $section, $utf8)
+}
+Remove-TargetPath "ai/domain-rules.md"
+
+Write-File "_governance/_proposals/README.md" @'
 # 提案起草区
 
 本目录用于在本 agent 项目内临时起草可回流到 agent-system-template（L2 领域模板）的优化提案。
@@ -362,9 +370,9 @@ try {
     Invoke-SafeNative { & git -c user.name="Codex Local Init" -c user.email="codex-local-init@example.invalid" commit -q -m $msg 2>$null } "git commit (local init identity)"
   }
 
-  # 5) 叠加 agent overlay（target 已是干净 git root；sync 复制 overlay 并产生 'sync agent domain template' commit）
+  # 5) 叠加 agent 领域件（domain/ 覆盖 + scaffold 种子化；sync 产生 'sync agent domain template' commit）
   $syncScript = Join-Path $Target "scripts/sync-domain-template.ps1"
-  Write-Host "==> 叠加 agent overlay（sync-domain-template）"
+  Write-Host "==> 叠加 agent 领域件（sync-domain-template）"
   Invoke-SafeNative { & powershell -ExecutionPolicy Bypass -File $syncScript -Source $Source -Target $Target -Commit 2>$null } "sync-domain-template"
 
   if ($NoRemote) {
@@ -396,6 +404,6 @@ if ($NoRemote -or [string]::IsNullOrWhiteSpace($Account)) {
 }
 Write-Host "后续："
 Write-Host "  cd `"$Target`""
-Write-Host "  初填 ai/project-rules.md 与 docs/design/agent-*.md；按 template-docs/agent-system/domain-derived-scenarios.md §5 走自检："
+Write-Host "  初填 ai/project-rules.md（含 §5 领域规则项目化实例）与 docs/design/agent-*.md；按 domain/scenarios.md §5 走自检："
 Write-Host "    powershell -ExecutionPolicy Bypass -File scripts\check-domain-derived-sync.ps1 -Source <agent-system-template> -Target . -Advisory"
 Write-Host "    powershell -ExecutionPolicy Bypass -File scripts\check-agent-template.ps1 -Target ."

@@ -1,7 +1,8 @@
 # TEMPLATE-UPGRADE: post-sync-cleanup 审计清单补「存量仓治理容器迁移」显式审计项
 
 > 来源：agent-system-template（emily8421/agent-system-template）派生项目回流
-> 状态：草案（2026-09-11，本仓 v0.5.0 Batch C 补课时实证）
+> 状态：**已提交模板仓**（issue #463，2026-09-11，标签 proposal + from:agent-system-template），待维护者 triage
+> 处置状态：已提交 PR（issue #463）
 > 目标模板版本：ai-project-template v1.75.0+
 > Release impact：patch（审计 Prompt 文档增量，不改脚本 / 清单 / CI）
 
@@ -27,6 +28,11 @@ v1.67.0 引入 `_governance/`（与 `project/`）容器后，覆盖式同步有�
 - 只加审计项 / 可选 advisory 提示；不改同步清单、不加 gate、不自动迁移。
 - 普通派生项目与领域模板仓同适用（本提案来自领域模板仓实证）。
 - 与 §5 第 89 行（§3 裁剪一致性：`project/*` 代码占位）、第 100 行（母仓自留内容）正交不重叠：三者分别管「代码容器裁剪」「容器内母仓残留」「容器迁移本身」。
+
+## 3.1 验证方式
+
+- 文档级提案：落地后在母模板仓 `check-template.*` 全量自检应零变化（不新增断言）；若采纳可选 advisory 提示，需在 PS5.1 + Git Bash 双入口实测 `check-derived-sync.*` 的提示路径分支（含无根级治理目录的新项目 = 空匹配不误报）。
+- 实证样本：`agent-system-template` v0.5.0 Batch C（2026-09-11）完成存量迁移后，`check-domain-derived-sync.*` 与同步记录路径均落位推荐路径，无回归。
 
 ## 4. 与既有规则关系（去重）
 

@@ -33,7 +33,7 @@ Commands executed:
 - `powershell -ExecutionPolicy Bypass -File scripts\sync-domain-template.ps1 -Source . -Target _examples\single-agent-demo -Commit`
 - `powershell -ExecutionPolicy Bypass -File scripts\check-domain-derived-sync.ps1 -Source . -Target _examples\single-agent-demo -Advisory`
 - `powershell -ExecutionPolicy Bypass -File scripts\check-agent-template.ps1 -Target _examples\single-agent-demo`
-- `python -B -m unittest discover -s tests`
+- `python -B -m unittest discover -s project/tests`
 - `powershell -ExecutionPolicy Bypass -File scripts\check-markdown-clean.ps1 _examples\single-agent-demo\template-docs _examples\single-agent-demo\ai _examples\single-agent-demo\docs _examples\single-agent-demo\README.md _examples\single-agent-demo\TEMPLATE-BASE.md`
 
 Result:

@@ -12,6 +12,7 @@
 | `scaffold/agent-system-checklist.md` | agent 项目派生与验收检查表 |
 | `scaffold/docs/design/*.md`（5） | agent 项目设计骨架：架构 / 工具权限 / memory-state / trace-replay / HITL-safety（L3 项目派生后 copy-if-missing 到项目 `docs/design/`，**不绑定具体 runtime**） |
 | `scaffold/docs/research/agent-eval-plan.md` | agent eval 计划骨架（任务集 / 轨迹 / 准确率 / 成本延迟） |
+| `scaffold/project/README.md` | L3 代码容器（`project/`）形态裁剪骨架（agent 默认 Python/CLI；创建时 copy-if-missing 种子化，之后归项目自有） |
 | `standards/profiles/single-agent.md` | 单 agent 形态 profile（默认正式标准件，适合一条主线的 agent 项目） |
 | `standards/profiles/multi-agent.md` | 多 agent 形态 profile stub（待真实多 agent 项目验证后补全） |
 | `standards/doc-standards/agent-*.md`（6） | agent 文档审计基线（架构 / 权限 / memory / trace / HITL / eval） |

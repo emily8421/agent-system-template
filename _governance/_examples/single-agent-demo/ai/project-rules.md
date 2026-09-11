@@ -23,5 +23,5 @@
 
 ## Verification
 
-- Run `python -m unittest discover -s tests` before changing behavior.
+- Run `python -m unittest discover -s project/tests` before changing behavior.
 - Update `docs/09-verification.md` and `docs/research/agent-standard-mapping.md` when REQ/TC coverage changes.

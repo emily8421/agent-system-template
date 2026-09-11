@@ -4,8 +4,8 @@
 
 - Language: Python 3.
 - Dependencies: standard library only.
-- Entry point: `agent_demo.py`.
-- Test command: `python -m unittest discover -s tests`.
+- Entry point: `project/agent_demo.py`.
+- Test command: `python -m unittest discover -s project/tests`.
 
 ## Data Contracts
 

@@ -139,6 +139,12 @@
       "mode": "copy-if-missing"
     },
     {
+      "source": "domain/scaffold/project/README.md",
+      "target": "project/README.md",
+      "kind": "project-code-skeleton",
+      "mode": "copy-if-missing"
+    },
+    {
       "source": "scripts/sync-domain-template.ps1",
       "target": "scripts/sync-domain-template.ps1",
       "kind": "domain-sync-script",

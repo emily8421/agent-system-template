@@ -17,12 +17,12 @@ This example is implemented as the Batch 3a manual validation artifact.
 ## Verification Commands
 
 ```powershell
-python -m unittest discover -s tests
+python -m unittest discover -s project/tests
 ```
 
 From the repository root:
 
 ```powershell
-python -m unittest discover -s _examples/single-agent-demo/tests
+python -m unittest discover -s _examples/single-agent-demo/project/tests
 powershell -ExecutionPolicy Bypass -File scripts\check-markdown-clean.ps1 _examples _proposals
 ```

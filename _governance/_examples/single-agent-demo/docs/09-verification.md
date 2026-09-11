@@ -5,13 +5,13 @@
 Run from this directory:
 
 ```powershell
-python -m unittest discover -s tests
+python -m unittest discover -s project/tests
 ```
 
 Run from repository root:
 
 ```powershell
-python -m unittest discover -s _examples/single-agent-demo/tests
+python -m unittest discover -s _examples/single-agent-demo/project/tests
 ```
 
 ## Test Matrix

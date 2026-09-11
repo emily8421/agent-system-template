@@ -8,7 +8,7 @@
 
 | Component | File | Responsibility |
 |---|---|---|
-| CLI | `agent_demo.py` | Parse prompt and approval flag, print JSON. |
+| CLI | `project/agent_demo.py` | Parse prompt and approval flag, print JSON. |
 | Planner | `run_agent()` | Decide whether the request is normal, unsafe, or high risk. |
 | Tool router | `ToolRouter` | Apply risk classification before local tool execution. |
 | Memory | `DemoMemory` | Store only safe in-process facts. |

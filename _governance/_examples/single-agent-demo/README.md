@@ -7,8 +7,8 @@ This is the Batch 3a validation example for the agent domain template. It is a m
 ## Run
 
 ```powershell
-python agent_demo.py "summarize the escalation policy"
-python -m unittest discover -s tests
+python project/agent_demo.py "summarize the escalation policy"
+python -m unittest discover -s project/tests
 ```
 
 ## Scope
@@ -26,6 +26,6 @@ python -m unittest discover -s tests
 | Scenario to verification | `docs/00-scenario.md` to `docs/09-verification.md` |
 | Agent design | `docs/design/*.md` |
 | Eval and mapping | `docs/research/*.md` |
-| Implementation | `agent_demo.py`, `tests/test_agent_demo.py` |
+| Implementation | `project/agent_demo.py`, `project/tests/test_agent_demo.py` |
 
 `docs/06-db-design.md` and `docs/07-api-spec.md` are intentionally omitted because this demo has no persistence layer and no API surface.

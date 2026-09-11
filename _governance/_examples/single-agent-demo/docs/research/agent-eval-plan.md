@@ -16,4 +16,4 @@ This eval plan keeps Batch 3a focused on observable single-agent behavior, not m
 
 ## Automation
 
-The eval cases are implemented in `tests/test_agent_demo.py` using `unittest`.
+The eval cases are implemented in `project/tests/test_agent_demo.py` using `unittest`.

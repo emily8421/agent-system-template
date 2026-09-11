@@ -82,7 +82,7 @@
 - UI 原型策略：豁免，见 §2.7。
 - 通用详细设计：L2 领域标准件已放在 `domain/scaffold/docs/design/*` 与 `domain/standards/`；根 `docs/design/*` 留给 L3 派生项目。
 - 需要保留的代码 / 资源目录：`scripts/`、`_governance/`（_proposals / _archive / _examples / sync-records / ai-records）、`domain/`（README / layer-map / scenarios / scaffold / standards）、`upstream/`、`tasks/`（按需启用，占位 README 保留）。
-- 裁剪执行记录（v0.5.0）：建仓期旧布局带入的根级 `backend/`、`frontend/`、`docker/`、`tests/` 占位（`.gitkeep` + README）已删除——本仓非运行型前后端应用（§2），占位与 §3 裁剪决策不符且会随 `git archive` 泄漏进新建 L3；`project/` 容器整体不启用。同批完成 v1.67.0 存量容器迁移：根级 `_proposals/`、`_archive/`、`_examples/`、`sync-records/` 迁入 `_governance/`（`tasks/` 保留，对齐母模板根目录）。
+- 裁剪执行记录（v0.5.0）：建仓期旧布局带入的根级 `backend/`、`frontend/`、`docker/`、`tests/` 占位（`.gitkeep` + README）已删除——本仓非运行型前后端应用（§2），占位与 §3 裁剪决策不符且会随 `git archive` 泄漏进新建 L3；`project/` 容器**本仓自身不启用**，但 L3 代码容器骨架由 `domain/scaffold/project/` 承载（形态裁剪说明：agent 默认 Python/CLI，frontend/backend/docker 按需），经 `new-domain-project.*` 与 manifest copy-if-missing 种子化到 L3 `project/`（v1.75.0 §5.2 的 L3 项目产出容器）。同批完成 v1.67.0 存量容器迁移：根级 `_proposals/`、`_archive/`、`_examples/`、`sync-records/` 迁入 `_governance/`（`tasks/` 保留，对齐母模板根目录）。
 
 ## 4. 目录规范的项目特例
 

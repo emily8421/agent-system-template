@@ -30,7 +30,7 @@
 ### A. 动作前预检
 
 1. 读取 Git 事实：`git status --short --branch`，确认当前分支、staged / unstaged / untracked 范围。
-2. 若准备 push / PR / merge / close / delete / release，运行只读预检：`powershell -ExecutionPolicy Bypass -File scripts/check-github-context.ps1`。
+2. 若准备 push / PR / merge / close / delete / release，运行只读预检：`powershell -NoProfile -File scripts/check-github-context.ps1`。
 3. 输出预检摘要：repo root、branch、origin、Git identity、`gh` auth、viewer permission、工作区是否含未确认改动。
 4. 若预检失败、权限不明、remote 不符合预期或工作区混入无关改动，立即停止并请用户确认。
 
@@ -53,6 +53,7 @@
 2. CI failed 时只摘失败 job / step、关键错误和链接；不要把完整长日志刷入上下文。
 3. 若失败原因无法确认与本次改动相关，先标记不确定并请用户确认，不直接扩大修复范围。
 4. Windows PowerShell / AI CLI 包装层中，复杂 `gh --jq` / `gh --template` formatter 可能被多层 shell 拆词；需要稳定只读复核 open PR / issue / Actions 时，优先用 GitHub REST API + `Invoke-WebRequest` 获取原始 JSON，再解析摘要。
+5. 编写 / 修改打包型 CI workflow 的 `paths` 触发过滤时，从 CI 产物反向枚举全部输入目录（主源码 + 内置页面 / 资源 + 依赖锁文件 + 构建配置）并逐项声明进 paths；新增产物输入目录的改动必须同步自查相关 workflow paths——防「输入目录变更 → workflow 静默不触发 → 产物与代码脱节」。
 
 ### E. Merge / Close / Delete
 

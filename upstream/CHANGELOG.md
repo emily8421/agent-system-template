@@ -9,6 +9,85 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v1.76.0（2026-11-01）
+
+MINOR 单提案（gmbl_project 派生项目回流 issue #485「TEMPLATE-UPGRADE-v1.76.0：评审机制总纲（触发矩阵）+ 图表体系评审清单」；2026-10-29 triage 属实 + 校正 3 处已被 gmbl 侧采纳并刷新正文，正文与实施内容一致）：评审机制此前「资产齐、收拢弱」——E1~E6 评估码、四个评审命令、doc-standards 审计基线均存在，但无「阶段 × 时点 × 命令 × 结论落点」总表，派生实证 E2~E5 阶段评估断档三周无人执行；OO 可选产物「选用即失管」，图表审核维度散落无统一 checklist。MINOR 判据：同步清单新增规则文件（新增下游采用面，CONTRIBUTING §4）。
+
+- **新增 `ai/review-guide.md`（评审总纲，一页索引型，登记 `template-sync.json` `files_all`）**：§1 评审触发矩阵——行 = E1-E6 阶段转换 + 关键时点（真实运行依赖触达 / 编码前 / Sprint 收口 / Phase 收口 / 同步后 / 收尾梳理），列 = 触发条件（强制 / 建议）× 命令 × 评估粒度 × 结论落点 × 报告落盘路径；§2 评审标准索引（公共维度 → document-lifecycle §6 / §6.0.1 / §6.1-6.2 / §7.1 / §9 / §13，文档专属 → doc-standards，实现侧 → implementation-lifecycle §5.1 / §6 / §7）；§3 结论分级与关闭规则（指针引用不复制）；§4 评审独立性约定（AI 自查 / 交叉评审 / 人工确认）；§5 与既有机制关系（姊妹提案尚在派生侧试点，正式回流前不引文件名，回流后补引）；§6 剖面裁剪。纯索引型、规则正文零复制；`scripts/sync-template.sh` 兜底数组同步补登（`sync-template.ps1` 无硬编码清单，不涉及）。
+- **`ai/document-lifecycle-rules.md` §13 增「图表体系评审清单」段**：按文档类型收拢「应含图表 + 审核条目入口」索引表（指向既有图纸审核四维度与 doc-standards 关键图字段，不复制）；OO overlay「选用即评审」——§2.1 四类可选产物一旦选用按最小审核条目核对（事物-事件表 / 用例本体表 + 用例图 / 分析类图 / 数据词典各 3 条）；与 §2.2 对账断点互相引用（断点登记 = 评审输入，审核条目 = 评审动作）。
+- **阶段转换轻挂钩（各 1 行，不加新 Gate、不引入自检断言）**：`ai/prompts/docs/00-generate-or-complete-docs.md`【前置门槛】、`ai/prompts/dev/02-run-task.md` 要求新增第 11 条（原 11 / 12 顺延为 12 / 13）、`ai/prompts/planning/08-phase-upgrade.md` 阅读清单各加「按 `ai/review-guide.md` 评审触发矩阵确认本轮评审义务与结论落点」。
+- **评审命令接图表维度（各 1 条条件检查项）**：`ai/prompts/review/10-docs-checklist.md` B 段、`16-docs-system-audit.md` 核查维度新增第 9 条、`19-docs-evaluation.md` 评估维度表各加「按 §13 图表体系评审清单核对（项目声明裁剪的除外）」。
+- 边界：不新增命令、不改命令文件结构、不引入 CI 断言；总纲为索引型，维护成本接近零；Lean 项目按总纲 §6 裁剪；`ai/index.md` 路由表不动（review-guide 为被引用索引文件，非规则包入口）。镜像 `issue-485.md` 随本 PR 入库，随归档 PR 移入 `_archive/`。
+
+## v1.75.8（2026-10-31）
+
+C1 双提案聚合 PATCH（flowkit-derived 派生项目回流 issue #490 + #491；2026-10-30 triage 拍板「聚合单 PR、#491 方案 a、#490 三桶范围」）：SOP 类 PowerShell 调用建议「优先无 bypass、被拦再降级」+ 路由表「PR / CI / Git 收尾」行对齐 remote-ci-sop-profile §2 最小必读集，消除双口径。
+
+- **#490（sync-ps1-bypass-optional）**：SOP 类人读文档 14 件 56 处示例命令 `powershell -ExecutionPolicy Bypass -File ...` 统一改为 `powershell -NoProfile -File ...`（无 bypass），并在主 SOP 枢纽（git-guide §1.1 / §5.4、SOP 常用命令、MAINTAINERS §3 / §5、env-setup、12-sync-template 步骤 8、smoke-test）补降级总则——优先无 bypass 运行，仅当报「此系统上禁止运行脚本」类加载错误时再加 `-ExecutionPolicy Bypass` 重试。动机实证：AI CLI 权限管控通常拦截 bypass 形式（09-09 pitfalls SUMMARY 已登记模板缺口），`CurrentUser = RemoteSigned` 且脚本无 Mark-of-the-Web 时无 bypass 即可运行（flowkit-derived v1.75.6 同步全流程 EXIT=0 + 本仓 v1.75.5 / 09-16 无 bypass 实录）。范围三桶：A 桶人读文档 14 件本轮改；B 桶脚本 usage 注释（11 件 35 处）留观察、随下次脚本触达评估；C 桶历史归档 / ai-records / research 记录不回溯改写（同 #479 存量渐进口径）。不改脚本本体、workflow、`template-sync.json`；无自检断言增减。
+- **#491（route-table-prci-minimal-set）**：`ai/index.md` 路由表「PR / CI / Git 收尾」行改为以 `template-docs/profiles/remote-ci-sop-profile.md` 为权威入口（按其 §2 最小必读集分诊），消除两清单双口径固定读取成本（两清单仅 2 项相交，执行侧实测 6-7 份全读）；保留条件性补充——发版 / 版本判定类收尾另读 `ai/implementation-lifecycle-rules.md`（§7.1 回写职责）与 `ai/project-rules.md`，涉及 Git 流程读 `git-guide.md` 相关章节（profile §2 最小集不含上述三件，整行委托会丢发版类指针，triage 补正）。断言核验：`check-template.sh:1829`（index.md 须含 profile 文件名）与 `:1340/:1341`（implementation-lifecycle / commands README 字样在其他路由行仍存）均不受影响。「同模式排查其余路由行」本轮不做（初扫未见同型双口径），留后续候选。
+- 校正 2 处（prompt 11 第 10 条「先期状态核实」首战）：#490 提案影响面低估（列 5-6 文件，实为人读文档 14 件 56 处）；`ai/commands/sync-methodology.md` / `collect-env.md` 实存但零 Bypass 命中，提案「命令文件含同模式示例」表述不成立、无需改。
+- 边界：纯文档口径与示例调整，不改默认行为、不改同步清单、不新增 check-template 断言；存量派生项目零迁移义务，对未来同步 / 检查操作生效。镜像 issue-490.md / issue-491.md 随本 PR 入库，随归档 PR 移入 `_archive/`。
+
+## v1.75.7（2026-10-30）
+
+C1 治理 PATCH（提案 `_governance/_proposals/TEMPLATE-UPGRADE-registry-writeback-enforcement.md`；2026-10-30 维护者拍板「①+②组合」，③推式上报挂多机 / 多用户触发）：registry 回写挂钩 + 母仓登记对账——治 stale-shared-state 弱触发第三次实证（08-27~09-16 LUMEN 4 轮、09-19 v1.75.3 轮 3 仓全漏、10-30 窗口 2 仓漏 + zhiyan 未同步，均靠人工实查补登 PR #475 / #492）。
+
+- `ai/prompts/maintainers/12-sync-template.md`：收尾门禁 A13 完成判据矩阵覆盖清单补「母仓 registry 回写登记」项（挂钩现行步骤 6）——未回写必须标 `部分完成` 并列补登路径，不得标 `完成`。治「有步骤、无判据」：同步会话收尾时强制核对回写状态。
+- `ai/prompts/maintainers/11-template-proposal-summary.md`：分析要求新增第 10 条「先期状态核实」——提案声称的缺口先核实现行版本是否已修复（#478 实证 v1.54.3 先期修复），引用的姊妹提案 / 文件先核实存在性（#485 实证悬空引用）；引用失真标注校正，不直接采信提案表述。
+- `scripts/check-registry-drift.ps1`（新增，模板仓专用）：只读对账 registry `Inherited` ↔ 各仓 TEMPLATE-BASE `Current synced template version`，输出差异表；`0` 一致 / `1` 漂移 / `2` 结构错误。挂载时点：C1 triage 开头、半年度机制审计、派生同步窗口收尾。把「人工发现漂移」变为例行点名（拉式感知；推式上报按维护者拍板挂多机 / 多用户触发，暂不做）。
+- `scripts/check-template.sh`：`check_scripts_sync_boundary` 模板专用脚本数组补新脚本（+3 断言，自检 2114 → 2117）；`scripts/new-project.sh` 裁剪名单同步；`scripts/README.md` §1 计数 5 类 / 6 文件 + §2.2 登记 `TOOL-GOV-001` + §2.3 运行契约补行。
+- 边界：advisory 工具只报不修；对账脚本不进同步清单、不进 CI、不自动回写；不新增其他 check-template 内容断言（rd-data-chain §4 / GOV-C-007 口径）；派生项目零影响（new-project 裁剪 + 同步清单不含）。
+
+## v1.75.6（2026-10-30）
+
+C1 治理提案 PATCH（提案 `_governance/_proposals/TEMPLATE-UPGRADE-governance-decoupling.md`；2026-10-29 维护者拍板 DC-001~DC-004 全按 AI 建议，提案本体已随 #488 入库）：治理机制解耦管理 **Phase 1（契约层）**——补机制生命周期与域间契约，回应「机制只进不出」的体系膨胀结构性根因（工具侧 TOOL-* 有生命周期而机制侧 MECH-* 没有）。
+
+- `template-docs/capability-packages.md`：§4 机制登记表扩三列——`状态`（candidate/experimental/active/deprecated/retired，与工具侧同款语义）+ `退役条件` + `最近审计`，14 机制首轮登记 active（2026-10-29）；§5.1 新增「域间交接契约」——五域对照（协调 / 文档体系 / 编码实现与验证 / 知识沉淀 / 模板演进 ↔ §3 七分区）+ 交接单七字段（权威输入 / 请求动作 / 允许范围 / 禁止事项 / 完成条件 / 回传证据 / 人工确认；字段吸收自 governance-handbook 提案 §5.5 草案）+ 交接三规则（先本域后跨域、跨域先列影响清单、失败按责任域回退）；§9 维护要求补三条——新机制准入四问（归哪个域 / 触发点挂哪 / 谁验收 / 何时可退役，四问不全不进表）、半年度机制审计节奏（6 / 12 月窗口 + 重大变更临时触发，十条审计维度内联：所有权 / 触发 / 事实源 / 循环依赖 / 状态升级 / 验证缺口 / 孤儿 / 过期 / 范围泄漏 / 失败扩散）、退役规则（deprecated 声明替代与迁移窗口 → 消费者迁移后 retired，退役需迁移消费者 + 更新登记表 + CHANGELOG）。
+- `ai/global-rules.md`（全局规则自身版本 v1.16 → v1.17）：各章节首行下补 `> 域：X` 标注（§1-§3 实现 / §4 验证 / §5-§10 横切·协调·文档·演进），文件头部补图例一句（DC-002 搭车项）；标题文字不变，防断言与章节级标注漂移。
+- 边界：纯文档与人读登记，不新增 check-template 断言（rd-data-chain §4 / GOV-C-007「首批人工」口径维持）、不改同步清单、不建 Agent、不并发、不拆规则文件——载体层三处混合（session-rules 协调+知识 / implementation 实现+验证 / document-lifecycle 文档+评审码）按提案 §3.3 触发条件挂账（Phase 3 实证后另行立项）；派生项目零迁移、零门禁（`capability-packages.md` 已在 files_all）。后续：Phase 2 首轮机制审计（2026-12 窗口，advisory）；本提案多阶段在途，不随 Phase 1 归档。
+
+## v1.75.5（2026-10-29）
+
+C1 单提案 PATCH（LumiOne-Framework 派生项目回流 issue #484；2026-10-29 triage 拍板「仅方向 A、方向 B 留观察」）：同步 PR 收尾件与 squash 合并后边界校验的粒度冲突——SOP 自身要求的收尾提交（提案归档移动、同步运行记录、种子文件联动清理）与同步提交进入同一 PR、squash 合并后，project-check.yml 的合并后边界校验（`check-derived-sync.sh HEAD`）会把收尾件报为清单外变更，每次此类同步在 main 必然红 CI（#478 v1.75.4 统一规范 subject 后该场景常态化）。
+
+- `ai/prompts/maintainers/12-sync-template.md`：收尾门禁前新增「同步 PR 边界」段——同步 PR 只包含同步提交；步骤 16-17 提案归档移动、步骤 21 同步运行记录、种子文件联动清理等收尾提交拆到合并后的后续小 PR / 提交执行，合并后 HEAD 即纯同步提交，边界校验天然通过；仍失败时按 `git-guide.md` §5 checklist squash 校验时点口径裁决。
+- `git-guide.md` §5.5：新增同口径 bullet（与既有 squash 校验时点指引相邻，构成「源头消除 + 失败裁决」互补两层）。
+- 边界：纯文档指引，不改 `check-derived-sync.*` 豁免逻辑（方向 B 不做——对清单外 rename 对 / sync-records 豁免会削弱种子文件保护边界，方向 A 源头消除后留观察）、不改 subject 正则与 project-check.yml 触发机制、无自检断言新增；存量派生项目无迁移义务，对未来同步生效。镜像 `issue-484.md` 随本 PR 入库，随归档 PR 移入 `_archive/`。同 PR 归档已处理提案 `TEMPLATE-UPGRADE-changelog-plain-version-assert.md`（CHANGELOG-PLAIN↔VERSION 双文件断言已于 #459 实施落地、自检 2112→2114 实证，处理记录在提案内；纯归档 chore）。
+
+## v1.75.4（2026-10-27）
+
+C1 三提案聚合 PATCH（web-ui-knowledge-base issue #478 / LumiOne-Framework issue #479 / gmbl_project issue #481 派生项目回流；2026-10-27 triage 拍板「聚合单 PR、#478 收窄采纳、#479 定级 PATCH」）：三份均为文档条目增补，互不重叠、无脚本改动、无自检断言新增。
+
+- **#478 校验时点指引（收窄采纳）**：`git-guide.md` §5 checklist 与 `ai/prompts/maintainers/12-sync-template.md` 步骤 11 各补一句——同步 PR 以 squash 合并的派生仓，权威边界校验时点在推送前（对纯同步提交跑 `check-derived-sync` 并留痕于同步运行记录），合并后 HEAD 校验失败对照推送前留痕判定合并粒度伪影、不据此回改边界。**提案主张的「放宽 ` (#N)` 尾缀匹配」不再实施：该容忍已由 v1.54.3（2026-07-19）先期落地（`.sh` / `.ps1` 双语正则 + `new-project.sh` 生成的 project-check.yml 同款），提案实据来自旧版脚本观察；现行正则仍拒绝的说明后缀 / 分支前缀变体按提案自身默认也不放宽。**
+- **#479 公文腔词语约束（定级 PATCH，非提案自荐 MINOR）**：`ai/global-rules.md` §10 第 6 款增补——不使用「口径、抓手、拉通、颗粒度、打法」等机构内部惯用公文腔 / 汇报腔词语，改用平实、具体、可核对的表述；行业通用术语例外与引用原文保持原样承既有条款。全局规则自身版本递增 v1.15 → v1.16。按 CONTRIBUTING §4 兼容性默认规则判 patch（不新增能力层级 / 下游采用面 / 同步结构，先例 #474 → v1.75.3 同级）。
+- **#481 Sprint 完成包版本回写挂钩**：`ai/implementation-lifecycle-rules.md` §7.1 回写职责表「Sprint 完成」行补 `CHANGELOG.md`（存在 `CHANGELOG-PLAIN.md` 时同步）与 `VERSION`——版本回写与完成包同批提交（0.x 阶段 Sprint 收口 bump MINOR、纯修复 bump PATCH）；`ai/doc-standards/project-rules.md` §2.4 补执行语义一句；`ai/doc-standards/08-dev-plan.md` §4 完成包要素后补三处互指指针。消除「§2.4 字段约定无执行检查点触达」的脱钩（gmbl 实证：单日 4 Sprint / 14 提交后 VERSION 滞留 v0.1.0 靠人工发现）。
+- 边界：三提案均不引入 check-template 新断言、不改同步清单、不改默认流程；#478 对 merge commit / 普通直接提交 / 推送前纯同步提交场景零行为变化（纯文档指引）；#479 存量文档按 §10 第 7 款渐进适用，不批量改写。镜像 issue-478/479/481.md 随本 PR 入库，随归档 PR 移入 `_archive/`。校正记录：#481 原文「执行链路上没有任何检查点触达」略过强（check-derived-sync 存在 VERSION↔CHANGELOG 顶部一致的非阻断告警，查不一致不查滞后，结论仍成立），目标版本字段 stale（原写 v1.75.0 已发）。
+
+## v1.75.3（2026-09-19）
+
+C1 单提案 PATCH（LUMEN_demo_T2.1 派生项目回流 issue #474；2026-09-19 triage 拍板「单独发布、advisory 单条、附录不并入」）：web-fullstack-profile §10 配套「组件库 vs 自绘」默认决策判据——§10（v1.74.0）只管「选型结论须声明」，本版补声明之前的「怎么选」默认判据，消除 AI 主导开发下承载方式选择不可控的空白（派生实证完整证据链：手写行为层缺陷家族 → 6 组件 headless 迁移外观零变化 + 冒烟断言全过 → 3 类豁免边界样本）。
+
+- `template-docs/profiles/web-fullstack-profile.md` §10 增补「承载方式默认判据」bullet（置于「承载声明」与「选型结论的知识沉淀载体」之间）：三层结构口诀——**视觉自己写（token 归 token）、行为优先买现成（headless / unstyled 库）、深水区用专项库**；普通静态组件与简单交互自绘；浮层 / 下拉 / modal / 外点与 Esc 关闭 / 焦点陷阱 / 键盘导航等「看不见的行为」默认引 headless 库不手写；富文本编辑 / 虚拟化长列表 / 拖拽排序 / 日期选择等深水区用专项库；整包组件库与 token 单源双写冲突默认排除、采用须论证；豁免须给理由（语义特殊 / 已收敛范式 / 无标准库对应）并随承载声明一并登记；附无头库选型参考维度 ×4（生态与 AI 语料规模 / unstyled 与 token 零冲突 / 组件 vs hooks 形态替换成本 / 配套标准件同系可得）。
+- 边界：advisory 治理提醒增补（与 §10 节尾注同口径），不改默认行为、不新增下游强制采用面、无自检断言、无脚本 / CI 改动；存量手写件按判据评估（缺陷史 × 成本收益）分批处置，不强制迁移、不追溯已声明项目；提案附录「行为库合成事件验证 3 坑」本轮不并入（测试方法论 ≠ 选型判据，留独立候选）。镜像随本 PR 入库，随归档 PR 移入 `_archive/`。
+
+## v1.75.2（2026-09-16）
+
+C1 双提案聚合 PATCH（agent-system-template 回流 issue #463 + LUMEN_demo_T2.1 回流 issue #464；2026-09-16 triage 拍板「聚合单版、文档级零脚本」）：
+
+- **`ai/prompts/maintainers/15-post-sync-cleanup.md` §5 新增审计项「审计治理容器迁移状态（v1.67.0 前存量仓）」**（置于「母仓自留内容」项之前）：v1.67.0 引入 `project/` / `_governance/` 容器后，覆盖式同步有意不做目录迁移（`template-sync.json` 清单成员不变），存量派生仓根级 5 治理目录（`ai-records/ sync-records/ _proposals/ _archive/ _examples/`）的迁移此前无审计项驱动（agent-system-template 实证：约 8 轮同步未触发迁移，人工复盘才发现，SOP 推荐路径与实际路径持续不一致靠兼容读取兜底）。本项检查根级残留 → 建议 `git mv` 迁入容器（保留历史）并全量更新仓库内引用（`check-derived-sync.*` 禁止路径模式、project-rules §3/§4、layer-map / README、同步记录路径）；v1.67.0 后经 `new-project.sh` 初始化的项目初始即容器化，本项应为空。仅审计提示，不自动迁移、不加门禁、不改同步清单。
+- **`template-docs/profiles/remote-ci-sop-profile.md` §3.D 新增检查点 5**：编写 / 修改打包型 CI workflow 的 `paths` 触发过滤时，从 CI 产物反向枚举全部输入目录（主源码 + 内置页面 / 资源 + 依赖锁文件 + 构建配置）并逐项声明进 paths；新增产物输入目录的改动必须同步自查相关 workflow paths——防「输入目录变更 → workflow 静默不触发 → 产物与代码脱节」（LUMEN_demo_T2.1 侧桌面壳项目完整证据链实证：paths 补齐后同 PR 实测触发恢复）。
+
+两提案均文档条目增补：不改默认行为、不引入自检断言、无脚本改动；#463 可选配套（`check-derived-sync.*` 根级治理目录 advisory 提示）本轮不做，留待复发或下次触达时随 PATCH 评估。提案镜像随本 PR 入库（`_governance/_proposals/_remote-issues/issue-463.md` / `issue-464.md`），随归档 PR 移入 `_archive/`。
+
+## v1.75.1（2026-09-15）
+
+同步跨度采用清单 PATCH（提案 `_governance/_proposals/TEMPLATE-UPGRADE-sync-span-adoption-checklist.md`，digital-cs-demo 派生项目回流，GitHub issue #466；2026-09-15 试点拍板「试点后立案」的正式化落地）：补「跨多版本同步后，上游方法论变更在派生侧的采用状态无结构化留痕」缺口——多版本跨度易只记「同步到了 vX.Y.Z」不逐条确认采用状态，规范基线增量对应的存量核查项靠临场判断（试点实证不点名就会漏 1 项）。
+
+- `ai/prompts/maintainers/12-sync-template.md`：边界验证（步骤 11）后插入「同步跨度采用清单」新步骤 12（可选，advisory；跳过不阻塞后续任何环节），原步骤 12-24 顺延为 13-25——确定跨度（`TEMPLATE-BASE.md` 旧继承版本排除 → 目标版本包含；实查为准、与预期不符停止说明）→ 读跨度段（优先 `upstream/CHANGELOG.md`，缺失读母模板仓 `CHANGELOG.md` 对应段）→ 逐条四桶分类（①结构迁移→cleanup ②规范基线→docs-system-audit 点名 ③行为规则→下次任务生效清单 ④零迁移一行带过；②③边界按「是否存在可点名审计的受影响 docs」判定；拿不准列待确认等用户裁决）→ 清单表（7 字段）写入同步运行记录 + 3 行反馈；大跨度可按版本分段或仅逐条列 MINOR 及以上。
+- `template-docs/templates/derived-sync-report-template.md`：新增「同步跨度采用清单（可选）」节（跨度确定说明 + 四桶字段表 + 桶分布 + 3 行反馈位）；旧记录无此节不回溯补写。
+- `git-guide.md` §5.3 末尾补一行指针（同步提交并过边界检查后的可选步骤）。triage 校正：提案原写 §5.5「同步闭环清单」，实查 §5.5 为「注意事项」且无该节，落点改 §5.3。
+- 边界：advisory 语义——跳过不影响 post-sync-cleanup、docs-system-audit、A13 完成判据门禁（SOP 收尾门禁与报告模板 A13 矩阵均不加行，advisory 不进门禁）；纯文档增量，不改脚本、不改 `template-sync.json`、不新增自检断言、不加 CI 门禁。试点首轮数据（digital-cs-demo，v1.73.0→v1.75.0 两段）：约 5 分钟完成、防漏 1 项（#451A 存量声明核验）、②③桶判据歧义已吸收为正式判据。
+
 ## v1.75.0（2026-09-10）
 
 三层布局模式定型 MINOR（提案 `_governance/_proposals/TEMPLATE-UPGRADE-domain-layout.md`，C-001~C-005 全按 AI 建议裁决；结构级规则变更发 MINOR，先例 v1.67.0 治理目录迁移）：

@@ -28,14 +28,16 @@
 
 当你同时打开模板仓库和多个派生项目，或多个 AI CLI / 终端并行工作时，在任何 `git push`、`gh pr create`、`gh pr merge`、`git pull` 合并、tag / release 前，先确认当前上下文：
 
+> PowerShell 调用总则（本文件各 `powershell` 示例适用）：优先 `powershell -NoProfile -File <script> ...`（无 bypass）运行；仅当脚本报「此系统上禁止运行脚本」类加载错误时，再改用 `-ExecutionPolicy Bypass` 重试。AI CLI 权限管控通常拦截 bypass 形式，`CurrentUser = RemoteSigned` 且脚本无 Mark-of-the-Web 时无 bypass 即可运行。
+
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/check-github-context.ps1
+powershell -NoProfile -File scripts/check-github-context.ps1
 ```
 
 如已知目标仓库，可加期望 owner / repo 做只读校验：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/check-github-context.ps1 -ExpectedOwner <owner> -ExpectedRepo <repo>
+powershell -NoProfile -File scripts/check-github-context.ps1 -ExpectedOwner <owner> -ExpectedRepo <repo>
 ```
 
 预检只读输出：当前 repo root、分支、origin、Git 提交身份、工作区状态、`gh auth status` 和 `gh repo view` 权限。它不会切账号、不会改 remote、不会 push / merge。若预检发现账号无权限、remote 不符合预期、工作区有未确认改动或 `gh repo view` 失败，应先停止并说明，不要继续执行远端操作。
@@ -79,9 +81,9 @@ powershell -ExecutionPolicy Bypass -File scripts/check-github-context.ps1 -Expec
 git status
 git diff
 git diff --check
-powershell -ExecutionPolicy Bypass -File scripts/check-markdown-clean.ps1 _proposals ai-records  # 模板仓 Markdown 提案 / 记录预检
+powershell -NoProfile -File scripts/check-markdown-clean.ps1 _proposals ai-records  # 模板仓 Markdown 提案 / 记录预检
 # 运行项目对应验证命令，例如：bash scripts/check-template.sh / npm test / pytest
-powershell -ExecutionPolicy Bypass -File scripts/check-github-context.ps1  # push / PR 前只读预检
+powershell -NoProfile -File scripts/check-github-context.ps1  # push / PR 前只读预检
 git add <文件路径>
 git commit -m "类型: 简短说明"
 git push -u origin <当前分支名>   # 首次推送该分支
@@ -205,7 +207,7 @@ git show --name-only --stat HEAD
 检查最新同步提交没有误覆盖 `README.md`、`ai/project-rules.md`、`docs/00-09` 或业务代码。旧派生项目首次同步到新版脚本后，不要停在同步提交；应继续读取新同步到的 `ai/prompts/maintainers/12-sync-template.md`，按标准闭环完成边界验证、同步后整理、文档体系审计、项目验证建议和同步运行记录。同步到包含 `scripts/check-derived-sync.ps1` 的版本后，也可以运行：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/check-derived-sync.ps1
+powershell -NoProfile -File scripts/check-derived-sync.ps1
 ```
 
 随后继续执行 `/run post-sync-cleanup`、`/run docs-system-audit` 的同步后审计模式，并按 `template-docs/templates/derived-sync-report-template.md` 生成或更新 `_governance/sync-records/template-sync/YYYY-MM-DD-sync-template-vX.Y.Z.md`。若项目当前 AI 入口仍是旧版本，先直接打开新同步到的 `ai/prompts/maintainers/12-sync-template.md` 作为后续步骤清单。
@@ -219,14 +221,14 @@ powershell -ExecutionPolicy Bypass -File scripts/check-derived-sync.ps1
 ```powershell
 git status
 git switch -c chore/sync-template-vX.Y.Z
-powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 --dry-run
+powershell -NoProfile -File scripts/sync-template.ps1 --dry-run
 ```
 
 确认 `--dry-run` 输出只涉及模板方法论同步文件，且不会覆盖项目专属内容后，再执行：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/sync-template.ps1 --commit
-powershell -ExecutionPolicy Bypass -File scripts/check-derived-sync.ps1
+powershell -NoProfile -File scripts/sync-template.ps1 --commit
+powershell -NoProfile -File scripts/check-derived-sync.ps1
 git status --short --branch
 git show --name-only --stat HEAD
 ```
@@ -238,11 +240,15 @@ git push -u origin chore/sync-template-vX.Y.Z
 gh pr create --fill
 ```
 
+同步提交并通过边界检查后，可选执行「同步跨度采用清单」（advisory，跳过不阻塞）：读 `upstream/CHANGELOG.md` 跨度段（`TEMPLATE-BASE.md` 旧继承版本排除 → 目标版本包含）做四桶分类（① 结构迁移 / ② 规范基线 / ③ 行为规则 / ④ 零迁移），清单写入同步运行记录；步骤口径见 `ai/prompts/maintainers/12-sync-template.md` 对应步骤。
+
 ### 5.4 两类检查命令
 
+> PowerShell 调用总则（无 bypass 优先、被拦再降级）见 §1.1。
+
 ```
-powershell -ExecutionPolicy Bypass -File scripts/check-derived-sync.ps1  # 派生项目同步边界检查
-powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1       # 仅模板仓库完整性自检
+powershell -NoProfile -File scripts/check-derived-sync.ps1  # 派生项目同步边界检查
+powershell -NoProfile -File scripts/check-template.ps1       # 仅模板仓库完整性自检
 ```
 
 ### 5.4.1 派生项目 GitHub Actions
@@ -264,6 +270,8 @@ powershell -ExecutionPolicy Bypass -File scripts/check-template.ps1       # 仅�
 - 被 `template-sync.json` 列入的方法论文件（`.md` / `.mdc` / `.sh` / `.ps1`；`template-sync.json` 自身用 `description` 字段承载同等声明）会在同步时被覆盖；派生项目不要直接修改这些文件，如需改进请在 `_governance/_proposals/` 起草提案并回流模板。
 - 同步文件清单以 `template-sync.json` 为准（v1.60.0 起分 `files_all` / `files_ordinary` / `files_domain` 三组，按派生路线选组：领域 `files_all ∪ files_domain`，普通 `files_all ∪ files_ordinary`）；`scripts/sync-template.sh` 会优先读取模板远端清单。
 - 同步后若 `check-derived-sync` 失败，先修复同步边界问题，再 push / PR。
+- 同步 PR 以 squash 合并的派生仓，权威边界校验时点在**推送前**：对纯同步提交跑 `check-derived-sync` 并将结果留痕于同步运行记录；squash 合并后原同步提交随分支删除，合并后在 main HEAD 上校验出现「提交信息不像同步提交 / 同步清单外变更」等失败时，对照推送前留痕判定是否为合并粒度伪影（项目自有提交与同步变更揉进同一 squash 提交所致），不要据此回改同步边界。
+- 同步 PR 只包含同步提交：提案归档移动（`_governance/_proposals/` → `_governance/_archive/proposals/`）、同步运行记录落盘、种子文件联动清理等 SOP 要求的收尾提交，拆到同步 PR 合并后的后续小 PR / 提交执行，让合并后 HEAD 保持纯同步提交，边界校验天然通过（对应 `ai/prompts/maintainers/12-sync-template.md`「同步 PR 边界」段）。
 - 若已经完成同步提交但不确定后续是否执行，使用 `/run sync-methodology` 的“同步后续接模式”：不要重新 dry-run / commit，先核对 `git log --oneline -8`、`VERSION`、`TEMPLATE-BASE.md`（若存在）、最近同步记录和工作区，再从 `check-derived-sync` 开始补完后续闭环。
 - 同步后进入标准闭环：`check-derived-sync` 边界验证 → `post-sync-cleanup` 整理计划 → `docs-system-audit` 同步后审计 → 项目验证建议 → 同步报告留痕。
 - 同步后整理项目内容时，另开分支执行 `ai/prompts/maintainers/15-post-sync-cleanup.md` 第一段，先只审计并输出迁移计划，不要混入同步提交；整理摘要应回写同步报告。
@@ -347,7 +355,7 @@ bash scripts/new-project.sh <项目名> --account <账号> --visibility public
 
 ```powershell
 cd <项目名>
-powershell -ExecutionPolicy Bypass -File scripts/collect-env.ps1
+powershell -NoProfile -File scripts/collect-env.ps1
 ```
 
 随后填写：

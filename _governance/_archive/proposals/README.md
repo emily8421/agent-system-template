@@ -24,5 +24,6 @@
 | domain-overlay-relocation | A 领域 | PR#13, v0.4.1（B1） | B2 / 轨 B（见 followups） |
 | ps1-native-stderr-stop | A 领域 | PR#13, v0.4.1 | stderr 回流（见 followups，未核实） |
 | l3-ai-entrypoint | A 领域 | PR#15, v0.4.2 | — |
+| post-sync-cleanup-container-audit | B→母模板 | 母模板 v1.75.2（issue #463，2026-09-16 CLOSED；post-sync-cleanup 审计清单补存量仓治理容器迁移显式审计项） | — |
 
 **保留未归档**：`_proposals/TEMPLATE-UPGRADE-agent-template-buildout.md`（总纲提案，D6 暂缓 / Batch 4 远期开放）。

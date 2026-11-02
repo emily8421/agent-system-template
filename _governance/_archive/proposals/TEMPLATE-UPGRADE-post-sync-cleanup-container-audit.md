@@ -1,9 +1,9 @@
 # TEMPLATE-UPGRADE: post-sync-cleanup 审计清单补「存量仓治理容器迁移」显式审计项
 
 > 来源：agent-system-template（emily8421/agent-system-template）派生项目回流
-> 状态：**已提交模板仓**（issue #463，2026-09-11，标签 proposal + from:agent-system-template），待维护者 triage
-> 处置状态：已提交 PR（issue #463）
-> 目标模板版本：ai-project-template v1.75.0+
+> 状态：**已采纳并归档**（母模板 issue #463，2026-09-16 CLOSED；采纳落地于母模板 v1.75.2「C1 双提案聚合 PATCH」；本仓 2026-11-02 同步 v1.76.0 已取得对应版本，归档至 `_governance/_archive/proposals/`）
+> 处置状态：已采纳（母模板 v1.75.2）+ 已归档（2026-11-02）
+> 目标模板版本：ai-project-template v1.75.0+（实际落地 v1.75.2）
 > Release impact：patch（审计 Prompt 文档增量，不改脚本 / 清单 / CI）
 
 ## 1. 动机

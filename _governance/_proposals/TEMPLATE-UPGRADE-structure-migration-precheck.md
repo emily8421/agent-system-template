@@ -1,7 +1,7 @@
 # TEMPLATE-UPGRADE: 结构迁移类任务补「母仓结构取证」固定预检步
 
 > 来源：agent-system-template（emily8421/agent-system-template）派生项目回流
-> 状态：**草案 · 待维护者确认**（2026-11-03 起草，尚未提交母仓）
+> 状态：**草案 · 待维护者确认**（2026-11-03 起草并提交母仓）
 > 目标模板版本：ai-project-template v1.76.0+（本仓同步口径）
 > Release impact：预估 PATCH（流程提示文档增量，与既往审计项提案同性质；不挂自检断言、不改脚本 / 清单）
 > 仓库角色：B 组 · 待上行跨领域（回流母模板）

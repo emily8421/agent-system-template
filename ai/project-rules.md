@@ -8,8 +8,8 @@
 - 项目名称：`agent-system-template`
 - 代号 / 缩写：`agent-system-template` / `agent-system`
 - 仓库角色：L2 领域模板，继承 L1 母模板 `ai-project-template`，向 L3 agent 派生项目下发领域标准件。
-- 当前领域模板版本：根 `VERSION`，当前为 `v0.5.0`。
-- 当前继承母模板版本：`TEMPLATE-BASE.md` 的 `Current synced template version`，当前为 `v1.79.1`。
+- 当前领域模板版本：以根 `VERSION` 为准（本节不复制版本号，避免与权威源双源漂移）。
+- 当前继承母模板版本：以 `TEMPLATE-BASE.md` 的 `Current synced template version` 为准（本节不复制版本号，避免与权威源双源漂移）。
 - 分层权威入口：`TEMPLATE-BASE.md` 与 `domain/layer-map.md`；领域规则种子 `ai/domain-rules.md`。
 
 ## 1. Phase 边界

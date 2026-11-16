@@ -1,5 +1,7 @@
 # TEMPLATE-UPGRADE: 结构迁移类任务补「母仓结构取证」固定预检步
 
+> **归档批注（2026-11-16）**：母模板已采纳落地——v1.76.2「母仓结构取证」固定预检步（git-guide §5.5 + post-sync-cleanup 审计项引用；母模板 issue #515，2026-11-03 CLOSED）；本仓已随 v1.79.1 同步下行拿到对应版本（squash 锚点 982a7af）。无残留待办。
+
 > 来源：agent-system-template（emily8421/agent-system-template）派生项目回流
 > 状态：**草案 · 待维护者确认**（2026-11-03 起草并提交母仓）
 > 目标模板版本：ai-project-template v1.76.0+（本仓同步口径）

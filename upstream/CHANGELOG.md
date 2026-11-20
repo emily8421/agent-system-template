@@ -9,6 +9,44 @@
 
 模板版本采用三段式 `vMAJOR.MINOR.PATCH`，以根目录 `VERSION` 为单一审计入口。版本是发布边界，不是提案数量边界；提案收件箱增长不触发版本递增，只有合并到同步范围内并改变模板行为或下游同步判断的 PR 才判断 `PATCH / MINOR / MAJOR`。`ai/global-rules.md` 顶部仅记录全局规则自身版本。
 
+## v1.79.5（2026-11-17）
+
+PATCH 单提案（模板自产提案 `TEMPLATE-UPGRADE-launcher-menu.md`「控制台启动器菜单——对话即界面的并列点选入口」，2026-11-17 同日起草 → C1 triage 核实属实（先期状态核实：现行版本无等价点选执行器，SOP / commands README 为文档地图形态）→ 维护者拍板「按建议执行」立项；W-001~W-004 按 AI 建议决议 + triage 校正 2 / 补强 2 随批吸收）：
+
+- **新增 `scripts/menu-launcher.ps1` / `menu-launcher.sh` + 单一清单源 `scripts/launcher-menu.json`（`TOOL-LAUNCH-001`，随模板下行）**：Phase 1 共 11 项——脚本类 5（registry 对账 / check-template 自检 / new-project 向导 / collect-env / check-markdown-clean，同步边界判定：前三者为模板仓专用 → scope=maintainer）+ 会话类 6（C1 triage / resume / rollup / 派生同步轮 / post-sync-cleanup / submit-proposal；生成点单词后可显示 / 复制剪贴板 / 拉起 claude / codex；会话类按 §5.1 发起目录语义分仓——同步轮与清理在派生仓发起）。仓型自适应：按 `MAINTAINERS.md` 存在与否过滤 scope（maintainer / derived / all，#522 判据）；**红线「点选 ≠ 授权」**：会话类仅生成点单词，远端状态变更仍须会话内逐项确认（11-14 授权粒度教训承接）。实现约束：bash 侧无 JSON 解析器，清单按行解析（每条目单行 `{}`、字段顺序固定，约束写入清单 description）；`.ps1` 纯 ASCII 源码 + 中文文案全部在 UTF-8 清单（规避 PS 5.1 无 BOM 编码坑，菜单显示名与 ASCII key 分离）；运行前置缺失（bash / powershell 不在 PATH）降级为显示命令不报错。
+- **`scripts/check-template.sh` 补 advisory（非阻断）**：launcher-menu 清单 target / source 指向存在性校验（单一清单源防漂移；rd-data-chain §4 避免过度治理口径，不设硬门禁）。
+- **登记与同步清单**：`scripts/README.md` TOOL 表登记 `TOOL-LAUNCH-001`（§2.1 下行组 + §2.3 运行契约）+ §1 分组计数刷新（下行组 8 类 / 10 文件 → 9 类 / 13 文件，登记与改动同批——v1.79.4 固定步）；`template-sync.json` `files_all` +3。
+- 提案文件同 PR 入库 `_governance/_proposals/`（实施 PR 先入库、归档 PR 随后，#570/#571 先例）。
+
+验证：全量自检（`check-template.sh --summary`，advisory +1 计数预期）+ md-clean 触达面 + `git diff --check` + 双启动器 `--list` 冒烟（母仓视角 8 项 / 模拟派生仓视角 7 项，scope 过滤正确）+ JSON 可解析 + bash 语法检查；PATCH 豁免 L3 e2e（新增可选工具，无骨架 / 规则文件触达）；dogfood 两周观察（成功判据见提案 §5）。
+
+## v1.79.4（2026-11-16）
+
+PATCH 单提案（模板自产提案 `TEMPLATE-UPGRADE-mechanism-registration-landing-step.md`「机制 / 工具登记接入发版清单固定步」，源起首轮机制审计 R1 收官后维护者「半年度节奏是否会积压」复议——根因分析结论：R1 唯一实锤 F1（#485 v1.76.0 落地后漏登 MECH 表）源于落地时点缺登记工序而非体检间隔，体检频率治不了漏登；拍板方案 B：半年度节奏不动（DC-004 维持），登记工序前移到发版时点）：
+
+- **`MAINTAINERS.md` §3 发布 checklist 插入新条目 8（原 8-12 顺延 9-13）+ `CONTRIBUTING.md` §3 改模板流程插入新步骤 5（原 5-10 顺延 6-11）**：两处同措辞（v1.79.1 归档固定步范式）——改动引入新治理机制 / 新脚本工具时，当场登记 `capability-packages.md` §4（MECH 表，准入四问）或 `scripts/README.md` §2（TOOL 表）并刷新受影响行「最近审计」列；登记与改动同批提交，不留「已上线未登记」中间态。发版清单是每次发版必过的执行节点，模板迭代越快该工序触发越勤，自动适配快速优化期；半年度审计由「抓漏登」降级为「对账抽查」。
+- 提案文件同 PR 入库 `_governance/_proposals/`（§3.1 对话新增建议先落提案先例）。
+
+验证：全量自检（`check-template.sh --summary`）+ md-clean 窄检 + `git diff --check`；PATCH 豁免 L3 e2e（维护者清单文案增量，无断言 / 同步清单 / 脚本变更）。
+
+## v1.79.3（2026-11-16）
+
+PATCH 单提案（首轮机制审计 R1 落地补登，F1 + F6；审计记录 `_governance/ai-records/mechanism-audits/2026-11-16-mechanism-audit-r1.md` 同日入库——2026-12 半年度窗口提前执行，用户 2026-11-16 拍板）：
+
+- **`template-docs/capability-packages.md` §4 补 `MECH-CORE-004`「评审触发矩阵」登记行**（F1，协调域）：decoupling 提案 Phase 1 承诺「#485 落地后其触发矩阵登记进 MECH 表」，#485 已随 v1.76.0 落地（`ai/review-guide.md` 12 时点强制 / 建议矩阵 + 图表体系评审清单）但登记缺失，首轮审计检出后补登；登记表 14 类 → 15 类，§9 审计节奏句同步刷新（首轮 R1 已执行、下一窗口 2026-06）。
+- **§4 既有 14 行「最近审计」列刷新为 2026-11-16（R1 审计）**（F6）：原值停留在登记日 2026-10-29。
+
+验证：全量自检（`check-template.sh --summary`）+ md-clean 窄检 + `git diff --check`；PATCH 豁免 L3 e2e（人读登记表补行与簿记列刷新，无断言 / 同步清单 / 脚本变更）。
+
+## v1.79.2（2026-11-16）
+
+PATCH 单提案（agent-system-template 派生项目回流 issue #565「同步收尾补『版本复制指针核对』advisory 步」，2026-11-16 C1 triage 核实属实——`复制指针` 全 `ai/` 零命中（缺口未被现行版本覆盖）、两落点锚点实存（12-sync-template 步骤 14 / 15-post-sync-cleanup §5）、来源仓 patch 文件实查存在；同族实证链：#481 发版侧 VERSION 滞留 + 来源仓 2026-11-02 / 2026-11-16 连续两轮 `ai/project-rules.md` §0 复制指针滞留；拍板即日实施）：
+
+- **`ai/prompts/maintainers/12-sync-template.md` 步骤 14 尾部 + `ai/prompts/maintainers/15-post-sync-cleanup.md` §5**：两处同措辞补「核对非同步清单文件的版本复制指针」advisory 步——核对派生仓内手抄版本号（如 `ai/project-rules.md` §0 的领域模板版本 / 继承母模板版本、根 README 状态行等）与权威源（根 `VERSION` / `TEMPLATE-BASE.md`）一致，发现滞留即随收尾提交回写或建议改写为纯指针（「以 <权威源> 为准，不复制版本号」）从源头消除漂移面；两处同措辞防双写漂移（v1.79.1 归档固定步先例）。advisory 语义零门禁：不新增同步结构、不挂自检断言、不改脚本与同步清单。
+- **归档收尾**：issue #549 镜像随本批补归档（该提案已随 v1.79.0 PR #557 落地吸收、issue 已关闭，镜像归档欠账清偿；归档索引表登记同批完成）+ issue #565 镜像入库 `_remote-issues/`（落地吸收后随收尾轮归档）。
+
+验证：全量自检（`check-template.sh --summary`）+ md-clean 窄检 + `git diff --check`；PATCH 豁免 L3 e2e（SOP / 审计清单文案增量，无脚本 / 同步清单 / 断言变更）。
+
 ## v1.79.1（2026-11-16）
 
 PATCH 单提案（模板自产提案 `TEMPLATE-UPGRADE-archive-index-fixed-step.md`「归档操作序列补同步更新归档索引表固定步」，源起 pitfall SUMMARY §18 第十四批——archive-index-backfill-drift 同族第三次实证（2026-09-10 #456 / 2026-11-10 #542 / 2026-11-12 #547 归档均漏登索引表，前两次靠事后补登记）；2026-11-16 用户随 rollup #559 拍板立案即日实施，与 untracked add 附注 v1.78.2、镜像清尾 v1.78.1 同款「三犯立案」先例）：

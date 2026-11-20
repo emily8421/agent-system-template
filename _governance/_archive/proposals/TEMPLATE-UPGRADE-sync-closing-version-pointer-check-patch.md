@@ -1,4 +1,5 @@
 # TEMPLATE-UPGRADE-sync-closing-version-pointer-check patch（old→new）
+> 归档批注（2026-11-20）：B 组——主提案已随母模板 v1.79.2 采纳落地（issue #565）；本 patch 为措辞修订稿，内容已并入主提案落地形态。下行锚点 7beca4e（v1.79.5 同步 PR #29）。残留待办：无。
 
 > 基于母模板 v1.79.1 文件内容起草；锚点如与最新版有偏移，按语义就近落位，落点裁量权在维护者。
 

@@ -35,4 +35,13 @@
 | sync-route-annotations | B→母模板 | 母模板 v1.76.1 路由行拆分（「派生项目下行同步」最小必读集）+ v1.76.2 残余收口（issue #514 CLOSED 2026-11-03）；本仓下行锚点 982a7af（v1.79.1 同步） | — |
 | structure-migration-precheck | B→母模板 | 母模板 v1.76.2「母仓结构取证」固定预检步（git-guide §5.5 + post-sync-cleanup 审计项引用；issue #515 CLOSED 2026-11-03）；本仓下行锚点 982a7af（v1.79.1 同步） | — |
 
+## 已归档提案（2026-11-20 第三批 · v1.79.5 同步轮收口）
+
+> 归档操作序列按母模板 v1.79.1 固定步执行：`git mv` 与本索引表登记同批完成，不留「只 rename 未登记」中间态。
+
+| 提案 | 组 | 落地证据 | 残留待办 |
+|---|---|---|---|
+| sync-closing-version-pointer-check | B→母模板 | 母模板 v1.79.2 版本复制指针核对 advisory 步（12-sync-template 步骤 14 + 15-post-sync-cleanup §5 两处同措辞；issue #565 CLOSED，changelog 明确记录实施）；本仓下行锚点 7beca4e（v1.79.5 同步 PR #29） | — |
+| sync-closing-version-pointer-check-patch | B→母模板 | 主提案措辞修订稿，内容已并入主提案落地形态（随上条同批归档） | — |
+
 **保留未归档**：`_proposals/TEMPLATE-UPGRADE-agent-template-buildout.md`（总纲提案，D6 暂缓 / Batch 4 远期开放）。

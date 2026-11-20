@@ -2,6 +2,7 @@
 
 > 来源：agent-system-template（emily8421/agent-system-template）派生项目回流
 > 状态：**草案 · 待维护者确认**（2026-11-16 起草并提交母仓）
+> 归档批注（2026-11-20）：B 组——母模板已采纳落地（v1.79.2，issue #565，两落点 12-sync-template 步骤 14 + 15-post-sync-cleanup §5）；本仓下行锚点 7beca4e（v1.79.5 同步 PR #29）。残留待办：无。
 > 目标模板版本：ai-project-template v1.79.1+
 > Release impact：patch（AI 建议，待维护者确认——SOP / 审计清单文案增量，不挂自检断言、不改脚本 / 同步清单）
 > Release strategy：单独发布
